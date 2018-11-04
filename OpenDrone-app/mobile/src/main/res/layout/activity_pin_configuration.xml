@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Last modified: 09.09.18 18:56
+  ~ Copyright (c) OpenDrone, 2018.  All rights reserved.
+  ~ The entire project (including this file) is licensed under the GNU GPL v3.0
+  -->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PinConfigurationActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_PinConfiguration"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primaryColor"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:titleTextColor="@color/secondaryTextColor"
+        app:title="@string/toolbar_PinConfiguration" />
+
+</android.support.constraint.ConstraintLayout>

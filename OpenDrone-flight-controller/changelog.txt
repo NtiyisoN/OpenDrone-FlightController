@@ -1,0 +1,20 @@
+//Changelog
+
+/*
+ * Copyright (c) OpenDrone, 2018.  All rights reserved.
+ * The entire project (including this file) is licensed under the GNU GPL v3.0
+ */
+
+USED LIBs
+	Wiring Pi
+	http://wiringpi.com/
+	--------------------
+
+VERSIONS
+v0.0.1-alpha
+    - initial
+	- Resources added
+	- Build configuration
+
+v0.0.2-alpha
+	-Reading HC-SR04 values

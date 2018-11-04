@@ -1,0 +1,54 @@
+<!--
+  ~ Last modified: 09.09.18 18:56
+  ~ Copyright (c) OpenDrone, 2018.  All rights reserved.
+  ~ The entire project (including this file) is licensed under the GNU GPL v3.0
+  -->
+
+<resources>
+    <string name="app_name">OpenDrone</string>
+
+    <!--MainActivity-->
+    <string name="demo_btn_txt">OpenDrone is awesome!</string>
+
+    <!--Drawer-->
+    <string name="opd_nav_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="txtView_Calibration">Calibration</string>
+    <string name="txtView_PinConfiguration">Pin-Configuration</string>
+    <string name="txt_DroneName">Drone Name</string>
+    <string name="txtView_DroneTyp">Drone Typ</string>
+    <string name="navItem_FlightPlanner">Flight Planner</string>
+    <string name="navItem_Drones">Drones</string>
+    <string name="navItem_Fly">Fly</string>
+    <string name="navItem_Home">Home</string>
+    <string name="txt_Drone_description">Drone Description</string>
+    <string name="btn_saveChanges">Save</string>
+    <string name="txt_calibration">Place the Drone on a flat surface</string>
+    <string name="btn_calibration">Start Calibration</string>
+    <string name="txt_calibration_inprogress">Calibration in Progress, do not move the Drone</string>
+    <string name="txt_calibration_end">Calibration Successful</string>
+    <string name="btn_Fly">Fly</string>
+    <string name="btn_TestConn">Test Connection</string>
+    <string name="btn_Land">Land</string>
+    <string name="btn_GoHome">Go Home</string>
+    <string name="btn_Control">Control</string>
+    <string name="txtView_FlightMode">Flight Mode</string>
+    <string name="txtView_Mission">Flight Mode</string>
+    <string name="imgView_Logo_Description">Our Product Logo</string>
+    <string name="imageView_DronePicture_Description">The Picture of the saved Drone. If non is set, the App Logo is picked</string>
+    <string name="btn_Settings">Settings</string>
+    <string name="editTxt_DroneName_Error">This field is required</string>
+    <string name="toolbar_Calibrate">Calibrate</string>
+    <string name="toolbar_PinConfiguration">Pin Configuration</string>
+    <string name="alertDialog_Delete">Do you really want to delete the drone?</string>
+    <string name="alertDialog_Accept">Hell yeah!</string>
+    <string name="alertDialog_Deny">Chill Bro!</string>
+    <string name="alertDialog_Picture_Title">New or Existing Picture?</string>
+    <string name="alertDialog_Picture_Message">So, we heard you want to add a picture. Do you prefer to take a new one or choose an existing one from your gallery?</string>
+    <string name="alertDialog_Picture_Positive">Camera</string>
+    <string name="alertDialog_Picture_Negative">Gallery</string>
+    <string name="exception_sorry">Error</string>
+    <string name="exception_no_location">Please enable the location in your phone\'s settings</string>
+</resources>
