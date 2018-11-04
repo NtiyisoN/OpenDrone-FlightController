@@ -166,6 +166,14 @@ public class FlightPlanSaveFragment extends Fragment {
             }
         });
 
+        save.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                displayAddDialog();
+                return true;
+            }
+        });
+
         returnToMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
