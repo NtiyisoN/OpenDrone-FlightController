@@ -31,7 +31,6 @@ GY87::GY87()
 		cout << ar[0] << " " << ar[1] << "\n";
 		delay(500);
 	}
-
 }
 
 void GY87::getGyroValues(double *ar) 
