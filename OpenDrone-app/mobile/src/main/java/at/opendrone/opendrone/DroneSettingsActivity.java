@@ -62,7 +62,8 @@ public class DroneSettingsActivity extends AppCompatActivity {
     private static final int CAMERA_CODE = 88;
     private static final int GALLERY_CODE = 18;
     private static final int RESULT_CODE = 3;
-
+    private static final int MODE_NEW = 7;
+    private static final int MODE_EDIT = 27;
     private TextView txtView_Calibration;
     private TextView txtView_PinConfiguration;
     private TextView txtView_DroneName;
@@ -73,28 +74,25 @@ public class DroneSettingsActivity extends AppCompatActivity {
     private ImageView dronePicture;
     private AppCompatImageView cameraOverlay;
     private int position;
-
-    private static final int MODE_NEW = 7;
-    private static final int MODE_EDIT = 27;
     private boolean fromIntent = false;
 
     private Uri imgUri;
     private String picturePath;
 
     private Drone selectedDrone;
-    private String mode="";
+    private String mode = "";
 
     private SharedPreferences sp;
 
-    public void setDrone(Drone drone){
+    public void setDrone(Drone drone) {
         this.selectedDrone = drone;
     }
 
-    public void setMode(String mode){
+    public void setMode(String mode) {
         this.mode = mode;
-        }
+    }
 
-    private void setPosition(int position){
+    private void setPosition(int position) {
         this.position = position;
     }
 
@@ -104,21 +102,21 @@ public class DroneSettingsActivity extends AppCompatActivity {
         switch (requestCode) {
             case RESULT_CODE: {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 1
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED &&grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                 }
                 return;
             }
-
+            default:
+                return;
             // other 'case' lines to check for other
             // permissions this app might request.
         }
     }
 
-    private void checkPermission(){
+    private void checkPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -137,9 +135,9 @@ public class DroneSettingsActivity extends AppCompatActivity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
-        switch(requestCode) {
+        switch (requestCode) {
             case CAMERA_CODE:
-                if(resultCode == RESULT_OK){
+                if (resultCode == RESULT_OK) {
                     Log.i("picky", "camera");
                     cameraToFile();
                     //setUri(imageReturnedIntent);
@@ -147,24 +145,26 @@ public class DroneSettingsActivity extends AppCompatActivity {
 
                 break;
             case GALLERY_CODE:
-                if(resultCode == RESULT_OK){
+                if (resultCode == RESULT_OK) {
                     Log.i("picky", "gallery");
                     galleryToFile(imageReturnedIntent);
                 }
                 break;
+            default:
+                break;
         }
     }
 
-    private void cameraToFile(){
+    private void cameraToFile() {
         imgUri = Uri.fromFile(new File(picturePath));
         Log.i("Picky", picturePath);
         Picasso.get().load(imgUri).into(dronePicture);
 
     }
 
-    private void galleryToFile(Intent data){
+    private void galleryToFile(Intent data) {
         Uri selectedImage = data.getData();
-        String[] filePathColumn = { MediaStore.Images.Media.DATA };
+        String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
         Cursor cursor = getContentResolver().query(selectedImage,
                 filePathColumn, null, null, null);
@@ -172,7 +172,7 @@ public class DroneSettingsActivity extends AppCompatActivity {
 
         int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
         picturePath = cursor.getString(columnIndex);
-        Log.i("Picky", "test: "+picturePath);
+        Log.i("Picky", "test: " + picturePath);
         //sp.edit().putString("imagepath",picturePath);
         cursor.close();
 
@@ -180,7 +180,7 @@ public class DroneSettingsActivity extends AppCompatActivity {
         Picasso.get().load(imgUri).into(dronePicture);
     }
 
-    private void showInfo(){
+    private void showInfo() {
         // 1. Instantiate an AlertDialog.Builder with its constructor
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -208,39 +208,41 @@ public class DroneSettingsActivity extends AppCompatActivity {
     private void openGalleryIntent() {
         Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(pickPhoto , GALLERY_CODE);//one can be replaced with any action code
+        startActivityForResult(pickPhoto, GALLERY_CODE);//one can be replaced with any action code
     }
 
     private void openCameraIntent() {
         Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        picturePath = getExternalMediaDirs()[0]+"/"+System.currentTimeMillis()+".jpg";
+        picturePath = getExternalMediaDirs()[0] + "/" + System.currentTimeMillis() + ".jpg";
         Uri photoURI = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".my.package.name.provider", new File(picturePath));
         takePicture.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
         takePicture.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         startActivityForResult(takePicture, CAMERA_CODE);
     }
 
-    public void setValuesForDrone(Drone drone){
+    public void setValuesForDrone(Drone drone) {
         txt_DroneDescription.setText(drone.description);
         txt_DroneName.setText(drone.name);
 
         String[] values = getResources().getStringArray(R.array.array_DroneTyp);
 
-        for(int i = 0; i < values.length; i++){
-            if(values[i].equals(drone.type)){
+        for (int i = 0; i < values.length; i++) {
+            if (values[i].equals(drone.type)) {
                 spinner_DroneTyp.setSelection(i);
                 break;
             }
         }
     }
 
-    private void addTextWatcher(EditText src, final TextView target){
+    private void addTextWatcher(EditText src, final TextView target) {
         src.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
             @Override
             public void afterTextChanged(Editable editable) {
@@ -249,19 +251,19 @@ public class DroneSettingsActivity extends AppCompatActivity {
         });
     }
 
-    public void startCalibration(){
+    public void startCalibration() {
 
         Intent i = new Intent(getApplicationContext(), DroneCalibrationActivity.class);
         startActivity(i);
     }
 
-    private void startPinConfig(){
+    private void startPinConfig() {
         Intent i = new Intent(getApplicationContext(), PinConfigurationActivity.class);
         startActivity(i);
 
     }
 
-    private void initViews(){
+    private void initViews() {
         dronePicture = (ImageView) findViewById(R.id.imageView_DronePicture);
         cameraOverlay = findViewById(R.id.imgView_CameraOverlay);
 
@@ -274,10 +276,10 @@ public class DroneSettingsActivity extends AppCompatActivity {
         initButtons();
     }
 
-    private void initImgView(){
+    private void initImgView() {
         dronePicture = (ImageView) findViewById(R.id.imageView_DronePicture);
-        String uriStr = sp.getString("DroneImg"+position, "");
-        if(!uriStr.equals("")){
+        String uriStr = sp.getString("DroneImg" + position, "");
+        if (!uriStr.equals("")) {
             Uri imgUri = Uri.parse(uriStr);
             Picasso.get().load(imgUri).into(dronePicture);
         }
@@ -311,21 +313,23 @@ public class DroneSettingsActivity extends AppCompatActivity {
             }
         });
 
-        switch (this.mode){
-            case("edit"):{
+        switch (this.mode) {
+            case ("edit"): {
                 editDrone(MODE_EDIT);
                 break;
             }
-            case("new"):{
+            case ("new"): {
                 editDrone(MODE_NEW);
                 break;
             }
+            default:
+                break;
         }
 
     }
 
 
-    private Drone readData(){
+    private Drone readData() {
         String droneName = String.valueOf(txt_DroneName.getText());
         String droneDescription = String.valueOf(txt_DroneDescription.getText());
         String droneType = String.valueOf(spinner_DroneTyp.getSelectedItem().toString());
@@ -334,7 +338,7 @@ public class DroneSettingsActivity extends AppCompatActivity {
     }
 
 
-    private boolean isNullOrEmpty(Object object){
+    private boolean isNullOrEmpty(Object object) {
         return object == null || object.toString().equals("");
     }
 
@@ -349,7 +353,7 @@ public class DroneSettingsActivity extends AppCompatActivity {
     }
 
     private void handleEditDrone(int mode) {
-        if(isNullOrEmpty(txt_DroneName.getText())){
+        if (isNullOrEmpty(txt_DroneName.getText())) {
             txt_DroneName.setError(getResources().getString(R.string.editTxt_DroneName_Error));
             return;
         }
@@ -360,12 +364,14 @@ public class DroneSettingsActivity extends AppCompatActivity {
     }
 
     private void checkMode(int mode, Drone drone) {
-        switch(mode){
+        switch (mode) {
             case MODE_EDIT:
                 DroneCardListRecyclerFragment.drones.set(position, drone);
                 break;
             case MODE_NEW:
                 DroneCardListRecyclerFragment.drones.add(drone);
+                break;
+            default:
                 break;
         }
     }
@@ -375,9 +381,9 @@ public class DroneSettingsActivity extends AppCompatActivity {
         Gson gson = new Gson();
         String serialized = gson.toJson(DroneCardListRecyclerFragment.drones.toArray());
         sp.edit().putString("DroneList", serialized).apply();
-        if(imgUri != null && !imgUri.toString().equals("")){
+        if (imgUri != null && !imgUri.toString().equals("")) {
             Log.i("Picky", picturePath);
-            sp.edit().putString("DroneImg"+position, picturePath).apply();
+            sp.edit().putString("DroneImg" + position, picturePath).apply();
         }
     }
 
@@ -385,7 +391,6 @@ public class DroneSettingsActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
     }
-
 
 
     private void hideSoftKeyboard(Activity activity) {
@@ -421,7 +426,7 @@ public class DroneSettingsActivity extends AppCompatActivity {
     protected void onResume() {
 
         int position = sp.getInt("CurrentDronePosition", -1);
-        if(position != -1 && !fromIntent){
+        if (position != -1 && !fromIntent) {
             String mode = sp.getString("CurrentDroneMode", "");
             String serializedDrone = sp.getString("CurrentDrone", "");
 
@@ -439,7 +444,7 @@ public class DroneSettingsActivity extends AppCompatActivity {
         checkPermission();
 
 
-        if(selectedDrone != null){
+        if (selectedDrone != null) {
             setValuesForDrone(this.selectedDrone);
         }
 
@@ -465,25 +470,23 @@ public class DroneSettingsActivity extends AppCompatActivity {
         Intent i = getIntent();
         sp = getSharedPreferences("at.opendrone.opendrone", MODE_PRIVATE);
         fromIntent = false;
-        if(i != null && i.getExtras() != null){
+        if (i != null && i.getExtras() != null) {
             fromIntent = true;
             String mode = i.getStringExtra("Mode");
             setMode(mode);
-            Drone drone  = (Drone)i.getSerializableExtra("Drone");
+            Drone drone = (Drone) i.getSerializableExtra("Drone");
             setDrone(drone);
-            int position = i.getIntExtra("Position",-1);
+            int position = i.getIntExtra("Position", -1);
             setPosition(position);
             dronePicture = (ImageView) findViewById(R.id.imageView_DronePicture);
             String uriStr = i.getStringExtra("Img");
-            if(uriStr != null && !uriStr.equals("")){
+            if (uriStr != null && !uriStr.equals("")) {
                 Uri uri = Uri.fromFile(new File(uriStr));
                 Picasso.get().load(uri).into(dronePicture);
             }
             //initImgView();
             //String defFragment.setMode("edit");
         }
-
-
 
 
     }
