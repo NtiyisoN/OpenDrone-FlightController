@@ -1,4 +1,4 @@
-#include "UltraSonicSensor.h"
+#include "UltraSonic.h"
 #include "Filter.h"
 #include <wiringPi.h>
 #include <iostream>
@@ -14,12 +14,12 @@ Filter *filter;
 
 //TODO: output 1 -> no sensor
 
-UltraSonicSensor::UltraSonicSensor()
+UltraSonic::UltraSonic()
 {
 	//Empty Constructor -- Necessary
 }
 
-UltraSonicSensor::UltraSonicSensor(int pin_trigger, int pin_echo, int id)
+UltraSonic::UltraSonic(int pin_trigger, int pin_echo, int id)
 {
 	this->pin_trigger = pin_trigger;
 	this->pin_echo = pin_echo;
@@ -36,11 +36,11 @@ UltraSonicSensor::UltraSonicSensor(int pin_trigger, int pin_echo, int id)
 	delay(50); 
 } 
 
-UltraSonicSensor::~UltraSonicSensor()
+UltraSonic::~UltraSonic()
 {
 }
 
-double UltraSonicSensor::distance()
+double UltraSonic::distance()
 {
 	long ping = 0;
 	long pong = 0;
@@ -67,6 +67,6 @@ double UltraSonicSensor::distance()
 }
 
 
-int UltraSonicSensor::getId() {
+int UltraSonic::getId() {
 	return this->id;
 }

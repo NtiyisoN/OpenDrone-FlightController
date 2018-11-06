@@ -66,15 +66,17 @@
     </RemotePostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Barometer.cpp" />
     <ClCompile Include="Filter.cpp" />
     <ClCompile Include="GY87.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="UltraSonicSensor.cpp" />
+    <ClCompile Include="UltraSonic.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Barometer.h" />
     <ClInclude Include="Filter.h" />
     <ClInclude Include="GY87.h" />
-    <ClInclude Include="UltraSonicSensor.h" />
+    <ClInclude Include="UltraSonic.h" />
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
