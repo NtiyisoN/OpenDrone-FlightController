@@ -16,14 +16,13 @@ Magnetometer::Magnetometer()
 		exit(1);
 	}
 	wiringPiI2CWriteReg8(fd, 0x02, 0x00);
-	wiringPiI2CWrite(fd, 0x03);
 }
 
 void Magnetometer::getMagnetometerValues(double *ar)
 {
-	ar[0] = wiringPiI2CReadReg16(fd, 6 + 8); //Gyro X
-	ar[1] = wiringPiI2CReadReg16(fd, 6 + 8 + 8) / 131; //Gyro Y
-	ar[2] = wiringPiI2CReadReg16(fd, 6 + 8 + 8 + 8) / 131; //Gyro Z
+	ar[0] = wiringPiI2CReadReg16(fd, 0x03); //Gyro X
+	ar[1] = wiringPiI2CReadReg16(fd, 0x05); //Gyro Y
+	ar[2] = wiringPiI2CReadReg16(fd, 0x07); //Gyro Z
 }
 
 
