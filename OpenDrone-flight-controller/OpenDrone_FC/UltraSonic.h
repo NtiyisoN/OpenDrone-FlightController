@@ -1,10 +1,10 @@
 #pragma once
-class UltraSonicSensor
+class UltraSonic
 {
 public:
-	UltraSonicSensor();
-	UltraSonicSensor(int pin_trigger, int pin_echo, int num);
-	~UltraSonicSensor();
+	UltraSonic();
+	UltraSonic(int pin_trigger, int pin_echo, int num);
+	~UltraSonic();
 	double distance();
 	int getId();
 
