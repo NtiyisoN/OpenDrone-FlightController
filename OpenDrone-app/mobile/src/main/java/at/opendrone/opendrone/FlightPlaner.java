@@ -264,7 +264,7 @@ public class FlightPlaner extends Fragment{
         startMarker.setEnableTextLabelsWhenNoImage(true);
 
         BitmapDrawable drawable =writeOnDrawable(R.drawable.marker_background, markers.size()+"");
-        startMarker.setIcon(drawable);
+        //startMarker.setIcon(drawable);
 
 
         addListenersToMarker(startMarker);
