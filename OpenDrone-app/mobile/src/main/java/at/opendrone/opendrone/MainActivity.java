@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 closeDrawer();
                 return true;
             case R.id.navItem_Drones:
-                Toast.makeText(getApplicationContext(), "Pressed Drones", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Pressed Drones", Toast.LENGTH_SHORT).show();
                 //initDroneSettingsFragment();
                 clearContainer();
                 initDroneRecyclerFragment();
@@ -116,13 +116,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return true;
             case R.id.navItem_FlightPlanner:
                 clearContainer();
-                Toast.makeText(getApplicationContext(), "Pressed FlightPlanner", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Pressed FlightPlanner", Toast.LENGTH_SHORT).show();
                 initFlightplaner();
                 closeDrawer();
                 return true;
             case R.id.navItem_Fly:
                 clearContainer();
-                Toast.makeText(getApplicationContext(), "Pressed Fly", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Pressed Fly", Toast.LENGTH_SHORT).show();
                 initFlyStartFragment();
                 closeDrawer();
                 return true;
@@ -171,7 +171,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initFlyStartFragment(){
-        FlyStart defFragment = new FlyStart();
+        //FlyStart defFragment = new FlyStart();
+        FlyManualFlight defFragment = new FlyManualFlight();
 
         FragmentTransaction ft  =fm.beginTransaction();
         ft.replace(R.id.frameLayout_FragmentContainer, defFragment);
