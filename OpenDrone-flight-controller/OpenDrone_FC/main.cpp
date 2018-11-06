@@ -46,7 +46,6 @@ void *runBarometer(void *interval)
 	double *ar;
 	barometer->getBarometerValues(ar);
 	cout << ar[0] << " " << ar[1];
-
 }
 
 int main(void)
