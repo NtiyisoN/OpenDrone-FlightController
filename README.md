@@ -1,3 +1,5 @@
+[![CodeFactor](https://www.codefactor.io/repository/github/opendroneat/opendrone/badge/develop)](https://www.codefactor.io/repository/github/opendroneat/opendrone/overview/develop)  
+  
 Open Drone Open-source Project  
 LICENSE GNU GPLv3  
   
