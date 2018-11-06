@@ -15,17 +15,16 @@ Magnetometer::Magnetometer()
 		cout << "wiringPiI2CSetup(addressMagnetometer)\n";
 		exit(1);
 	}
-	wiringPiI2CWriteReg8(fdMagnet, 0x02, 0x00);
-	wiringPiI2CWrite(fdMagnet, 0x03);
+	wiringPiI2CWriteReg8(fd, 0x02, 0x00);
 }
 
 double *Magnetometer::getMagnetometerValues()
 {
 	double ar[3];
-	ar[0] = wiringPiI2CReadReg16(fdMagnet, 6 + 8); //Magnet X
-	ar[1] = wiringPiI2CReadReg16(fdMagnet, 6 + 8 + 8) / 131; //Magnet Y
-	ar[2] = wiringPiI2CReadReg16(fdMagnet, 6 + 8 + 8 + 8) / 131; //Magnet Z
-	return ar;
+	ar[0] = wiringPiI2CReadReg16(fdMagnet, 0x03); //Magnet X
+	ar[1] = wiringPiI2CReadReg16(fdMagnet, 0x05); //Magnet Y
+	ar[2] = wiringPiI2CReadReg16(fdMagnet, 0x07); //Magnet Z
+  return ar;
 }
 
 
