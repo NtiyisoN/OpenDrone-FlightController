@@ -1,11 +1,6 @@
 #include "UltraSonic.h"
 #include "Filter.h"
 #include <wiringPi.h>
-#include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-using namespace std;
 
 int pin_trigger;
 int pin_echo;
@@ -24,9 +19,6 @@ UltraSonic::UltraSonic(int pin_trigger, int pin_echo, int id)
 	this->pin_trigger = pin_trigger;
 	this->pin_echo = pin_echo;
 	this->id = id;
-
-	cout << "Starting HC-SR04 with the id " << id << "\n";
-
 	//Initalize the 
 	filter = new Filter(400.0,3.0,16.0);
 	//Defines the pins
