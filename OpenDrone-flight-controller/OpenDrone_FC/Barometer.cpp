@@ -1,5 +1,6 @@
 #include "Barometer.h"
 #include <bmp180.h>
+#include <wiringPi.h>
 
 Barometer::Barometer()
 {
