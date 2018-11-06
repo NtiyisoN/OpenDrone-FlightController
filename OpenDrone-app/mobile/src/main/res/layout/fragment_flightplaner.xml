@@ -24,4 +24,17 @@
         app:rippleColor="@color/secondaryColor"
         android:src="@drawable/ic_tick"
         />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/deleteFab"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="8dp"
+        android:tint="@color/cardview_light_background"
+        android:backgroundTint="@color/delete_color"
+        app:rippleColor="@color/delete_color"
+        android:src="@drawable/ic_delete"
+        />
 </FrameLayout>
