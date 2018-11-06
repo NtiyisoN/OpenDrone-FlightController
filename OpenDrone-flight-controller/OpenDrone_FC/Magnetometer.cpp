@@ -6,24 +6,26 @@
 using namespace std;
 
 int addressMag = 0x1E;
-int fd;
+int fdMagnet;
 
 Magnetometer::Magnetometer()
 {
-	fd = wiringPiI2CSetup(addressMag);
-	if (fd < 1) {
+	this->fdMagnet = wiringPiI2CSetup(addressMag);
+	if (fdMagnet < 1) {
 		cout << "wiringPiI2CSetup(addressMagnetometer)\n";
 		exit(1);
 	}
-	wiringPiI2CWriteReg8(fd, 0x02, 0x00);
-	wiringPiI2CWrite(fd, 0x03);
+	wiringPiI2CWriteReg8(fdMagnet, 0x02, 0x00);
+	wiringPiI2CWrite(fdMagnet, 0x03);
 }
 
-void Magnetometer::getMagnetometerValues(double *ar)
+double *Magnetometer::getMagnetometerValues()
 {
-	ar[0] = wiringPiI2CReadReg16(fd, 6 + 8); //Gyro X
-	ar[1] = wiringPiI2CReadReg16(fd, 6 + 8 + 8) / 131; //Gyro Y
-	ar[2] = wiringPiI2CReadReg16(fd, 6 + 8 + 8 + 8) / 131; //Gyro Z
+	double ar[3];
+	ar[0] = wiringPiI2CReadReg16(fdMagnet, 6 + 8); //Magnet X
+	ar[1] = wiringPiI2CReadReg16(fdMagnet, 6 + 8 + 8) / 131; //Magnet Y
+	ar[2] = wiringPiI2CReadReg16(fdMagnet, 6 + 8 + 8 + 8) / 131; //Magnet Z
+	return ar;
 }
 
 
