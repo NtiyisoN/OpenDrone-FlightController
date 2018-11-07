@@ -2,12 +2,11 @@
 class GyroAccelerometer
 {
 public:
+	int fd;
+
 	GyroAccelerometer();
-	void getGyroValues(double* ar);
-	void getAccValues(double* ar);
+	float *getValues(void);
+	short readRawData(int addr);
 	~GyroAccelerometer();
-private:
-	int fdGyroAcc;
-	int addressAccel;
 };
 

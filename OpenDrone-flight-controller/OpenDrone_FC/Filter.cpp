@@ -41,5 +41,12 @@ double Filter::addValue(double value)
 		num = num + *i;
 	}
 
-	return num / list1.size();
+	if (list1.size() > 0)
+	{
+		return num / list1.size();
+	}
+	else
+	{
+		return -1.0;
+	}
 }
