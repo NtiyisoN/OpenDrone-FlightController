@@ -57,14 +57,19 @@ public class FlyStart extends Fragment {
                 String flightMode = (String) spinner_FlightMode.getSelectedItem();
                 String mission;
 
-                switch (flightMode){
-                    case "Manual":
+                switch (flightMode) {
+                    case "Manual": {
                         //TODO: Open the manual Fragment
                         break;
-                    case "Automatic":
+                    }
+                    case "Automatic": {
                         mission = (String) spinner_Mission.getSelectedItem();
                         initFlyAutoFlyFragment();
                         break;
+                    }
+                    default: {
+                        //No default case defined
+                    }
                 }
             }
         });
