@@ -41,14 +41,15 @@ void *runGyroAccelerometer(void *interval)
 {
 	//Initializing the sensor
 	GyroAccelerometer* gyroAcc = new GyroAccelerometer();
-	double *valuesGyro, *valuesAcc;
+	double valuesGyro[3];
+	double valuesAcc[3];
 
 	//Infinite loop to keep measuring --> TODO: Need to be changed
 	while (1)
 	{
-		valuesAcc = gyroAcc->getAccValues();
+		gyroAcc->getAccValues(valuesAcc);
 		cout << "Accelerometer x=" << valuesAcc[0] << " y=" << valuesAcc[1] << " z=" << valuesAcc[2] << "\n";
-		valuesGyro = gyroAcc->getGyroValues();
+		gyroAcc->getGyroValues(valuesGyro);
 		cout << "Gyrometer x=" << valuesGyro[0] << " y=" << valuesGyro[1] << " z=" << valuesGyro[2] << "\n";
 		delay((int)interval);
 	}
@@ -58,13 +59,13 @@ void *runBarometer(void *interval)
 {
 	//Initializing the sensor
 	Barometer *barometer = new Barometer();
-	double *values;
+	double values[2];
 
 	//Infinite loop to keep measuring --> TODO: Need to be changed
 	while (1)
 	{
-		values = barometer->getBarometerValues();
-		cout << "Temperature: " << values[0] << " Pressure: " << values[1] << "\n";
+		barometer->getBarometerValues(values);
+		cout << "Barometer Temperature: " << values[0] << " Pressure: " << values[1] << "\n";
 		delay((int)interval);
 	}
 }
@@ -73,12 +74,12 @@ void *runMagnetometer(void *interval)
 {
 	//Initializing the sensor
 	Magnetometer *magnetometer = new Magnetometer();
-	double *values;
+	double values[3];
 
 	//Infinite loop to keep measuring --> TODO: Need to be changed
 	while (1)
 	{
-		values = magnetometer->getMagnetometerValues();
+		magnetometer->getMagnetometerValues(values);
 		cout << "Magnet x=" << values[0] << " y=" << values[1] << " z=" << values[2] << "\n";
 		delay((int)interval);
 	}
@@ -95,7 +96,8 @@ int main(void)
 	int thread1 = pthread_create(&t1, NULL, runUltrasonic, (void *)500);
 	int thread2 = pthread_create(&t2, NULL, runGyroAccelerometer, (void *)500);
 	int thread3 = pthread_create(&t3, NULL, runBarometer, (void *)500);
-	int thread4 = pthread_create(&t4, NULL, runMagnetometer, (void *)500);
+	//int thread4 = pthread_create(&t4, NULL, runMagnetometer, (void *)500);
+	int thread4 = 0;
 
 	//Checking if there was a problem with creating the Threads
 	if (thread1 != 0)
