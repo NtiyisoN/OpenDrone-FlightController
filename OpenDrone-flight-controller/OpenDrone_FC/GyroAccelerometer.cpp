@@ -18,24 +18,20 @@ GyroAccelerometer::GyroAccelerometer()
 	wiringPiI2CWriteReg16(fdGyroAcc, 0x6b, 0);
 }
 
-double* GyroAccelerometer::getGyroValues()
+void GyroAccelerometer::getGyroValues(double *ar)
 {
 	// °/s  ?? rad/s ??
-	double ar[3];
 	ar[0] = wiringPiI2CReadReg16(fdGyroAcc, 0x43) / 131; //Gyro X
 	ar[1] = wiringPiI2CReadReg16(fdGyroAcc, 0x45) / 131; //Gyro Y
 	ar[2] = wiringPiI2CReadReg16(fdGyroAcc, 0x47) / 131; //Gyro Z
-	return ar;
 }
 
-double* GyroAccelerometer::getAccValues()
+void GyroAccelerometer::getAccValues(double *ar)
 {
 	//m/s^2 ??
-	double ar[3];
 	ar[0] = wiringPiI2CReadReg16(fdGyroAcc, 0x3b) / 16384.0; //Acc. X
     ar[1] = wiringPiI2CReadReg16(fdGyroAcc, 0x3d) / 16384.0; //Acc. Y
 	ar[2] = wiringPiI2CReadReg16(fdGyroAcc, 0x3f) / 16384.0; //Acc. Z
-	return ar;
 }
 
 GyroAccelerometer::~GyroAccelerometer()

@@ -3,7 +3,7 @@ class Magnetometer
 {
 public:
 	Magnetometer();
-	double *getMagnetometerValues();
+	void getMagnetometerValues(double *ar);
 	~Magnetometer();
 private:
 	int fdMagnet;

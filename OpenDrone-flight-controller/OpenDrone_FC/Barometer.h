@@ -3,7 +3,7 @@ class Barometer
 {
 public:
 	Barometer();
-	double* getBarometerValues();
+	void getBarometerValues(double* ar);
 	~Barometer();
 };
 

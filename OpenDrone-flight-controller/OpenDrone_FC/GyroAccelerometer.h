@@ -3,8 +3,8 @@ class GyroAccelerometer
 {
 public:
 	GyroAccelerometer();
-	double* getGyroValues();
-	double* getAccValues();
+	void getGyroValues(double* ar);
+	void getAccValues(double* ar);
 	~GyroAccelerometer();
 private:
 	int fdGyroAcc;
