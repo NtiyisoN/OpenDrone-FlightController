@@ -4,25 +4,36 @@
 #include <iostream>
 using namespace std;
 
+#define DEVICE_ADDRESS 0x1E
 
 Magnetometer::Magnetometer()
 {
-	this->fdMagnet = wiringPiI2CSetup(addressMag);
-	if (fdMagnet < 1) {
+	this->fd = wiringPiI2CSetup(DEVICE_ADDRESS);
+	if (this->fd < 1) {
 		cout << "wiringPiI2CSetup(addressMagnetometer)\n";
 		exit(1);
 	}
-	wiringPiI2CWriteReg8(fdMagnet, 0x02, 0x00);
+	wiringPiI2CWriteReg8(this->fd, 0x02, 0x00);
 }
 
-void Magnetometer::getMagnetometerValues(double *ar)
+short Magnetometer::readRawData(int addr)
 {
-	//static double ar[3];  /* Lokal deklariert, dennoch global im Datensegment abgelegt (und nicht am Stack) */
-	ar[0] = wiringPiI2CReadReg16(fdMagnet, 0x03); //Magnet X
-	ar[1] = wiringPiI2CReadReg16(fdMagnet, 0x05); //Magnet Y
-	ar[2] = wiringPiI2CReadReg16(fdMagnet, 0x07); //Magnet Z
+	short high_byte, low_byte, value;
+
+	high_byte = wiringPiI2CReadReg8(fd, addr);
+	low_byte = wiringPiI2CReadReg8(fd, addr + 1);
+	value = (high_byte << 8) | low_byte;
+	return value;
 }
 
+float *Magnetometer::getMagnetometerValues()
+{
+	static float ar[3];  /* Declared locally, but saved in the data-segment (and not on the stack) */
+	ar[0] = readRawData(0x03); //Magnet X
+	ar[1] = readRawData(0x05); //Magnet Y
+	ar[2] = readRawData(0x07); //Magnet Z
+	return ar;
+}
 
 Magnetometer::~Magnetometer()
 {

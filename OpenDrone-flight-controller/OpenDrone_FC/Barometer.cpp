@@ -7,12 +7,13 @@ Barometer::Barometer()
 	bmp180Setup(200);
 }
 
-void Barometer::getBarometerValues(double *ar)
+float *Barometer::getBarometerValues()
 {
+	static float ar[2];
 	ar[0] = analogRead(200 + 0); //Temperatur
 	ar[1] = analogRead(200 + 1); //Pressure - hPa
+	return ar;
 }
-
 
 Barometer::~Barometer()
 {

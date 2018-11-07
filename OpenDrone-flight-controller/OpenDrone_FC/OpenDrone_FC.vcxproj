@@ -68,6 +68,7 @@
   <ItemGroup>
     <ClCompile Include="Barometer.cpp" />
     <ClCompile Include="Filter.cpp" />
+    <ClCompile Include="FlightController.cpp" />
     <ClCompile Include="GyroAccelerometer.cpp" />
     <ClCompile Include="Magnetometer.cpp" />
     <ClCompile Include="main.cpp" />
@@ -76,6 +77,7 @@
   <ItemGroup>
     <ClInclude Include="Barometer.h" />
     <ClInclude Include="Filter.h" />
+    <ClInclude Include="FlightController.h" />
     <ClInclude Include="GyroAccelerometer.h" />
     <ClInclude Include="Magnetometer.h" />
     <ClInclude Include="UltraSonic.h" />

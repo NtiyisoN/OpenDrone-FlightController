@@ -1,10 +1,11 @@
 #include "GyroAccelerometer.h"
+#include "Filter.h"
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include <iostream>
 using namespace std;
 
-#define Device_Address 0x68	/*Device Address/Identifier for MPU6050*/
+#define DEVICE_ADDRESS 0x68	/*Device Address/Identifier for MPU6050*/
 
 #define PWR_MGMT_1   0x6B
 #define SMPLRT_DIV   0x19
@@ -20,7 +21,7 @@ using namespace std;
 
 GyroAccelerometer::GyroAccelerometer()
 {
-	this->fd = wiringPiI2CSetup(Device_Address);
+	this->fd = wiringPiI2CSetup(DEVICE_ADDRESS);
 	if (this->fd < 1) {
 		cout << "wiringPiI2CSetup(addressAccel)\n";
 		exit(1);
@@ -31,6 +32,14 @@ GyroAccelerometer::GyroAccelerometer()
 	wiringPiI2CWriteReg8(this->fd, CONFIG, 0);			/* Write to Configuration register */
 	wiringPiI2CWriteReg8(this->fd, GYRO_CONFIG, 24);	/* Write to Gyro Configuration register */
 	wiringPiI2CWriteReg8(this->fd, INT_ENABLE, 0x01);	/* Write to interrupt enable register */
+
+	this->filterAccX = new Filter(-10.0, 10.0, 2.0);
+	this->filterAccY = new Filter(-10.0, 10.0, 2.0);
+	this->filterAccZ = new Filter(-10.0, 10.0, 2.0);
+
+	this->filterGyroX = new Filter(-100.0, 100.0, 2.0);
+	this->filterGyroY = new Filter(-100.0, 100.0, 2.0);
+	this->filterGyroZ = new Filter(-100.0, 100.0, 2.0);
 }
 
 
@@ -51,13 +60,13 @@ float *GyroAccelerometer::getValues()
 	//Read new value and divide raw value by sensitivity scale factor
 	ar[0] = millis();
 	//g --> 1m/s^2 = 0.101972g
-	ar[1] = readRawData(ACCEL_XOUT_H) / 16384.0;
-	ar[2] = readRawData(ACCEL_YOUT_H) / 16384.0;
-	ar[3] = readRawData(ACCEL_ZOUT_H) / 16384.0;
+	ar[1] = this->filterAccX->addValue(readRawData(ACCEL_XOUT_H) / 16384.0);
+	ar[2] = this->filterAccY->addValue(readRawData(ACCEL_YOUT_H) / 16384.0);
+	ar[3] = this->filterAccZ->addValue(readRawData(ACCEL_ZOUT_H) / 16384.0);
 	//degree/seconds
-	ar[4] = readRawData(GYRO_XOUT_H) / 131;
-	ar[5] = readRawData(GYRO_YOUT_H) / 131;
-	ar[6] = readRawData(GYRO_ZOUT_H) / 131;
+	ar[4] = this->filterGyroX->addValue(readRawData(GYRO_XOUT_H) / 131.0);
+	ar[5] = this->filterGyroY->addValue(readRawData(GYRO_YOUT_H) / 131.0);
+	ar[6] = this->filterGyroZ->addValue(readRawData(GYRO_ZOUT_H) / 131.0);
 
 	return ar;
 }

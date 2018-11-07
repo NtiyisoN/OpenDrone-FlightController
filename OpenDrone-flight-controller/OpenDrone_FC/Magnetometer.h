@@ -1,12 +1,12 @@
 #pragma once
 class Magnetometer
 {
-	int addressMag = 0x1E;
-	int fdMagnet;
-
 public:
+	int fd;
+
 	Magnetometer();
-	void getMagnetometerValues(double *ar);
+	float *getMagnetometerValues();
+	short readRawData(int addr);
 	~Magnetometer();
 };
 
