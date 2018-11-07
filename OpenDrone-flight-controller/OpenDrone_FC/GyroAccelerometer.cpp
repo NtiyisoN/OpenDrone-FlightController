@@ -2,37 +2,66 @@
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include <iostream>
-
 using namespace std;
 
-int addressAccel = 0x68;
-int fdGyroAcc;
+#define Device_Address 0x68	/*Device Address/Identifier for MPU6050*/
+
+#define PWR_MGMT_1   0x6B
+#define SMPLRT_DIV   0x19
+#define CONFIG       0x1A
+#define GYRO_CONFIG  0x1B
+#define INT_ENABLE   0x38
+#define ACCEL_XOUT_H 0x3B
+#define ACCEL_YOUT_H 0x3D
+#define ACCEL_ZOUT_H 0x3F
+#define GYRO_XOUT_H  0x43
+#define GYRO_YOUT_H  0x45
+#define GYRO_ZOUT_H  0x47
 
 GyroAccelerometer::GyroAccelerometer()
 {
-	this->fdGyroAcc = wiringPiI2CSetup(addressAccel);
-	if (fdGyroAcc < 1) {
+	this->fd = wiringPiI2CSetup(Device_Address);
+	if (this->fd < 1) {
 		cout << "wiringPiI2CSetup(addressAccel)\n";
 		exit(1);
 	}
-	wiringPiI2CWriteReg16(fdGyroAcc, 0x6b, 0);
+
+	wiringPiI2CWriteReg8(this->fd, SMPLRT_DIV, 0x07);	/* Write to sample rate register */
+	wiringPiI2CWriteReg8(this->fd, PWR_MGMT_1, 0x01);	/* Write to power management register */
+	wiringPiI2CWriteReg8(this->fd, CONFIG, 0);			/* Write to Configuration register */
+	wiringPiI2CWriteReg8(this->fd, GYRO_CONFIG, 24);	/* Write to Gyro Configuration register */
+	wiringPiI2CWriteReg8(this->fd, INT_ENABLE, 0x01);	/* Write to interrupt enable register */
 }
 
-void GyroAccelerometer::getGyroValues(double *ar)
+
+short GyroAccelerometer::readRawData(int addr)
 {
-	// °/s  ?? rad/s ??
-	ar[0] = wiringPiI2CReadReg16(fdGyroAcc, 0x43) / 131; //Gyro X
-	ar[1] = wiringPiI2CReadReg16(fdGyroAcc, 0x45) / 131; //Gyro Y
-	ar[2] = wiringPiI2CReadReg16(fdGyroAcc, 0x47) / 131; //Gyro Z
+	short high_byte, low_byte, value;
+
+	high_byte = wiringPiI2CReadReg8(fd, addr);
+	low_byte = wiringPiI2CReadReg8(fd, addr + 1);
+	value = (high_byte << 8) | low_byte;
+	return value;
 }
 
-void GyroAccelerometer::getAccValues(double *ar)
+float *GyroAccelerometer::getValues()
 {
-	//m/s^2 ??
-	ar[0] = wiringPiI2CReadReg16(fdGyroAcc, 0x3b) / 16384.0; //Acc. X
-    ar[1] = wiringPiI2CReadReg16(fdGyroAcc, 0x3d) / 16384.0; //Acc. Y
-	ar[2] = wiringPiI2CReadReg16(fdGyroAcc, 0x3f) / 16384.0; //Acc. Z
+	static float ar[7];
+
+	//Read new value and divide raw value by sensitivity scale factor
+	ar[0] = millis();
+	//g --> 1m/s^2 = 0.101972g
+	ar[1] = readRawData(ACCEL_XOUT_H) / 16384.0;
+	ar[2] = readRawData(ACCEL_YOUT_H) / 16384.0;
+	ar[3] = readRawData(ACCEL_ZOUT_H) / 16384.0;
+	//degree/seconds
+	ar[4] = readRawData(GYRO_XOUT_H) / 131;
+	ar[5] = readRawData(GYRO_YOUT_H) / 131;
+	ar[6] = readRawData(GYRO_ZOUT_H) / 131;
+
+	return ar;
 }
+
 
 GyroAccelerometer::~GyroAccelerometer()
 {

@@ -2,11 +2,8 @@
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include <iostream>
-
 using namespace std;
 
-int addressMag = 0x1E;
-int fdMagnet;
 
 Magnetometer::Magnetometer()
 {
@@ -20,6 +17,7 @@ Magnetometer::Magnetometer()
 
 void Magnetometer::getMagnetometerValues(double *ar)
 {
+	//static double ar[3];  /* Lokal deklariert, dennoch global im Datensegment abgelegt (und nicht am Stack) */
 	ar[0] = wiringPiI2CReadReg16(fdMagnet, 0x03); //Magnet X
 	ar[1] = wiringPiI2CReadReg16(fdMagnet, 0x05); //Magnet Y
 	ar[2] = wiringPiI2CReadReg16(fdMagnet, 0x07); //Magnet Z

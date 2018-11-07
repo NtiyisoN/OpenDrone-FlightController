@@ -3,6 +3,7 @@
 #include "GyroAccelerometer.h"
 #include "Magnetometer.h"
 #include <iostream>
+#include <fstream>
 #include <pthread.h>
 #include <wiringPi.h>
 using namespace std;
@@ -41,18 +42,20 @@ void *runGyroAccelerometer(void *interval)
 {
 	//Initializing the sensor
 	GyroAccelerometer* gyroAcc = new GyroAccelerometer();
-	double valuesGyro[3];
-	double valuesAcc[3];
-
+	ofstream myfile;
+	myfile.open("example.csv");
+	
 	//Infinite loop to keep measuring --> TODO: Need to be changed
 	while (1)
 	{
-		gyroAcc->getAccValues(valuesAcc);
-		cout << "Accelerometer x=" << valuesAcc[0] << " y=" << valuesAcc[1] << " z=" << valuesAcc[2] << "\n";
-		gyroAcc->getGyroValues(valuesGyro);
-		cout << "Gyrometer x=" << valuesGyro[0] << " y=" << valuesGyro[1] << " z=" << valuesGyro[2] << "\n";
+		float *values = gyroAcc->getValues();
+		cout << "Acc x=" << values[1] << " y=" << values[2] << " z=" << values[3];
+		cout << "Gyrometer x=" << values[4] << " y=" << values[5] << " z=" << values[6] << "\n";
+		myfile << values[0] << ";" << values[1] << ";" << values[2] << ";" << values[3] << ";" << values[4] << ";" << values[5] << ";" << values[6] << ";\n";
 		delay((int)interval);
 	}
+
+	myfile.close();
 }
 
 void *runBarometer(void *interval)
@@ -93,14 +96,13 @@ int main(void)
 	pthread_t t1, t2, t3, t4;
 
 	//Starts the Thread with the threadId in arg[0], arg[2] is the method, which is called by the thread, arg[3] the arguments of the method
-	int thread1 = pthread_create(&t1, NULL, runUltrasonic, (void *)500);
-	int thread2 = pthread_create(&t2, NULL, runGyroAccelerometer, (void *)500);
-	int thread3 = pthread_create(&t3, NULL, runBarometer, (void *)500);
+	//int thread1 = pthread_create(&t1, NULL, runUltrasonic, (void *)500);
+	int thread2 = pthread_create(&t2, NULL, runGyroAccelerometer, (void *)0);
+	//int thread3 = pthread_create(&t3, NULL, runBarometer, (void *)500);
 	//int thread4 = pthread_create(&t4, NULL, runMagnetometer, (void *)500);
-	int thread4 = 0;
 
 	//Checking if there was a problem with creating the Threads
-	if (thread1 != 0)
+	/*if (thread1 != 0)
 	{
 		cout << "Error while creating the Thread 1 for the Sensor. Error Code " << thread1;
 		exit(1);
@@ -119,7 +121,7 @@ int main(void)
 	{
 		cout << "Error while creating the Thread 4 for the Sensor. Error Code " << thread2;
 		exit(1);
-	}
+	}*/
 
 	//Waits until the threads are interrupted
 	pthread_join(t1, (void**)1);
