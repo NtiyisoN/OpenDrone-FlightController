@@ -1,10 +1,13 @@
+#include <list> 
 #pragma once
 class Filter
 {
 public:
-	Filter(double maxValue, double minValue, double minSize);
+	std::list<float> list1;
+	float maxValue, minValue, minSize;
+
+	Filter(float minValue, float maxValue, float minSize);
 	~Filter();
-	double addValue(double value);
-	int MAX_VALUE, MIN_VALUE, MIN_SIZE;
+	float addValue(float value);
 };
 

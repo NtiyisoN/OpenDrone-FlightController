@@ -2,51 +2,44 @@
 #include <iostream>
 #include <list> 
 #include <iterator> 
-
 using namespace std;
 
-list <double> list1;
-double MAX_VALUE, MIN_VALUE, MIN_SIZE;
-
-
-Filter::Filter(double maxValue, double minValue, double minSize)
+Filter::Filter(float minValue, float maxValue, float minSize)
 {
-	this->MAX_VALUE = maxValue;
-	this->MIN_VALUE = minValue;
-	this->MIN_SIZE = minSize;
+	this->maxValue = maxValue;
+	this->minValue = minValue;
+	this->minSize = minSize;
 }
 
-
-Filter::~Filter()
-{
-}
-
-
-double Filter::addValue(double value)
+float Filter::addValue(float value)
 {	
-	if (value <= MAX_VALUE && value > MIN_VALUE)
+	if (value <= maxValue && value > minValue)
 	{
-		list1.push_back(value);
+		this->list1.push_back(value);
 	}
 
-	if (list1.size() > MIN_SIZE)
+	if (this->list1.size() > minSize)
 	{
-		list1.pop_front();
+		this->list1.pop_front();
 	}
 
-	double num;
-	list <double> ::iterator i;
-	for (i = list1.begin(); i != list1.end(); ++i)
+	float num;
+	list <float> ::iterator i;
+	for (i = this->list1.begin(); i != this->list1.end(); ++i)
 	{
 		num = num + *i;
 	}
 
-	if (list1.size() > 0)
+	if (this->list1.size() > 0)
 	{
-		return num / list1.size();
+		return num / this->list1.size();
 	}
 	else
 	{
 		return -1.0;
 	}
+}
+
+Filter::~Filter()
+{
 }
