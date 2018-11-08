@@ -17,9 +17,10 @@ public class Flightplan implements Serializable {
     private String description;
     public List<GeoPoint> points;
 
-    public Flightplan(){
+    public Flightplan() {
     }
-    public Flightplan(int id, String name, String desc, List<GeoPoint> coords){
+
+    public Flightplan(int id, String name, String desc, List<GeoPoint> coords) {
         this.name = name;
         this.description = desc;
         this.id = id;

@@ -42,7 +42,7 @@ public class FlyStart extends Fragment {
         // Required empty public constructor
     }
 
-    private void initElements(){
+    private void initElements() {
         btn_FlyAuto = view.findViewById(R.id.btn_FlyAuto);
         btn_TestConnection = view.findViewById(R.id.btn_FlyTestConnection);
         spinner_FlightMode = view.findViewById(R.id.spinner_FlightMode);
@@ -57,7 +57,7 @@ public class FlyStart extends Fragment {
                 String flightMode = (String) spinner_FlightMode.getSelectedItem();
                 String mission;
 
-                switch (flightMode){
+                switch (flightMode) {
                     case "Manual":
                         //TODO: Open the manual Fragment
                         break;
@@ -68,7 +68,7 @@ public class FlyStart extends Fragment {
                 }
             }
         });
-        btn_TestConnection.setOnClickListener(new View.OnClickListener(){
+        btn_TestConnection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //TODO: implement TestConnection
@@ -78,9 +78,9 @@ public class FlyStart extends Fragment {
         spinner_FlightMode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0){
+                if (position == 0) {
                     cl_FlightPlan.setVisibility(View.GONE);
-                }else if (position == 1){
+                } else if (position == 1) {
                     cl_FlightPlan.setVisibility(View.VISIBLE);
                 }
             }

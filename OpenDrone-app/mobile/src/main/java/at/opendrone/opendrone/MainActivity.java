@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private boolean isOpened = false;
 
-    private void initFragments(){
+    private void initFragments() {
         /*Do this when changing Fragment:
 
         HomeFragment defFragment = new HomeFragment();
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-    private void initToolbar(){
+    private void initToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar_Main);
         setSupportActionBar(toolbar);
 
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
     }
 
-    private void initNavView(){
+    private void initNavView() {
         drawerLayout = findViewById(R.id.drawerLayout);
         NavigationView navView = findViewById(R.id.navView);
 
@@ -73,9 +73,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                if(isOpened){
+                if (isOpened) {
                     closeDrawer();
-                }else{
+                } else {
                     openDrawer();
                 }
 
@@ -84,15 +84,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
 
-    public void clearContainer(){
-        for (Fragment fragment:fm.getFragments()) {
-            if (fragment!=null) {
+    public void clearContainer() {
+        for (Fragment fragment : fm.getFragments()) {
+            if (fragment != null) {
                 getSupportFragmentManager().beginTransaction().remove(fragment).commit();
             }
         }
     }
 
-    public void initHomeFragment(){
+    public void initHomeFragment() {
         HomeFragment hf = new HomeFragment();
         FragmentTransaction ft = fm.beginTransaction();
         ft.add(R.id.frameLayout_FragmentContainer, hf);
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.navItem_Home:
                 clearContainer();
                 initHomeFragment();
@@ -130,12 +130,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return false;
     }
 
-    private void closeDrawer(){
+    private void closeDrawer() {
         drawerLayout.closeDrawer(GravityCompat.START);
         isOpened = false;
     }
 
-    private void openDrawer(){
+    private void openDrawer() {
         drawerLayout.openDrawer(GravityCompat.START);
         isOpened = true;
     }
@@ -146,50 +146,49 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initHomeFragment();
     }
 
-    private void initDroneSettingsFragment(){
+    private void initDroneSettingsFragment() {
         DroneSettings defFragment = new DroneSettings();
 
-        FragmentTransaction ft  =fm.beginTransaction();
+        FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.frameLayout_FragmentContainer, defFragment);
         ft.commit();
     }
 
-    private void initDronesFragment(){
+    private void initDronesFragment() {
         DroneCardList defFragment = new DroneCardList();
 
-        FragmentTransaction ft  =fm.beginTransaction();
+        FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.frameLayout_FragmentContainer, defFragment.createFragment());
         ft.commit();
     }
 
-    private void initDroneRecyclerFragment(){
+    private void initDroneRecyclerFragment() {
         DroneCardListRecyclerFragment defFragment = new DroneCardListRecyclerFragment();
 
-        FragmentTransaction ft  =fm.beginTransaction();
+        FragmentTransaction ft = fm.beginTransaction();
         ft.add(R.id.frameLayout_FragmentContainer, defFragment);
         ft.commit();
     }
 
-    private void initFlyStartFragment(){
+    private void initFlyStartFragment() {
         FlyStart defFragment = new FlyStart();
 
-        FragmentTransaction ft  =fm.beginTransaction();
+        FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.frameLayout_FragmentContainer, defFragment);
         ft.commit();
     }
 
-    private void initFlightplaner(){
+    private void initFlightplaner() {
 
         SharedPreferences sp = getApplication().getSharedPreferences("at.opendrone.opendrone", Context.MODE_PRIVATE);
         sp.edit().remove(OpenDroneUtils.SP_FLIGHTPLAN_HOLDER).apply();
 
         FlightPlanListFragment defFragment = new FlightPlanListFragment();
 
-        FragmentTransaction ft  =fm.beginTransaction();
+        FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.frameLayout_FragmentContainer, defFragment);
         ft.commit();
     }
-
 
 
 }
