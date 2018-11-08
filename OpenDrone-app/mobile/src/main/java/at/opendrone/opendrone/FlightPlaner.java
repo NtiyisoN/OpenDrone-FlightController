@@ -164,6 +164,9 @@ public class FlightPlaner extends Fragment {
                 }
                 return;
             }
+            default: {
+                Toast.makeText(getContext(), "Didn't grant all Permissions", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
