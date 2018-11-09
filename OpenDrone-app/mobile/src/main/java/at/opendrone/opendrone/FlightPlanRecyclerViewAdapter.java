@@ -43,12 +43,14 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+public class FlightPlanRecyclerViewAdapter extends RecyclerView.Adapter<FlightPlanRecyclerViewAdapter.ViewHolder> {
 
     private List<Flightplan> flightplans;
     private AppCompatActivity activity;
     private FlightPlanListFragment fragment;
     private SharedPreferences sp;
 
+    public FlightPlanRecyclerViewAdapter(List<Flightplan> flightplans, AppCompatActivity activity, FlightPlanListFragment fragment) {
         this.flightplans = flightplans;
         this.activity = activity;
         this.fragment = fragment;
@@ -70,12 +72,14 @@ import java.util.List;
         holder.flightplan = fp;
         holder.flightplan.setId(position);
         holder.position = position;
+    }
 
     @Override
     public int getItemCount() {
         return this.flightplans.size();
     }
 
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
         private CardView mCardView;
         private TextView flightplan_name;
@@ -101,8 +105,10 @@ import java.util.List;
                     sp.edit().remove(OpenDroneUtils.SP_FLIGHTPLAN_HOLDER).apply();
 
                     String object = gson.toJson(flightplan);
+                    sp.edit().putString(OpenDroneUtils.SP_FLIGHTPLAN_HOLDER, object).apply();
 
                     FlightPlanSaveFragment fp = new FlightPlanSaveFragment(flightplan.getName(), flightplan.getDescription(), flightplan.getCoordinates(), position);
+                    FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
                     ft.replace(R.id.frameLayout_FragmentContainer, fp);
                     ft.commit();
                 }
@@ -110,8 +116,10 @@ import java.util.List;
             btn_deleteFlightplan.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Toast.makeText(activity, position + "", Toast.LENGTH_LONG).show();
                     fragment.deletePosition(position);
                     FlightPlanListFragment fp = new FlightPlanListFragment();
+                    FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
                     ft.replace(R.id.frameLayout_FragmentContainer, fp);
                     ft.commit();
                 }

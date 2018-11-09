@@ -31,6 +31,7 @@ public class FlyAutoFly extends Fragment {
         // Required empty public constructor
     }
 
+    private void initButtons() {
         btn_Land = view.findViewById(R.id.btn_Land);
         btn_GoHome = view.findViewById(R.id.btn_GoHome);
         btn_Control = view.findViewById(R.id.btn_Control);
@@ -47,6 +48,7 @@ public class FlyAutoFly extends Fragment {
                 //TODO: Send the GoHome-command to the drone
             }
         });
+        btn_Control.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //TODO: Open Control-Fragment

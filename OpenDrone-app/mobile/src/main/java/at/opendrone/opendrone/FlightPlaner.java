@@ -60,6 +60,7 @@ import java.util.List;
 
 import static android.content.Context.LOCATION_SERVICE;
 
+public class FlightPlaner extends Fragment {
 
     private MapView mMapView;
 
@@ -225,8 +226,10 @@ import static android.content.Context.LOCATION_SERVICE;
         mMapView.setMultiTouchControls(true);
 
         //Manually entered a point -> jump to that location
+        if (points.size() > 0) {
             GeoPoint p = points.get(0);
             setCenter(p.getLatitude(), p.getLongitude());
+        } else {
             requestPermissionAndSetLocation();
         }
         //mLocationManager.getLastKnownLocation().getLongitude();
@@ -267,6 +270,7 @@ import static android.content.Context.LOCATION_SERVICE;
         showFAB();
     }
 
+    private void drawLine() {
         line.setPoints(points);
         mMapView.getOverlayManager().remove(line);
         mMapView.getOverlayManager().add(line);
@@ -375,12 +379,16 @@ import static android.content.Context.LOCATION_SERVICE;
         this.points = points;
     }
 
+    private void addListenersToMarker(Marker marker) {
         Log.i("flightplany", "setMarker");
         marker.setDraggable(true);
         marker.setOnMarkerDragListener(new Marker.OnMarkerDragListener() {
             @Override
             public void onMarkerDrag(Marker marker) {
+                if ((!canAddMarker && draggedPosition == points.size() - 1) || (!canAddMarker && draggedPosition == 0)) {
                     points.set(0, marker.getPosition());
+                    points.set(points.size() - 1, marker.getPosition());
+                } else {
                     points.set(draggedPosition, marker.getPosition());
                 }
                 drawLine();
@@ -388,8 +396,13 @@ import static android.content.Context.LOCATION_SERVICE;
 
             @Override
             public void onMarkerDragEnd(Marker marker) {
+                if (lastEvent != null && isViewInBounds(removeFAB, (int) lastEvent.getX(), (int) lastEvent.getY() + (int) (marker.getIcon().getIntrinsicHeight() * 1.5))) {
                     removeMarker(marker);
+                } else {
+                    if ((!canAddMarker && draggedPosition == points.size() - 1) || (!canAddMarker && draggedPosition == 0)) {
                         points.set(0, marker.getPosition());
+                        points.set(points.size() - 1, marker.getPosition());
+                    } else {
                         points.set(draggedPosition, marker.getPosition());
                     }
                 }
@@ -412,6 +425,10 @@ import static android.content.Context.LOCATION_SERVICE;
         marker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker, MapView mapView) {
+                //savePointsAndAddInfo();
+                addToLine(marker.getPosition());
+                markers.add(marker);
+                canAddMarker = false;
                 return true;
             }
         });
@@ -427,8 +444,11 @@ import static android.content.Context.LOCATION_SERVICE;
 
     private void removeMarker(Marker marker) {
         Toast.makeText(getContext(), "DELETE", Toast.LENGTH_SHORT).show();
+        if ((draggedPosition == 0 || draggedPosition == points.size() - 1) && !canAddMarker) {
+            int lastPosition = points.size() - 1;
             deleteFromLists(lastPosition);
             deleteFromLists(0);
+        } else {
             deleteFromLists(draggedPosition);
             //points.remove(draggedPosition);
             //mMapView.getOverlayManager().remove(marker);
@@ -439,6 +459,7 @@ import static android.content.Context.LOCATION_SERVICE;
         drawLine();
     }
 
+    private void deleteFromLists(int position) {
         Marker tmp = markers.get(position);
         markers.remove(position);
         mMapView.getOverlayManager().remove(tmp);
@@ -446,9 +467,11 @@ import static android.content.Context.LOCATION_SERVICE;
         mMapView.invalidate();
     }
 
+    private boolean isViewInBounds(View view, int x, int y) {
         view.getDrawingRect(outRect);
         view.getLocationOnScreen(locationAr);
         outRect.offset(locationAr[0], locationAr[1]);
+        Log.i("flightplany", outRect.left + " / " + outRect.bottom + " / " + outRect.top + " / " + outRect.right);
         return outRect.contains(x, y);
     }
 

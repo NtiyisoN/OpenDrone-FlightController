@@ -8,6 +8,7 @@ UltraSonic::UltraSonic(int pin_trigger, int pin_echo, int id)
 	this->pin_echo = pin_echo;
 	this->id = id;
 	//Initalize the 
+	this->filter = new Filter(3.0,400.0,16.0);
 	//Defines the pins
 	pinMode(pin_trigger, OUTPUT);
 	pinMode(pin_echo, INPUT);
@@ -15,9 +16,11 @@ UltraSonic::UltraSonic(int pin_trigger, int pin_echo, int id)
 	delay(50); 
 } 
 
+float UltraSonic::distance()
 {
 	long ping = 0;
 	long pong = 0;
+	float distance = 0;
 	long timeout = 25000;
 
 	digitalWrite(pin_trigger, LOW);
@@ -36,9 +39,14 @@ UltraSonic::UltraSonic(int pin_trigger, int pin_echo, int id)
 	// Convert ping duration to distance.
 	distance = ((pong - ping)/2000000.0)*341.29*100;
 
+	return this->filter->addValue(distance);
 }
 
 
 int UltraSonic::getId() {
 	return this->id;
+}
+
+UltraSonic::~UltraSonic()
+{
 }

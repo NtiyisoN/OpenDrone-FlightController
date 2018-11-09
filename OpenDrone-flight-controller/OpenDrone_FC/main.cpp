@@ -1,17 +1,14 @@
 #include <iostream>
-<<<<<<< HEAD
 #include <fstream>
 #include <pthread.h>
 #include <wiringPi.h>
 #include "PWMMotorTest.h"
-=======
 #include "FlightController.h"
->>>>>>> 273ecb5f711d6dc25ace7a1dd7571ede8599dc3a
+
 using namespace std;
 
 int main(void)
 {
-<<<<<<< HEAD
 	cout << "Starting Flight Controller\n";
 	
 	//Creating the threads
@@ -67,6 +64,4 @@ int main(void)
 	
 	cout << "Done!";
 	return (0);
-=======
->>>>>>> 273ecb5f711d6dc25ace7a1dd7571ede8599dc3a
 }

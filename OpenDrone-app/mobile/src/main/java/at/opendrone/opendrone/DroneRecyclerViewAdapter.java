@@ -33,12 +33,14 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.util.List;
 
+public class DroneRecyclerViewAdapter extends RecyclerView.Adapter<DroneRecyclerViewAdapter.ViewHolder> {
 
     private List<Drone> drones;
     private Activity activity;
     private DroneCardListRecyclerFragment fragment;
     private SharedPreferences sp;
 
+    public DroneRecyclerViewAdapter(List<Drone> drones, Activity activity, DroneCardListRecyclerFragment fragment, SharedPreferences sp) {
         this.drones = drones;
         this.activity = activity;
         this.fragment = fragment;
@@ -60,7 +62,10 @@ import java.util.List;
         holder.text_droneDescription.setText(drone.description);
         final ConstraintLayout sourceView = holder.itemView.findViewById(R.id.constraintLayout_Item);
 
+        final String imgString = sp.getString("DroneImg" + position, "");
+        if (!imgString.equals("")) {
             Uri imgUri = Uri.fromFile(new File(imgString));
+            Log.i("Picky", "asdf: " + imgString);
             Picasso.get().load(imgUri).into(holder.imageView);
         }
 
@@ -99,6 +104,7 @@ import java.util.List;
                     public void onClick(DialogInterface dialog, int id) {
                         fragment.remove(position);
 
+                        sp.edit().putString("DroneImg" + position, "").apply();
 
                         /*SharedPreferences sp = activity.getSharedPreferences("at.opendrone.opendrone", MODE_PRIVATE);
                         String droneJSON = sp.getString("DroneList","");
@@ -129,12 +135,14 @@ import java.util.List;
                 return true;
             }
         });
+    }
 
     @Override
     public int getItemCount() {
         return drones.size();
     }
 
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private CardView mCardView;
         private TextView text_droneName;
         private TextView text_droneDescription;

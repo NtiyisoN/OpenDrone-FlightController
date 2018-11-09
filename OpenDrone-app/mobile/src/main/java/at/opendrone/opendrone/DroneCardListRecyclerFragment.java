@@ -51,14 +51,17 @@ import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 
+public class DroneCardListRecyclerFragment extends Fragment {
 
     public static List<Drone> drones = new LinkedList<>();
     private RecyclerView recyclerView;
     private SharedPreferences sp;
 
+    public DroneCardListRecyclerFragment() {
 
     }
 
+    public static Fragment newInstance() {
         return new DroneCardListRecyclerFragment();
     }
 
@@ -74,6 +77,7 @@ import static android.content.Context.MODE_PRIVATE;
         sp = getActivity().getSharedPreferences("at.opendrone.opendrone", MODE_PRIVATE);
         String droneJSON = sp.getString("DroneList", "");
 
+        if (!droneJSON.equals("")) {
             Gson gson = new Gson();
             Drone[] droneAr = gson.fromJson(droneJSON, Drone[].class);
 
@@ -106,10 +110,12 @@ import static android.content.Context.MODE_PRIVATE;
         return view;
     }
 
+    public void remove(int i) {
         drones.remove(i);
         updateAdapter();
     }
 
+    public void updateAdapter() {
         DroneRecyclerViewAdapter adapter = new DroneRecyclerViewAdapter(drones, this.getActivity(), DroneCardListRecyclerFragment.this, sp);
         recyclerView.setAdapter(adapter);
         //atm json, later Java DOM XML
