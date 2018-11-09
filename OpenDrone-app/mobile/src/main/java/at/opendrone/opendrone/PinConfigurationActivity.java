@@ -13,7 +13,6 @@ import android.support.v7.widget.Toolbar;
 
 public class PinConfigurationActivity extends AppCompatActivity {
 
-    private void initActionbar(){
         Toolbar toolbar = findViewById(R.id.toolbar_PinConfiguration);
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();

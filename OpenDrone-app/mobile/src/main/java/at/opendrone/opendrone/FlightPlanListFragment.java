@@ -59,13 +59,10 @@ public class FlightPlanListFragment extends Fragment {
         try {
             Gson gson = new Gson();
             String flightplanJSON = sp.getString(OpenDroneUtils.SP_FLIGHTPLANS, "");
-            if(!flightplanJSON.equals("")){
                 Flightplan[] flightPlanAr = gson.fromJson(flightplanJSON, Flightplan[].class);
                 plans = new LinkedList<>(Arrays.asList(flightPlanAr));
                 setAdapter();
             }
-        }catch (Exception e){
-            Toast.makeText(getContext(),getResources().getString(R.string.exception_sorry), Toast.LENGTH_LONG).show();
         }
         btn_AddFP.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,7 +70,6 @@ public class FlightPlanListFragment extends Fragment {
                 SharedPreferences sp = getActivity().getSharedPreferences("at.opendrone.opendrone", Context.MODE_PRIVATE);
                 sp.edit().remove(OpenDroneUtils.SP_FLIGHTPLAN_HOLDER).apply();
                 FlightPlaner fp = new FlightPlaner();
-                FragmentTransaction ft  = getActivity().getSupportFragmentManager().beginTransaction();
                 ft.replace(R.id.frameLayout_FragmentContainer, fp);
                 ft.commit();
             }
@@ -83,20 +79,16 @@ public class FlightPlanListFragment extends Fragment {
         return view;
     }
 
-    public void deletePosition(int position){
         plans.remove(position);
-        try{
             SharedPreferences sp = getActivity().getSharedPreferences("at.opendrone.opendrone", Context.MODE_PRIVATE);
             Gson gson = new Gson();
             String serialized = gson.toJson(plans.toArray());
             sp.edit().putString(OpenDroneUtils.SP_FLIGHTPLANS, serialized).apply();
-        }catch(Exception e ){
 
         }
 
     }
 
-    public void setAdapter(){
         FlightPlanRecyclerViewAdapter adapter = new FlightPlanRecyclerViewAdapter(plans, (AppCompatActivity) getActivity(), this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);

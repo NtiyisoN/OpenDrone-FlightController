@@ -26,14 +26,12 @@ import org.osmdroid.util.GeoPoint;
 import java.util.LinkedList;
 import java.util.List;
 
-public class GeoPointRecyclerViewAdapter extends RecyclerView.Adapter<GeoPointRecyclerViewAdapter.ViewHolder>{
 
     private List<GeoPoint> points = new LinkedList<>();
     private Activity activity;
     private FlightPlanSaveFragment fragment;
     private SharedPreferences sp;
 
-    public GeoPointRecyclerViewAdapter(List<GeoPoint> points, Activity activity, FlightPlanSaveFragment fragment){
         this.points = points;
         this.activity = activity;
         this.fragment = fragment;
@@ -50,10 +48,6 @@ public class GeoPointRecyclerViewAdapter extends RecyclerView.Adapter<GeoPointRe
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
-            GeoPoint p = points.get(position);
-            holder.coordsTxt.setText(p.getLatitude()+" / "+p.getLongitude());
-            holder.coords = "" + p.getLatitude()+" / "+p.getLongitude();
-            holder.position = position;
     }
 
     @Override
@@ -61,7 +55,6 @@ public class GeoPointRecyclerViewAdapter extends RecyclerView.Adapter<GeoPointRe
         return this.points.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
 
         private String coords;
         private TextView coordsTxt;
@@ -79,7 +72,6 @@ public class GeoPointRecyclerViewAdapter extends RecyclerView.Adapter<GeoPointRe
             addListeners();
         }
 
-        private void addListeners(){
             //final
             btn_EditCoords.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -97,13 +89,11 @@ public class GeoPointRecyclerViewAdapter extends RecyclerView.Adapter<GeoPointRe
                     flightPlanContainer.setHasFixedSize(true);
                     flightPlanContainer.setLayoutManager(new LinearLayoutManager(activity));
 
-                    GeoPointRecyclerViewAdapter adapter = new GeoPointRecyclerViewAdapter(points,activity,null);
                     flightPlanContainer.setAdapter(adapter);
                 }
             });
         }
 
-        private void displayAddDialog(String latitude, String longitude){
             LayoutInflater layoutInflater = LayoutInflater.from(activity);
             View promptView = layoutInflater.inflate(R.layout.fragment_edit_geopoint, null);
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
@@ -123,7 +113,6 @@ public class GeoPointRecyclerViewAdapter extends RecyclerView.Adapter<GeoPointRe
                     String longitude = txt_longitude.getText().toString();
                     GeoPoint p = new GeoPoint(Double.parseDouble(latitude), Double.parseDouble(longitude));
                     points.set(position, p);
-                    coordsTxt.setText(p.getLatitude()+" / "+p.getLongitude());
                 }
             });
             alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

@@ -26,9 +26,7 @@ public abstract class DroneCardListSingleFragment extends AppCompatActivity {
         FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = fm.findFragmentById(R.id.fragment_container);
 
-        if(fragment == null){
             fragment = createFragment();
-            fm.beginTransaction().add(R.id.fragment_container,fragment).commit();
 
         }
     }

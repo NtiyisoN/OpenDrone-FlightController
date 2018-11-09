@@ -1,96 +1,17 @@
-#include "UltraSonic.h"
-#include "Barometer.h"
-#include "GyroAccelerometer.h"
-#include "Magnetometer.h"
 #include <iostream>
+<<<<<<< HEAD
 #include <fstream>
 #include <pthread.h>
 #include <wiringPi.h>
 #include "PWMMotorTest.h"
+=======
+#include "FlightController.h"
+>>>>>>> 273ecb5f711d6dc25ace7a1dd7571ede8599dc3a
 using namespace std;
-
-void *runUltrasonic(void *interval)
-{
-	//Initializing the wiringPi-Gpio's
-	int rc = wiringPiSetupGpio();
-	if (rc != 0)
-	{
-		cout << "Failed to wiringPiSetupGpio()\n";
-		exit(1);
-	}
-
-	//Initialize the sensors
-	int len = 2;
-	UltraSonic* sensors[len];
-	sensors[0] = new UltraSonic(17, 27, 1);
-	sensors[1] = new UltraSonic(17, 27, 1);
-
-	//Infinite loop to keep measuring --> TODO: Need to be changed
-	double curDistance;
-	while (1) 
-	{
-		for (int i = 0; i < len; i++) 
-		{
-			curDistance = sensors[i]->distance();
-			cout << "Ultrasonic " << sensors[i]->getId() << ": Distance: " << curDistance << "\n";
-			delay(2);
-		}
-		delay((int)interval);
-	}
-}
-
-void *runGyroAccelerometer(void *interval)
-{
-	//Initializing the sensor
-	GyroAccelerometer* gyroAcc = new GyroAccelerometer();
-	ofstream myfile;
-	myfile.open("example.csv");
-	
-	//Infinite loop to keep measuring --> TODO: Need to be changed
-	while (1)
-	{
-		float *values = gyroAcc->getValues();
-		cout << "Acc x=" << values[1] << " y=" << values[2] << " z=" << values[3];
-		cout << "Gyrometer x=" << values[4] << " y=" << values[5] << " z=" << values[6] << "\n";
-		myfile << values[0] << ";" << values[1] << ";" << values[2] << ";" << values[3] << ";" << values[4] << ";" << values[5] << ";" << values[6] << ";\n";
-		delay((int)interval);
-	}
-
-	myfile.close();
-}
-
-void *runBarometer(void *interval)
-{
-	//Initializing the sensor
-	Barometer *barometer = new Barometer();
-	double values[2];
-
-	//Infinite loop to keep measuring --> TODO: Need to be changed
-	while (1)
-	{
-		barometer->getBarometerValues(values);
-		cout << "Barometer Temperature: " << values[0] << " Pressure: " << values[1] << "\n";
-		delay((int)interval);
-	}
-}
-
-void *runMagnetometer(void *interval)
-{
-	//Initializing the sensor
-	Magnetometer *magnetometer = new Magnetometer();
-	double values[3];
-
-	//Infinite loop to keep measuring --> TODO: Need to be changed
-	while (1)
-	{
-		magnetometer->getMagnetometerValues(values);
-		cout << "Magnet x=" << values[0] << " y=" << values[1] << " z=" << values[2] << "\n";
-		delay((int)interval);
-	}
-}
 
 int main(void)
 {
+<<<<<<< HEAD
 	cout << "Starting Flight Controller\n";
 	
 	//Creating the threads
@@ -104,20 +25,23 @@ int main(void)
 
 	//Checking if there was a problem with creating the Threads
 	/*if (thread1 != 0)
+=======
+	FlightController *fc = new FlightController();
+
+	cout << "Starting Flight Controller\n";
+	int status = fc->run();
+	if (status == 0) 
+>>>>>>> 273ecb5f711d6dc25ace7a1dd7571ede8599dc3a
 	{
-		cout << "Error while creating the Thread 1 for the Sensor. Error Code " << thread1;
-		exit(1);
+		cout << "Stopping Flight Controller!";
+		return (0);
 	}
-	if (thread2 != 0)
-	{ 
-		cout << "Error while creating the Thread 2 for the Sensor. Error Code " << thread2;
-		exit(1);
-	}
-	if (thread3 != 0)
+	else
 	{
-		cout << "Error while creating the Thread 3 for the Sensor. Error Code " << thread2;
-		exit(1);
+		cout << "Stopping Flight Controller!";
+		return (status);
 	}
+<<<<<<< HEAD
 	if (thread4 != 0)
 	{
 		cout << "Error while creating the Thread 4 for the Sensor. Error Code " << thread2;
@@ -143,4 +67,6 @@ int main(void)
 	
 	cout << "Done!";
 	return (0);
+=======
+>>>>>>> 273ecb5f711d6dc25ace7a1dd7571ede8599dc3a
 }
