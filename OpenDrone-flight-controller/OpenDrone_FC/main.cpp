@@ -6,6 +6,7 @@
 #include <fstream>
 #include <pthread.h>
 #include <wiringPi.h>
+#include "PWMMotorTest.h"
 using namespace std;
 
 void *runUltrasonic(void *interval)
@@ -93,11 +94,11 @@ int main(void)
 	cout << "Starting Flight Controller\n";
 	
 	//Creating the threads
-	pthread_t t1, t2, t3, t4;
+	//pthread_t t1, t2, t3, t4;
 
 	//Starts the Thread with the threadId in arg[0], arg[2] is the method, which is called by the thread, arg[3] the arguments of the method
 	//int thread1 = pthread_create(&t1, NULL, runUltrasonic, (void *)500);
-	int thread2 = pthread_create(&t2, NULL, runGyroAccelerometer, (void *)0);
+	//int thread2 = pthread_create(&t2, NULL, runGyroAccelerometer, (void *)0);
 	//int thread3 = pthread_create(&t3, NULL, runBarometer, (void *)500);
 	//int thread4 = pthread_create(&t4, NULL, runMagnetometer, (void *)500);
 
@@ -124,10 +125,21 @@ int main(void)
 	}*/
 
 	//Waits until the threads are interrupted
-	pthread_join(t1, (void**)1);
+	/*pthread_join(t1, (void**)1);
 	pthread_join(t2, (void**)1);
 	pthread_join(t3, (void**)1);
-	pthread_join(t4, (void**)1);
+	pthread_join(t4, (void**)1);*/
+
+	int rc = wiringPiSetupGpio();
+	if (rc != 0)
+	{
+		cout << "Failed to wiringPiSetupGpio()\n";
+		exit(1);
+	}
+
+	PWMMotorTest* pw = new PWMMotorTest();
+	pw->Test();
+
 	
 	cout << "Done!";
 	return (0);
