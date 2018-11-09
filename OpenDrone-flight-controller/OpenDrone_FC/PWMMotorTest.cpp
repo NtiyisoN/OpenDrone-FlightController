@@ -20,7 +20,6 @@ PWMMotorTest::PWMMotorTest()
 	}
 
 	PCA9685PWMReset(this->fd);
-	pwmWrite(PIN_BASE + 16, 0);
 }
 
 void PWMMotorTest::SetSpeed(int num) {
@@ -29,14 +28,12 @@ void PWMMotorTest::SetSpeed(int num) {
 	cout.flush();
 }
 
-short int PWMMotorTest::StartMotors(short int ret) {
-	cout << "MAX\n";
-	pwmWrite(PIN_BASE + 16, MAX_PWM);
+void PWMMotorTest::StartMotors() {
+	pwmWrite(PIN_BASE + 16, 0);
 	delay(2000);
 	cout << "MIN\n";
 	pwmWrite(PIN_BASE + 16, MIN_PWM);
 	delay(5000);
-	return ret;
 }
 
 void PWMMotorTest::Test()

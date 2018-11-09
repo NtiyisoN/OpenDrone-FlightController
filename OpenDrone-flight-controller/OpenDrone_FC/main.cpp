@@ -59,7 +59,21 @@ int main(void)
 	}
 
 	PWMMotorTest* pw = new PWMMotorTest();
-	pw->Test();
+	pw->StartMotors(); //Start Motors !!ONLY one time!!
+	pw->SetSpeed(210); //Sets speed
+	delay(5000);
+	pw->SetSpeed(300);
+	delay(5000);
+	pw->SetSpeed(400);
+	delay(5000);
+	pw->SetSpeed(180);
+	delay(5000);
+	pw->SetSpeed(0);
+	pw->SetSpeed(205);
+	delay(5000);
+	pw->SetSpeed(180);
+	delay(5000);
+	pw->SetSpeed(0);
 
 	
 	cout << "Done!";

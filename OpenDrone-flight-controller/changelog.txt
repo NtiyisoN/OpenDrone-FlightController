@@ -9,6 +9,9 @@ USED LIBs
 	Wiring Pi
 	http://wiringpi.com/
 	--------------------
+	PCA9685.h devLib extension
+	Reinhard Sprung
+	--------------------
 
 VERSIONS
 v0.0.1-alpha

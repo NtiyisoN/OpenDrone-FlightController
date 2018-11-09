@@ -5,7 +5,7 @@ public:
 	int fd;
 	PWMMotorTest();
 	void SetSpeed(int num);
-	short int StartMotors(short int ret);
+	void StartMotors();
 	void Test();
 	void Setup();
 	~PWMMotorTest();
