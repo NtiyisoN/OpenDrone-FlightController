@@ -49,7 +49,6 @@ void PWMMotorTest::Test()
 	delay(5000);
 
 	while (true) {
-
 		for (size_t i = MIN_PWM; i < MAX_PWM; i++)
 		{
 			pwmWrite(PIN_BASE + 16, i);
@@ -66,7 +65,6 @@ void PWMMotorTest::Test()
 			delay(10);
 		}
 	}
-
 }
 
 void PWMMotorTest::Setup() {
