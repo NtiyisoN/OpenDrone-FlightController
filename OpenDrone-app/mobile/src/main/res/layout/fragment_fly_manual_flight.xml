@@ -25,8 +25,8 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
-        android:max="1024"
-        android:progress="10" />
+        android:max="200"
+        android:progress="0" />
 
     <TextView
         android:id="@+id/txtView_Percentage"

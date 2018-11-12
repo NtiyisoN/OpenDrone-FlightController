@@ -1,7 +1,10 @@
 package at.opendrone.opendrone;
 
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,7 +41,6 @@ public class FlyManualFlight extends Fragment {
     private void findViews(){
         percentageSeekBar = view.findViewById(R.id.sb_ChangeSpeed);
         percentageTxt = view.findViewById(R.id.txtView_Percentage);
-
         addListenerToSeekbar();
     }
 
@@ -48,11 +50,12 @@ public class FlyManualFlight extends Fragment {
     }
 
     private void uploadValue(int value){
-        valueRef.child(System.currentTimeMillis()+"").setValue(value);
+        valueRef.child(System.currentTimeMillis()+"").setValue(value+200);
     }
 
     private void setPercentage(int value){
-        percentageTxt.setText(Math.round(value/(double)percentageSeekBar.getMax()*100)+"%");
+        percentageTxt.setText(Math.round((value/(double)percentageSeekBar.getMax())*100)+"%");
+        //percentageTxt.setText(value+"%");
     }
 
     private void addListenerToSeekbar(){
