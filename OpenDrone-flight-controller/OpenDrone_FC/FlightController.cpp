@@ -3,6 +3,7 @@
 #include "Barometer.h"
 #include "GyroAccelerometer.h"
 #include "Magnetometer.h"
+#include "PWMMotorTest.h"
 #include <iostream>
 #include <fstream>
 #include <pthread.h>
@@ -93,7 +94,7 @@ static void *runMagnetometer(void *interval)
 
 int FlightController::run()
 {
-	//Creating the threads
+	/*//Creating the threads
 	int len = 4;
 	pthread_t threadIds[len];
 	int threads[len];
@@ -118,7 +119,31 @@ int FlightController::run()
 	pthread_join(threadIds[0], (void**)1);
 	pthread_join(threadIds[1], (void**)1);
 	pthread_join(threadIds[2], (void**)1);
-	pthread_join(threadIds[3], (void**)1);
+	pthread_join(threadIds[3], (void**)1);*/
+
+	int rc = wiringPiSetupGpio();
+	if (rc != 0)
+	{
+		cout << "Failed to wiringPiSetupGpio()\n";
+		exit(1);
+	}
+
+	PWMMotorTest* pw = new PWMMotorTest();
+	pw->StartMotors(); //Start Motors !!ONLY one time!!
+	pw->SetSpeed(210); //Sets speed
+	delay(5000);
+	pw->SetSpeed(300);
+	delay(5000);
+	pw->SetSpeed(400);
+	delay(5000);
+	pw->SetSpeed(180);
+	delay(5000);
+	pw->SetSpeed(0);
+	pw->SetSpeed(205);
+	delay(5000);
+	pw->SetSpeed(180);
+	delay(5000);
+	pw->SetSpeed(0);
 
 	return (0);
 }
