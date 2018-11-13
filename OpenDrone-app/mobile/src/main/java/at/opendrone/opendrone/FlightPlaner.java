@@ -263,7 +263,7 @@ public class FlightPlaner extends Fragment{
         startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         startMarker.setEnableTextLabelsWhenNoImage(true);
 
-        BitmapDrawable drawable =writeOnDrawable(R.drawable.marker_background, markers.size()+"");
+        //BitmapDrawable drawable =writeOnDrawable(R.drawable.marker_background, markers.size()+"");
         //startMarker.setIcon(drawable);
 
 
