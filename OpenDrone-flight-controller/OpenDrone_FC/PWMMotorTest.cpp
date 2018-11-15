@@ -28,7 +28,7 @@ void PWMMotorTest::SetSpeed(int num) {
 	cout.flush();
 }
 
-void PWMMotorTest::StartMotors() {
+void PWMMotorTest::ArmMotor() {
 	pwmWrite(PIN_BASE + 16, 0);
 	delay(2000);
 	cout << "MIN\n";
