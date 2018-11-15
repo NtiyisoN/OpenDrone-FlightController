@@ -90,12 +90,6 @@ public class DroneCardListRecyclerFragment extends Fragment {
         startConfig.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*DroneSettings defFragment = new DroneSettings();
-                defFragment.setMode("new");
-                FragmentManager fm = getFragmentManager();
-                FragmentTransaction ft  = fm.beginTransaction();
-                ft.replace(R.id.frameLayout_FragmentContainer, defFragment);
-                ft.commit();*/
                 Activity activity = getActivity();
                 Intent intent = new Intent(activity, DroneSettingsActivity.class);
                 intent.putExtra("Mode", "new");

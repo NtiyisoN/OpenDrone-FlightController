@@ -44,9 +44,12 @@ public class DroneCalibrationActivity extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 return false;
+            default:
+                Log.i("DroneCalibration", "Default case");
+                return super.onOptionsItemSelected(item);
         }
 
-        return super.onOptionsItemSelected(item);
+        //return super.onOptionsItemSelected(item);
     }
 
     private void initActionbar() {
