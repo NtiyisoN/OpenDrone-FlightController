@@ -78,10 +78,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 } else {
                     openDrawer();
                 }
-
                 return true;
+            default:
+                Log.i("MainActivity", "OnOptionItemSelected default case");
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     public void clearContainer() {
@@ -126,8 +127,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 initFlyStartFragment();
                 closeDrawer();
                 return true;
+            default:
+                Log.i("MainActivity", "OnNavigationItem Default case");
+                return false;
         }
-        return false;
     }
 
     private void closeDrawer() {
@@ -144,14 +147,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onBackPressed() {
         clearContainer();
         initHomeFragment();
-    }
-
-    private void initDroneSettingsFragment() {
-        DroneSettings defFragment = new DroneSettings();
-
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.frameLayout_FragmentContainer, defFragment);
-        ft.commit();
     }
 
     private void initDronesFragment() {

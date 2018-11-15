@@ -72,13 +72,6 @@ public class DroneRecyclerViewAdapter extends RecyclerView.Adapter<DroneRecycler
         holder.btn_Settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    /*DroneSettings defFragment = new DroneSettings();
-                    defFragment.setDrone(drone);
-                    defFragment.setMode("edit");
-                    FragmentManager fm = getFragmentManager();
-                    FragmentTransaction ft  = fm.beginTransaction();
-                    ft.replace(R.id.frameLayout_FragmentContainer, defFragment);
-                    ft.commit();*/
                 Intent intent = new Intent(activity, DroneSettingsActivity.class);
                 intent.putExtra("Mode", "edit");
                 intent.putExtra("Drone", drone);

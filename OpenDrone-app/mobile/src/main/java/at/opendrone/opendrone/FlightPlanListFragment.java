@@ -17,6 +17,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,7 +92,7 @@ public class FlightPlanListFragment extends Fragment {
             String serialized = gson.toJson(plans.toArray());
             sp.edit().putString(OpenDroneUtils.SP_FLIGHTPLANS, serialized).apply();
         } catch (Exception e) {
-
+            Log.e("FlightPlanError", "Something went wrong",e);
         }
 
     }
