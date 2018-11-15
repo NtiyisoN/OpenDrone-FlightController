@@ -129,21 +129,10 @@ int FlightController::run()
 	}
 
 	PWMMotorTest* pw = new PWMMotorTest();
-	pw->StartMotors(); //Start Motors !!ONLY one time!!
+	pw->ArmMotor(); //Start Motors !!ONLY one time!!
 	pw->SetSpeed(210); //Sets speed
 	delay(5000);
-	pw->SetSpeed(300);
-	delay(5000);
-	pw->SetSpeed(400);
-	delay(5000);
-	pw->SetSpeed(180);
-	delay(5000);
-	pw->SetSpeed(0);
-	pw->SetSpeed(205);
-	delay(5000);
-	pw->SetSpeed(180);
-	delay(5000);
-	pw->SetSpeed(0);
+	pw->SetSpeed(200);
 
 	return (0);
 }
