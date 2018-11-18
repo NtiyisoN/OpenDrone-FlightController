@@ -74,6 +74,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PCA9685.cpp" />
     <ClCompile Include="PWMMotorTest.cpp" />
+    <ClCompile Include="UDPServer.cpp" />
     <ClCompile Include="UltraSonic.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -84,6 +85,7 @@
     <ClInclude Include="Magnetometer.h" />
     <ClInclude Include="PCA9685.h" />
     <ClInclude Include="PWMMotorTest.h" />
+    <ClInclude Include="UDPServer.h" />
     <ClInclude Include="UltraSonic.h" />
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
