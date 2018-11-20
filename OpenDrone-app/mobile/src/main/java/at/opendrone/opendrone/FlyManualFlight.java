@@ -33,7 +33,7 @@ public class FlyManualFlight extends Fragment {
     private int lastValue;
 
     private static final String FB_SPEED_QUEUE = "speedQueue";
-    private static final String TARGET_IP="172.16.54.6";
+    private static final String TARGET_IP="172.16.54.9";
 
     private static final int OFFSET = 200;
 
