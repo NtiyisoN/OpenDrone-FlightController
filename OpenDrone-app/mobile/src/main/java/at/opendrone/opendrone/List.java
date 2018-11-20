@@ -16,7 +16,7 @@ import java.util.ListIterator;
  *
  * @author 20150032
  */
-public class List<T> implements java.util.List<T> {
+public class List<T> implements java.util.List<Node<T>> {
     Node head, tail;
     int size;
 
@@ -50,89 +50,6 @@ public class List<T> implements java.util.List<T> {
             cur=cur.next;
         }
         return null;
-    }
-
-    @Override
-    public T set(int index, T element) {
-        return null;
-    }
-
-    @Override
-    public void add(int index, T element) {
-
-    }
-
-    public int size(){
-        return size;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
-    @Override
-    public boolean contains(@NonNull Object o) {
-        return false;
-    }
-
-    @NonNull
-    @Override
-    public Iterator<T> iterator() {
-        return null;
-    }
-
-    @NonNull
-    @Override
-    public Object[] toArray() {
-        return new Object[0];
-    }
-
-    @Override
-    public <T1> T1[] toArray(@Nullable T1[] a) {
-        return null;
-    }
-
-    @Override
-    public boolean add(T t) {
-        append(t);
-        return true;
-    }
-
-    @Override
-    public boolean remove(@NonNull Object o) {
-        removeFromList(o);
-        return true;
-    }
-
-    @Override
-    public boolean containsAll(@NonNull Collection<?> c) {
-        return false;
-    }
-
-    @Override
-    public boolean addAll(@NonNull Collection<? extends T> c) {
-        return false;
-    }
-
-    @Override
-    public boolean addAll(int index, @NonNull Collection<? extends T> c) {
-        return false;
-    }
-
-    @Override
-    public boolean removeAll(@NonNull Collection<?> c) {
-        return false;
-    }
-
-    @Override
-    public boolean retainAll(@NonNull Collection<?> c) {
-        return false;
-    }
-
-    @Override
-    public void clear() {
-        clear();
     }
 
     public void prepend(T val){
@@ -194,35 +111,6 @@ public class List<T> implements java.util.List<T> {
         return true;
     }
 
-    @Override
-    public int indexOf(@NonNull Object o) {
-        return 0;
-    }
-
-    @Override
-    public int lastIndexOf(@NonNull Object o) {
-        return 0;
-    }
-
-    @NonNull
-    @Override
-    public ListIterator<T> listIterator() {
-        return null;
-    }
-
-
-    @NonNull
-    @Override
-    public ListIterator<T> listIterator(int index) {
-        return null;
-    }
-
-    @NonNull
-    @Override
-    public java.util.List<T> subList(int fromIndex, int toIndex) {
-        return null;
-    }
-
     public void appendList (List l){
         tail.next=l.head;
         tail=l.tail;
@@ -235,23 +123,6 @@ public class List<T> implements java.util.List<T> {
         size+=l.size();
     }
     
-   /* public void invert(){
-        Node curT;
-        Node curH;
-        Node cur;
-        
-        cur=tail;
-        tail=head;
-        head=cur;
-        curT=tail;
-        curH=head;
-        while(curT!=curH){
-            curT.prev=curH;
-            curT=curT.prev;
-            curH=curH.next;
-        }
-        
-    }*/
     public void print(){
         Node cur = head;
         while(cur != null){
@@ -260,9 +131,125 @@ public class List<T> implements java.util.List<T> {
         }
         System.out.println();
     }
-    
-   
-    
-    
-    
+
+
+    @Override
+    public int size() {
+        return 0;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
+    public boolean contains(@Nullable Object o) {
+        return false;
+    }
+
+    @NonNull
+    @Override
+    public Iterator<Node<T>> iterator() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public Object[] toArray() {
+        return new Object[0];
+    }
+
+    @Override
+    public <T> T[] toArray(@Nullable T[] a) {
+        return null;
+    }
+
+    @Override
+    public boolean add(Node<T> tNode) {
+        return false;
+    }
+
+    @Override
+    public boolean remove(@Nullable Object o) {
+        return false;
+    }
+
+    @Override
+    public boolean containsAll(@Nullable Collection<?> c) {
+        return false;
+    }
+
+    @Override
+    public boolean addAll(@Nullable Collection<? extends Node<T>> c) {
+        return false;
+    }
+
+    @Override
+    public boolean addAll(int index, @NonNull Collection<? extends Node<T>> c) {
+        return false;
+    }
+
+    @Override
+    public boolean removeAll(@NonNull Collection<?> c) {
+        return false;
+    }
+
+    @Override
+    public boolean retainAll(@NonNull Collection<?> c) {
+        return false;
+    }
+
+    @Override
+    public void clear() {
+
+    }
+
+    @Override
+    public Node<T> get(int index) {
+        return null;
+    }
+
+    @Override
+    public Node<T> set(int index, Node<T> element) {
+        return null;
+    }
+
+    @Override
+    public void add(int index, Node<T> element) {
+
+    }
+
+    @Override
+    public Node<T> remove(int index) {
+        return null;
+    }
+
+    @Override
+    public int indexOf(@Nullable Object o) {
+        return 0;
+    }
+
+    @Override
+    public int lastIndexOf(@Nullable Object o) {
+        return 0;
+    }
+
+    @NonNull
+    @Override
+    public ListIterator<Node<T>> listIterator() {
+        return null;
+    }
+
+    @NonNull
+    @Override
+    public ListIterator<Node<T>> listIterator(int index) {
+        return null;
+    }
+
+    @NonNull
+    @Override
+    public java.util.List<Node<T>> subList(int fromIndex, int toIndex) {
+        return null;
+    }
 }

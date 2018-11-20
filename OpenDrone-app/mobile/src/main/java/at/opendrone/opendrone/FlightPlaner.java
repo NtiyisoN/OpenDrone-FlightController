@@ -227,7 +227,7 @@ public class FlightPlaner extends Fragment {
 
         //Manually entered a point -> jump to that location
         if (points.size() > 0) {
-            GeoPoint p = points.get(0).val;
+            GeoPoint p = points.getNode(0).val;
             setCenter(p.getLatitude(), p.getLongitude());
         } else {
             requestPermissionAndSetLocation();
