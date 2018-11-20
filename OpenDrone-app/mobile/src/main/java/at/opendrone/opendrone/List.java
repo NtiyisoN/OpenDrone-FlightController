@@ -189,17 +189,12 @@ public class List<T> implements java.util.List<Node<T>> {
     }
 
     @Override
-    public boolean add(Node<T> tNode) {
-        return false;
-    }
-
-    @Override
-    public boolean remove(@Nullable Object o) {
-        return false;
-    }
-
-    @Override
     public boolean containsAll(@Nullable Collection<?> c) {
+        return false;
+    }
+
+    @Override
+    public boolean add(Node<T> tNode) {
         return false;
     }
 
@@ -235,6 +230,11 @@ public class List<T> implements java.util.List<Node<T>> {
 
     @Override
     public boolean addAll(int index, @NonNull Collection<? extends Node<T>> c) {
+        return false;
+    }
+
+    @Override
+    public boolean remove(@Nullable Object o) {
         return false;
     }
 
