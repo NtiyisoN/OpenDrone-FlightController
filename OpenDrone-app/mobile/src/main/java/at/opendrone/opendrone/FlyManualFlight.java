@@ -15,9 +15,6 @@ import android.view.ViewGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
 import at.opendrone.opendrone.network.UDPClient;
 
 import static android.content.Context.WIFI_SERVICE;
@@ -36,7 +33,7 @@ public class FlyManualFlight extends Fragment {
     private int lastValue;
 
     private static final String FB_SPEED_QUEUE = "speedQueue";
-    private static final String TARGET_IP="127.0.0.1";
+    private static final String TARGET_IP="172.16.54.6";
 
     private static final int OFFSET = 200;
 
