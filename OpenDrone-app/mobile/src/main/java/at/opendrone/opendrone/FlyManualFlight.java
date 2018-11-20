@@ -1,11 +1,8 @@
 package at.opendrone.opendrone;
 
 
-import android.annotation.TargetApi;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.text.format.Formatter;
 import android.util.Log;
@@ -15,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import at.opendrone.opendrone.network.UDPClient;
+import at.opendrone.opendrone.network.TCPClient;
 
 import static android.content.Context.WIFI_SERVICE;
 
@@ -28,7 +25,7 @@ public class FlyManualFlight extends Fragment {
     private TextView percentageTxt;
     private SeekBar percentageSeekBar;
 
-    private UDPClient client;
+    private TCPClient client;
 
     private int lastValue;
 
@@ -82,6 +79,7 @@ public class FlyManualFlight extends Fragment {
         percentageSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                Log.i("updy", i+"");
                 sendValue(i==0?-20:i);
                 setPercentage(i);
                 lastValue = i;
@@ -100,7 +98,7 @@ public class FlyManualFlight extends Fragment {
     }
 
     private void initClient(){
-        client = new UDPClient(TARGET_IP);
+        client = new TCPClient(TARGET_IP, getActivity());
     }
 
     private void startClient(){
@@ -120,7 +118,6 @@ public class FlyManualFlight extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view =  inflater.inflate(R.layout.fragment_fly_manual_flight, container, false);
-
         initClient();
         findViews();
         getIp();
