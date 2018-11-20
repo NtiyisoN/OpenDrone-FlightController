@@ -56,7 +56,7 @@ import org.osmdroid.views.overlay.Polyline;
 import org.w3c.dom.Text;
 
 import java.util.LinkedList;
-import java.util.List;
+import at.opendrone.opendrone.List;
 
 import static android.content.Context.LOCATION_SERVICE;
 
@@ -64,7 +64,7 @@ public class FlightPlaner extends Fragment {
 
     private MapView mMapView;
 
-    private List<GeoPoint> points = new LinkedList<>();
+    private List<GeoPoint> points = new List<>();
 
     private SharedPreferences sp;
     private FloatingActionButton saveFAB;
@@ -86,13 +86,13 @@ public class FlightPlaner extends Fragment {
 
     private MotionEvent lastEvent;
 
-    private List<Marker> markers = new LinkedList<>();
+    private List<Marker> markers = new List<>();
 
     private int draggedPosition = -1;
 
     public FlightPlaner() {
         // Required empty public constructor
-        points = new LinkedList<>();
+        points = new List<>();
     }
 
     public void onResume() {
@@ -227,7 +227,7 @@ public class FlightPlaner extends Fragment {
 
         //Manually entered a point -> jump to that location
         if (points.size() > 0) {
-            GeoPoint p = points.get(0);
+            GeoPoint p = points.get(0).val;
             setCenter(p.getLatitude(), p.getLongitude());
         } else {
             requestPermissionAndSetLocation();
@@ -264,7 +264,7 @@ public class FlightPlaner extends Fragment {
 
 
         mMapView.getOverlays().add(startMarker);
-        markers.add(startMarker);
+        markers.append(startMarker);
 
         addToLine(startMarker.getPosition());
         showFAB();
