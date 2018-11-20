@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.ListIterator;
 
 /**
@@ -202,39 +203,127 @@ public class List<T> implements java.util.List<Node<T>> {
 
     @Override
     public void clear() {
-
+        head = new Node(null);
     }
 
     @Override
     public Node<T> get(int index) {
-        return null;
+        Node cur = head;
+        Node get = null;
+        int pos = 0;
+
+        while(cur != null){
+            if(pos == index){
+                get = cur;
+            }
+            cur = cur.next;
+        }
+        return get;
     }
 
     @Override
     public Node<T> set(int index, Node<T> element) {
-        return null;
+        Node p = element;
+        Node cur = head;
+        Node next;
+        int pos = 0;
+
+        while(cur != null){
+            if(pos == index){
+                next = cur.next;
+                cur = element;
+                cur.next = next;
+            }
+            cur = cur.next;
+        }
+        return element;
     }
 
     @Override
     public void add(int index, Node<T> element) {
+        Node p = element;
+        Node cur = head;
+        int pos = 0;
+        if(head==null){
+            head = p;
+        }else{
+            p.prev=tail;
+            tail.next=p;
+        }
 
+        while(cur != null){
+            if(pos == index){
+                Node next = cur.next;
+                cur.next = p;
+                p.next = next;
+            }
+            cur = cur.next;
+        }
+        tail = cur;
+
+        size++;
     }
 
     @Override
     public Node<T> remove(int index) {
-        return null;
+        Node cur = head;
+        Node prev = null;
+        int cnt = 0;
+        while(cur!=null && cnt != index){
+            cur = cur.next;
+        }
+        if(cur == null){
+            return null;
+        }else{
+            if(cur==head){
+                head=cur.next;
+            }else if(cur==tail){
+                tail=cur.prev;
+                tail.next=null;
+            }else{
+                prev.next=cur.next;
+            }
+        }
+        size--;
+        return cur;
     }
 
     @Override
     public int indexOf(@Nullable Object o) {
-        return 0;
+        int index = 0;
+        Node cur = head;
+        Node toCompare = new Node(o);
+
+        while(cur!=null){
+            if(cur.val == toCompare.val){
+                break;
+            }
+            index++;
+            cur=cur.next;
+        }
+        return index;
     }
 
     @Override
     public int lastIndexOf(@Nullable Object o) {
-        return 0;
+        //Method returns -1 when no position was found;
+        int lastIndex = -1;
+        int index = 0;
+        Node cur = head;
+        Node toCompare = new Node(o);
+
+        while(cur!=null){
+            if(cur.val == toCompare.val){
+                lastIndex = index;
+            }
+            index++;
+            cur=cur.next;
+        }
+
+        return lastIndex;
     }
 
+    //No Iterators implemented
     @NonNull
     @Override
     public ListIterator<Node<T>> listIterator() {
@@ -250,6 +339,21 @@ public class List<T> implements java.util.List<Node<T>> {
     @NonNull
     @Override
     public java.util.List<Node<T>> subList(int fromIndex, int toIndex) {
-        return null;
+        int count = 0;
+        Node cur = head;
+        java.util.List<Node<T>> sub = new LinkedList<>();
+
+        if(fromIndex > size || toIndex > size){
+            return null;
+        }
+
+        while(cur!=null){
+            if(count >= fromIndex && count <= toIndex){
+                sub.add(cur);
+            }
+            count++;
+            cur=cur.next;
+        }
+        return sub;
     }
 }
