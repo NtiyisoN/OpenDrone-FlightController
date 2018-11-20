@@ -141,11 +141,7 @@ public class List<T> implements java.util.List<Node<T>> {
 
     @Override
     public boolean isEmpty() {
-        if(size > 0){
-            return true;
-        }else{
-            return false;
-        }
+        return !(size > 0);
     }
 
     @Override
@@ -193,18 +189,38 @@ public class List<T> implements java.util.List<Node<T>> {
     }
 
     @Override
+    public boolean containsAll(@Nullable Collection<?> c) {
+        return false;
+    }
+
+    @Override
     public boolean add(Node<T> tNode) {
         return false;
     }
 
     @Override
-    public boolean remove(@Nullable Object o) {
-        return false;
-    }
+    public void add(int index, Node<T> element) {
+        Node p = element;
+        Node cur = head;
+        int pos = 0;
+        if(head==null){
+            head = p;
+        }else{
+            p.prev=tail;
+            tail.next=p;
+        }
 
-    @Override
-    public boolean containsAll(@Nullable Collection<?> c) {
-        return false;
+        while(cur != null){
+            if(pos == index){
+                Node next = cur.next;
+                cur.next = p;
+                p.next = next;
+            }
+            cur = cur.next;
+        }
+        tail = cur;
+
+        size++;
     }
 
     @Override
@@ -215,6 +231,35 @@ public class List<T> implements java.util.List<Node<T>> {
     @Override
     public boolean addAll(int index, @NonNull Collection<? extends Node<T>> c) {
         return false;
+    }
+
+    @Override
+    public boolean remove(@Nullable Object o) {
+        return false;
+    }
+
+    @Override
+    public Node<T> remove(int index) {
+        Node cur = head;
+        Node prev = null;
+        int cnt = 0;
+        while(cur!=null && cnt != index){
+            cur = cur.next;
+        }
+        if(cur == null){
+            return null;
+        }else{
+            if(cur==head){
+                head=cur.next;
+            }else if(cur==tail){
+                tail=cur.prev;
+                tail.next=null;
+            }else{
+                prev.next=cur.next;
+            }
+        }
+        size--;
+        return cur;
     }
 
     @Override
@@ -263,55 +308,6 @@ public class List<T> implements java.util.List<Node<T>> {
             cur = cur.next;
         }
         return element;
-    }
-
-    @Override
-    public void add(int index, Node<T> element) {
-        Node p = element;
-        Node cur = head;
-        int pos = 0;
-        if(head==null){
-            head = p;
-        }else{
-            p.prev=tail;
-            tail.next=p;
-        }
-
-        while(cur != null){
-            if(pos == index){
-                Node next = cur.next;
-                cur.next = p;
-                p.next = next;
-            }
-            cur = cur.next;
-        }
-        tail = cur;
-
-        size++;
-    }
-
-    @Override
-    public Node<T> remove(int index) {
-        Node cur = head;
-        Node prev = null;
-        int cnt = 0;
-        while(cur!=null && cnt != index){
-            cur = cur.next;
-        }
-        if(cur == null){
-            return null;
-        }else{
-            if(cur==head){
-                head=cur.next;
-            }else if(cur==tail){
-                tail=cur.prev;
-                tail.next=null;
-            }else{
-                prev.next=cur.next;
-            }
-        }
-        size--;
-        return cur;
     }
 
     @Override
