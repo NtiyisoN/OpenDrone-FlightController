@@ -136,17 +136,32 @@ public class List<T> implements java.util.List<Node<T>> {
 
     @Override
     public int size() {
-        return 0;
+        return size;
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        if(size > 0){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     @Override
     public boolean contains(@Nullable Object o) {
-        return false;
+        Node cur = head;
+        Node toCompare = new Node(o);
+        int pos = 0;
+        boolean contains = false;
+
+        while(cur != null){
+            if(cur.val == toCompare.val){
+                contains = true;
+            }
+            cur = cur.next;
+        }
+        return contains;
     }
 
     @NonNull
@@ -158,7 +173,18 @@ public class List<T> implements java.util.List<Node<T>> {
     @Nullable
     @Override
     public Object[] toArray() {
-        return new Object[0];
+        Object[] arr = new Object[size];
+        Node cur = head;
+        int pos = 0;
+
+        while(cur != null){
+            arr[pos] = cur.val;
+            pos++;
+            cur = cur.next;
+        }
+
+
+        return arr;
     }
 
     @Override
