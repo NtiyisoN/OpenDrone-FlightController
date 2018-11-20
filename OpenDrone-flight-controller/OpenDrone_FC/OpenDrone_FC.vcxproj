@@ -47,6 +47,10 @@
   <ImportGroup Label="Shared" />
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <IncludePath>E:\4.Jahrgang\OpenDrone\include;E:\4.Jahrgang\OpenDrone\include\arm-linux-gnueabihf;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>
       <LibraryDependencies>wiringPi;pthread</LibraryDependencies>
@@ -74,6 +78,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PCA9685.cpp" />
     <ClCompile Include="PWMMotorTest.cpp" />
+    <ClCompile Include="TCPServer.cpp" />
     <ClCompile Include="UDPServer.cpp" />
     <ClCompile Include="UltraSonic.cpp" />
   </ItemGroup>
@@ -85,12 +90,14 @@
     <ClInclude Include="Magnetometer.h" />
     <ClInclude Include="PCA9685.h" />
     <ClInclude Include="PWMMotorTest.h" />
+    <ClInclude Include="TCPServer.h" />
     <ClInclude Include="UDPServer.h" />
     <ClInclude Include="UltraSonic.h" />
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
       <CppLanguageStandard>c++11</CppLanguageStandard>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
