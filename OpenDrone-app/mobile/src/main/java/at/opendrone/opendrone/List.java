@@ -141,11 +141,7 @@ public class List<T> implements java.util.List<Node<T>> {
 
     @Override
     public boolean isEmpty() {
-        if(size > 0){
-            return true;
-        }else{
-            return false;
-        }
+        return !(size > 0);
     }
 
     @Override
