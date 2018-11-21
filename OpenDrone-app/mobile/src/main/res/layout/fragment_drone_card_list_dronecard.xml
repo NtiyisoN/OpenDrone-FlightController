@@ -40,13 +40,10 @@
             android:id="@+id/text_DroneName"
             android:layout_width="268dp"
             android:layout_height="27dp"
-            android:layout_marginStart="15dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="12dp"
-            android:layout_marginEnd="99dp"
             android:textAppearance="@style/AVLoadingIndicatorView.Large"
             android:textSize="18sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.535"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
