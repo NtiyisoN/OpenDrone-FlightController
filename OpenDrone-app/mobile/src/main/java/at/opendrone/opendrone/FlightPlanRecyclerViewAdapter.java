@@ -43,14 +43,14 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class FlightPlanRecyclerViewAdapter extends RecyclerView.Adapter<FlightPlanRecyclerViewAdapter.ViewHolder>{
+public class FlightPlanRecyclerViewAdapter extends RecyclerView.Adapter<FlightPlanRecyclerViewAdapter.ViewHolder> {
 
     private List<Flightplan> flightplans;
     private AppCompatActivity activity;
     private FlightPlanListFragment fragment;
     private SharedPreferences sp;
 
-    public FlightPlanRecyclerViewAdapter(List<Flightplan> flightplans, AppCompatActivity activity, FlightPlanListFragment fragment){
+    public FlightPlanRecyclerViewAdapter(List<Flightplan> flightplans, AppCompatActivity activity, FlightPlanListFragment fragment) {
         this.flightplans = flightplans;
         this.activity = activity;
         this.fragment = fragment;
@@ -72,14 +72,14 @@ public class FlightPlanRecyclerViewAdapter extends RecyclerView.Adapter<FlightPl
         holder.flightplan = fp;
         holder.flightplan.setId(position);
         holder.position = position;
-        }
+    }
 
     @Override
     public int getItemCount() {
         return this.flightplans.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
         private CardView mCardView;
         private TextView flightplan_name;
@@ -105,10 +105,10 @@ public class FlightPlanRecyclerViewAdapter extends RecyclerView.Adapter<FlightPl
                     sp.edit().remove(OpenDroneUtils.SP_FLIGHTPLAN_HOLDER).apply();
 
                     String object = gson.toJson(flightplan);
-                    sp.edit().putString(OpenDroneUtils.SP_FLIGHTPLAN_HOLDER,object).apply();
+                    sp.edit().putString(OpenDroneUtils.SP_FLIGHTPLAN_HOLDER, object).apply();
 
                     FlightPlanSaveFragment fp = new FlightPlanSaveFragment(flightplan.getName(), flightplan.getDescription(), flightplan.getCoordinates(), position);
-                    FragmentTransaction ft  = activity.getSupportFragmentManager().beginTransaction();
+                    FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
                     ft.replace(R.id.frameLayout_FragmentContainer, fp);
                     ft.commit();
                 }
@@ -116,10 +116,10 @@ public class FlightPlanRecyclerViewAdapter extends RecyclerView.Adapter<FlightPl
             btn_deleteFlightplan.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(activity, position+"", Toast.LENGTH_LONG).show();
+                    Toast.makeText(activity, position + "", Toast.LENGTH_LONG).show();
                     fragment.deletePosition(position);
                     FlightPlanListFragment fp = new FlightPlanListFragment();
-                    FragmentTransaction ft  = activity.getSupportFragmentManager().beginTransaction();
+                    FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
                     ft.replace(R.id.frameLayout_FragmentContainer, fp);
                     ft.commit();
                 }

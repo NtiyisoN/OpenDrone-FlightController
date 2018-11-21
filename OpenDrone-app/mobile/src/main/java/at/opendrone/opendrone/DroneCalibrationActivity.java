@@ -40,16 +40,19 @@ public class DroneCalibrationActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 return false;
+            default:
+                Log.i("DroneCalibration", "Default case");
+                return super.onOptionsItemSelected(item);
         }
 
-        return super.onOptionsItemSelected(item);
+        //return super.onOptionsItemSelected(item);
     }
 
-    private void initActionbar(){
+    private void initActionbar() {
         Toolbar toolbar = findViewById(R.id.toolbar_Calibrate);
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
@@ -62,10 +65,10 @@ public class DroneCalibrationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_drone_calibration);
 
         Intent i = getIntent();
-        if(i != null){
+        if (i != null) {
             mode = i.getStringExtra("Mode");
-            drone  = (Drone)i.getSerializableExtra("Drone");
-            position = i.getIntExtra("Position",-1);
+            drone = (Drone) i.getSerializableExtra("Drone");
+            position = i.getIntExtra("Position", -1);
         }
 
         initActionbar();

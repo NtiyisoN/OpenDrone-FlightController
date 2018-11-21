@@ -1,34 +1,14 @@
-#include "UltraSonicSensor.h"
+#include "UltraSonic.h"
 #include "Filter.h"
 #include <wiringPi.h>
-#include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-using namespace std;
 
-int pin_trigger;
-int pin_echo;
-int id;
-Filter *filter;
-
-//TODO: output 1 -> no sensor
-
-UltraSonicSensor::UltraSonicSensor()
-{
-	//Empty Constructor -- Necessary
-}
-
-UltraSonicSensor::UltraSonicSensor(int pin_trigger, int pin_echo, int id)
+UltraSonic::UltraSonic(int pin_trigger, int pin_echo, int id)
 {
 	this->pin_trigger = pin_trigger;
 	this->pin_echo = pin_echo;
 	this->id = id;
-
-	cout << "Starting HC-SR04 with the id " << id << "\n";
-
 	//Initalize the 
-	filter = new Filter(400.0,3.0,16.0);
+	this->filter = new Filter(3.0,400.0,16.0);
 	//Defines the pins
 	pinMode(pin_trigger, OUTPUT);
 	pinMode(pin_echo, INPUT);
@@ -36,15 +16,11 @@ UltraSonicSensor::UltraSonicSensor(int pin_trigger, int pin_echo, int id)
 	delay(50); 
 } 
 
-UltraSonicSensor::~UltraSonicSensor()
-{
-}
-
-double UltraSonicSensor::distance()
+float UltraSonic::distance()
 {
 	long ping = 0;
 	long pong = 0;
-	double distance = 0;
+	float distance = 0;
 	long timeout = 25000;
 
 	digitalWrite(pin_trigger, LOW);
@@ -63,10 +39,14 @@ double UltraSonicSensor::distance()
 	// Convert ping duration to distance.
 	distance = ((pong - ping)/2000000.0)*341.29*100;
 
-	return filter->addValue(distance);
+	return this->filter->addValue(distance);
 }
 
 
-int UltraSonicSensor::getId() {
+int UltraSonic::getId() {
 	return this->id;
+}
+
+UltraSonic::~UltraSonic()
+{
 }

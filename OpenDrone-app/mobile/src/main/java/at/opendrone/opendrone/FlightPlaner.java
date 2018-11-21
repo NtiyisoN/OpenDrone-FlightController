@@ -66,7 +66,7 @@ import java.util.List;
 
 import static android.content.Context.LOCATION_SERVICE;
 
-public class FlightPlaner extends Fragment{
+public class FlightPlaner extends Fragment {
 
     private MapView mMapView;
 
@@ -170,6 +170,9 @@ public class FlightPlaner extends Fragment{
                 }
                 return;
             }
+            default: {
+                Toast.makeText(getContext(), "Didn't grant all Permissions", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -229,10 +232,10 @@ public class FlightPlaner extends Fragment{
         mMapView.setMultiTouchControls(true);
 
         //Manually entered a point -> jump to that location
-        if(points.size() > 0){
+        if (points.size() > 0) {
             GeoPoint p = points.get(0);
             setCenter(p.getLatitude(), p.getLongitude());
-        }else {
+        } else {
             requestPermissionAndSetLocation();
         }
         //mLocationManager.getLastKnownLocation().getLongitude();
@@ -275,21 +278,6 @@ public class FlightPlaner extends Fragment{
 
         addToLine(startMarker.getPosition());
         showFAB();
-    }
-
-    public BitmapDrawable writeOnDrawable(int drawableId, String text){
-
-        Bitmap bm = BitmapFactory.decodeResource(getResources(), drawableId).copy(Bitmap.Config.ARGB_8888, true);
-
-        Paint paint = new Paint();
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.BLACK);
-        paint.setTextSize(20);
-
-        Canvas canvas = new Canvas(bm);
-        canvas.drawText(text, 0, bm.getHeight()/2, paint);
-
-        return new BitmapDrawable(getResources(), bm);
     }
 
     private void drawLine(){
@@ -401,16 +389,16 @@ public class FlightPlaner extends Fragment{
         this.points = points;
     }
 
-    private void addListenersToMarker(Marker marker){
+    private void addListenersToMarker(Marker marker) {
         Log.i("flightplany", "setMarker");
         marker.setDraggable(true);
         marker.setOnMarkerDragListener(new Marker.OnMarkerDragListener() {
             @Override
             public void onMarkerDrag(Marker marker) {
-                if((!canAddMarker && draggedPosition == points.size()-1) || (!canAddMarker && draggedPosition == 0) ){
+                if ((!canAddMarker && draggedPosition == points.size() - 1) || (!canAddMarker && draggedPosition == 0)) {
                     points.set(0, marker.getPosition());
-                    points.set(points.size()-1, marker.getPosition());
-                }else{
+                    points.set(points.size() - 1, marker.getPosition());
+                } else {
                     points.set(draggedPosition, marker.getPosition());
                 }
                 drawLine();
@@ -418,13 +406,13 @@ public class FlightPlaner extends Fragment{
 
             @Override
             public void onMarkerDragEnd(Marker marker) {
-                if(lastEvent != null && isViewInBounds(removeFAB, (int)lastEvent.getX(), (int)lastEvent.getY()+(int)(marker.getIcon().getIntrinsicHeight()*1.5))){
+                if (lastEvent != null && isViewInBounds(removeFAB, (int) lastEvent.getX(), (int) lastEvent.getY() + (int) (marker.getIcon().getIntrinsicHeight() * 1.5))) {
                     removeMarker(marker);
-                }else{
-                    if((!canAddMarker && draggedPosition == points.size()-1) || (!canAddMarker && draggedPosition == 0) ){
+                } else {
+                    if ((!canAddMarker && draggedPosition == points.size() - 1) || (!canAddMarker && draggedPosition == 0)) {
                         points.set(0, marker.getPosition());
-                        points.set(points.size()-1, marker.getPosition());
-                    }else{
+                        points.set(points.size() - 1, marker.getPosition());
+                    } else {
                         points.set(draggedPosition, marker.getPosition());
                     }
                 }
@@ -447,10 +435,10 @@ public class FlightPlaner extends Fragment{
         marker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker, MapView mapView) {
-                    //savePointsAndAddInfo();
-                    addToLine(marker.getPosition());
-                    markers.add(marker);
-                    canAddMarker = false;
+                //savePointsAndAddInfo();
+                addToLine(marker.getPosition());
+                markers.add(marker);
+                canAddMarker = false;
                 return true;
             }
         });
@@ -466,11 +454,11 @@ public class FlightPlaner extends Fragment{
 
     private void removeMarker(Marker marker) {
         Toast.makeText(getContext(), "DELETE", Toast.LENGTH_SHORT).show();
-        if((draggedPosition == 0 || draggedPosition == points.size()-1 ) && !canAddMarker){
-            int lastPosition = points.size()-1;
+        if ((draggedPosition == 0 || draggedPosition == points.size() - 1) && !canAddMarker) {
+            int lastPosition = points.size() - 1;
             deleteFromLists(lastPosition);
             deleteFromLists(0);
-        }else{
+        } else {
             deleteFromLists(draggedPosition);
             //points.remove(draggedPosition);
             //mMapView.getOverlayManager().remove(marker);
@@ -481,7 +469,7 @@ public class FlightPlaner extends Fragment{
         drawLine();
     }
 
-    private void deleteFromLists(int position){
+    private void deleteFromLists(int position) {
         Marker tmp = markers.get(position);
         markers.remove(position);
         mMapView.getOverlayManager().remove(tmp);
@@ -489,11 +477,11 @@ public class FlightPlaner extends Fragment{
         mMapView.invalidate();
     }
 
-    private boolean isViewInBounds(View view, int x, int y){
+    private boolean isViewInBounds(View view, int x, int y) {
         view.getDrawingRect(outRect);
         view.getLocationOnScreen(locationAr);
         outRect.offset(locationAr[0], locationAr[1]);
-        Log.i("flightplany", outRect.left+" / "+outRect.bottom+" / "+outRect.top+" / "+outRect.right);
+        Log.i("flightplany", outRect.left + " / " + outRect.bottom + " / " + outRect.top + " / " + outRect.right);
         return outRect.contains(x, y);
     }
 

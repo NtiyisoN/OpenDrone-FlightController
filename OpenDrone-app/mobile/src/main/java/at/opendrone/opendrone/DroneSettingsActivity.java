@@ -103,16 +103,12 @@ public class DroneSettingsActivity extends AppCompatActivity {
             case RESULT_CODE: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length < 1 && grantResults[0] != PackageManager.PERMISSION_GRANTED && grantResults[1] != PackageManager.PERMISSION_GRANTED) {
-                    //TODO:
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
+                    Log.i("DroneSettings", "permissions not granted");
                 }
                 return;
             }
             default:
                 return;
-            // other 'case' lines to check for other
-            // permissions this app might request.
         }
     }
 
