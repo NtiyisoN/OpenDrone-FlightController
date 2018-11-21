@@ -121,7 +121,7 @@ static void *loop(void * m)
 int FlightController::run()
 {
 	/*//Creating the threads
-	int len = 4;
+	int len = 5;
 	pthread_t threadIds[len];
 	int threads[len];
 
@@ -145,23 +145,9 @@ int FlightController::run()
 	pthread_join(threadIds[0], (void**)1);
 	pthread_join(threadIds[1], (void**)1);
 	pthread_join(threadIds[2], (void**)1);
-	pthread_join(threadIds[3], (void**)1);
-
-	int rc = wiringPiSetupGpio();
-	if (rc != 0)
-	{
-		cout << "Failed to wiringPiSetupGpio()\n";
-		exit(1);
-	}
-
-	PWMMotorTest* pw = new PWMMotorTest();
-	pw->ArmMotor(); //Start Motors !!ONLY one time!!
-	pw->SetSpeed(210); //Sets speed
-	delay(5000);
-	pw->SetSpeed(200);*/
+	pthread_join(threadIds[3], (void**)1);*/
 
 	pthread_t msg;
-
 	int rc = wiringPiSetupGpio();
 	if (rc != 0)
 	{
@@ -170,12 +156,12 @@ int FlightController::run()
 	}
 	pw->ArmMotor(); //Start Motors !!ONLY one time!!
 	delay(5000);
+
 	tcp.setup(2018);
 	if (pthread_create(&msg, NULL, loop, (void *)0) == 0)
 	{
 		tcp.receive();
 	}
-
 	pthread_join(msg, (void**)1);
 
 	return (0);

@@ -79,7 +79,6 @@
     <ClCompile Include="PCA9685.cpp" />
     <ClCompile Include="PWMMotorTest.cpp" />
     <ClCompile Include="TCPServer.cpp" />
-    <ClCompile Include="UDPServer.cpp" />
     <ClCompile Include="UltraSonic.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -91,7 +90,6 @@
     <ClInclude Include="PCA9685.h" />
     <ClInclude Include="PWMMotorTest.h" />
     <ClInclude Include="TCPServer.h" />
-    <ClInclude Include="UDPServer.h" />
     <ClInclude Include="UltraSonic.h" />
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
