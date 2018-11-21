@@ -25,7 +25,7 @@
  */
 
  // Setup a PCA9685 at the specific i2c address
-extern int PCA9685Setup(const int pinBase, const int i2cAddress/* = 0x40*/, float freq/* = 50*/);
+
 
 // You now have access to the following wiringPi functions:
 //
@@ -54,10 +54,19 @@ extern int PCA9685Setup(const int pinBase, const int i2cAddress/* = 0x40*/, floa
 
 // Advanced controls
 // You can use the file descriptor returned from the setup function to access the following features directly on each connected PCA9685
-extern void PCA9685PWMFreq(int fd, float freq);
-extern void PCA9685PWMReset(int fd);
-extern void PCA9685PWMWrite(int fd, int pin, int on, int off);
-extern void PCA9685PWMRead(int fd, int pin, int *on, int *off);
 
-extern void PCA9685FullOn(int fd, int pin, int tf);
-extern void PCA9685FullOff(int fd, int pin, int tf);
+
+#pragma once
+class PCA9685
+{
+public:
+	PCA9685();
+	int PCA9685Setup(const int pinBase, const int i2cAddress/* = 0x40*/, float freq/* = 50*/);
+	void PCA9685PWMFreq(int fd, float freq);
+	void PCA9685PWMReset(int fd);
+	void PCA9685PWMWrite(int fd, int pin, int on, int off);
+	void PCA9685PWMRead(int fd, int pin, int *on, int *off);
+	void PCA9685FullOn(int fd, int pin, int tf);
+	void PCA9685FullOff(int fd, int pin, int tf);
+	~PCA9685();
+};

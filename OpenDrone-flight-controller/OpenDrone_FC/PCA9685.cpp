@@ -56,7 +56,7 @@ int baseReg(int pin);
  * i2cAddress:	The default address is 0x40
  * freq:		Frequency will be capped to range [40..1000] Hertz. Try 50 for servos
  */
-int PCA9685Setup(const int pinBase, const int i2cAddress, float freq)
+int PCA9685::PCA9685Setup(const int pinBase, const int i2cAddress, float freq)
 {
 	// Create a node with 16 pins [0..15] + [16] for all
 	struct wiringPiNodeStruct *node = wiringPiNewNode(pinBase, PIN_ALL + 1);
@@ -94,7 +94,7 @@ int PCA9685Setup(const int pinBase, const int i2cAddress, float freq)
  * Sets the frequency of PWM signals.
  * Frequency will be capped to range [40..1000] Hertz. Try 50 for servos.
  */
-void PCA9685PWMFreq(int fd, float freq)
+void PCA9685::PCA9685PWMFreq(int fd, float freq)
 {
 	// Cap at min and max
 	freq = (freq > 1000 ? 1000 : (freq < 40 ? 40 : freq));
@@ -123,7 +123,7 @@ void PCA9685PWMFreq(int fd, float freq)
 /**
  * Set all leds back to default values (: fullOff = 1)
  */
-void PCA9685PWMReset(int fd)
+void PCA9685::PCA9685PWMReset(int fd)
 {
 	wiringPiI2CWriteReg16(fd, LEDALL_ON_L, 0x0);
 	wiringPiI2CWriteReg16(fd, LEDALL_ON_L + 2, 0x1000);
@@ -133,7 +133,7 @@ void PCA9685PWMReset(int fd)
  * Write on and off ticks manually to a pin
  * (Deactivates any full-on and full-off)
  */
-void PCA9685PWMWrite(int fd, int pin, int on, int off)
+void PCA9685::PCA9685PWMWrite(int fd, int pin, int on, int off)
 {
 	int reg = baseReg(pin);
 
@@ -148,7 +148,7 @@ void PCA9685PWMWrite(int fd, int pin, int on, int off)
  * To get full-on or off bit: mask with 0x1000
  * Note: ALL_LED pin will always return 0
  */
-void PCA9685PWMRead(int fd, int pin, int *on, int *off)
+void PCA9685::PCA9685PWMRead(int fd, int pin, int *on, int *off)
 {
 	int reg = baseReg(pin);
 
@@ -163,7 +163,7 @@ void PCA9685PWMRead(int fd, int pin, int *on, int *off)
  * tf = true: full-on
  * tf = false: according to PWM
  */
-void PCA9685FullOn(int fd, int pin, int tf)
+void PCA9685::PCA9685FullOn(int fd, int pin, int tf)
 {
 	int reg = baseReg(pin) + 1;		// LEDX_ON_H
 	int state = wiringPiI2CReadReg8(fd, reg);
@@ -183,7 +183,7 @@ void PCA9685FullOn(int fd, int pin, int tf)
  * tf = true: full-off
  * tf = false: according to PWM or full-on
  */
-void PCA9685FullOff(int fd, int pin, int tf)
+void PCA9685::PCA9685FullOff(int fd, int pin, int tf)
 {
 	int reg = baseReg(pin) + 3;		// LEDX_OFF_H
 	int state = wiringPiI2CReadReg8(fd, reg);
