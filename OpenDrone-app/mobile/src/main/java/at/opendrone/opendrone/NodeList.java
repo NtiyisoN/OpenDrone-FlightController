@@ -17,11 +17,11 @@ import java.util.ListIterator;
  *
  * @author 20150032
  */
-public class List<T> implements java.util.List<Node<T>> {
+public class NodeList<T> implements java.util.List<Node<T>> {
     Node head, tail;
     int size;
 
-    public List() {
+    public NodeList() {
         head=null;
         tail=null;
     }
@@ -112,13 +112,13 @@ public class List<T> implements java.util.List<Node<T>> {
         return true;
     }
 
-    public void appendList (List l){
+    public void appendList (NodeList l){
         tail.next=l.head;
         tail=l.tail;
         size+=l.size();
     }
     
-    public void prependList (List l){
+    public void prependList (NodeList l){
         l.tail.next=head;
         head=l.head;
         size+=l.size();
@@ -163,7 +163,8 @@ public class List<T> implements java.util.List<Node<T>> {
     @NonNull
     @Override
     public Iterator<Node<T>> iterator() {
-        return null;
+        NodeIterator it = new NodeIterator(head);
+        return it;
     }
 
     @Nullable
@@ -190,12 +191,27 @@ public class List<T> implements java.util.List<Node<T>> {
 
     @Override
     public boolean containsAll(@Nullable Collection<?> c) {
-        return false;
+        Iterator it = c.iterator();
+        while(it.hasNext()){
+            if(!contains(it.next())){
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public boolean add(Node<T> tNode) {
-        return false;
+
+        Node p = tNode;
+        if (head == null) {
+            head = p;
+        } else {
+            p.prev = tail;
+            tail.next = p;
+        }
+        tail = p;
+        return true;
     }
 
     @Override
@@ -225,7 +241,14 @@ public class List<T> implements java.util.List<Node<T>> {
 
     @Override
     public boolean addAll(@Nullable Collection<? extends Node<T>> c) {
-        return false;
+        Iterator it = c.iterator();
+        while(it.hasNext()){
+            T obj = (T)it.next();
+            if(!contains(obj)){
+                append(obj);
+            }
+        }
+        return true;
     }
 
     @Override
@@ -235,7 +258,25 @@ public class List<T> implements java.util.List<Node<T>> {
 
     @Override
     public boolean remove(@Nullable Object o) {
-        return false;
+        Node cur  = head;
+        Node prev = null;
+        while(cur!=null&&!cur.val.equals(o)){
+            prev=cur;
+            cur=cur.next;
+        }
+        if(cur==null){
+            return false;
+        }else{
+            if(cur==head){
+                head=cur.next;
+            }else if(cur==tail){
+                tail=cur.prev;
+                tail.next=null;
+            }else{
+                prev.next=cur.next;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -264,17 +305,30 @@ public class List<T> implements java.util.List<Node<T>> {
 
     @Override
     public boolean removeAll(@NonNull Collection<?> c) {
-        return false;
+        Iterator it = c.iterator();
+        while(it.hasNext()){
+            T obj = (T)it.next();
+            if(contains(obj)){
+                remove(obj);
+            }
+        }
+        return true;
     }
 
     @Override
     public boolean retainAll(@NonNull Collection<?> c) {
-        return false;
+        Iterator it = c.iterator();
+        clear();
+        while(it.hasNext()){
+            T obj = (T)it.next();
+            append(obj);
+        }
+        return true;
     }
 
     @Override
     public void clear() {
-        head = new Node(null);
+        head = null;
     }
 
     @Override

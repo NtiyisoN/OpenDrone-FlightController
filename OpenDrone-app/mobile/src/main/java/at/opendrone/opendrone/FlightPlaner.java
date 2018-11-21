@@ -9,20 +9,15 @@ package at.opendrone.opendrone;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -31,8 +26,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -42,7 +35,6 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.gson.Gson;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -53,18 +45,12 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Polyline;
-import org.w3c.dom.Text;
-
-import java.util.LinkedList;
-import at.opendrone.opendrone.List;
-
-import static android.content.Context.LOCATION_SERVICE;
 
 public class FlightPlaner extends Fragment {
 
     private MapView mMapView;
 
-    private List<GeoPoint> points = new List<>();
+    private NodeList<GeoPoint> points = new NodeList<>();
 
     private SharedPreferences sp;
     private FloatingActionButton saveFAB;
@@ -86,13 +72,13 @@ public class FlightPlaner extends Fragment {
 
     private MotionEvent lastEvent;
 
-    private List<Marker> markers = new List<>();
+    private NodeList<Marker> markers = new NodeList<>();
 
     private int draggedPosition = -1;
 
     public FlightPlaner() {
         // Required empty public constructor
-        points = new List<>();
+        points = new NodeList<>();
     }
 
     public void onResume() {
@@ -375,7 +361,7 @@ public class FlightPlaner extends Fragment {
         return view;
     }
 
-    public void setPoints(List<GeoPoint> points) {
+    public void setPoints(NodeList<GeoPoint> points) {
         this.points = points;
     }
 
