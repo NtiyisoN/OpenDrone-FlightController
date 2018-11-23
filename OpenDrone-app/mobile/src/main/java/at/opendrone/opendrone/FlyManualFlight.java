@@ -30,7 +30,7 @@ public class FlyManualFlight extends Fragment {
     private int lastValue;
 
     private static final String FB_SPEED_QUEUE = "speedQueue";
-    private static final String TARGET_IP="172.16.54.9";
+    private static final String TARGET_IP="192.168.1.88";
 
     private static final int OFFSET = 200;
 
@@ -102,8 +102,14 @@ public class FlyManualFlight extends Fragment {
     }
 
     private void startClient(){
-        if(client != null && !client.isAlive()){
-            client.start();
+        try{
+
+            if(client != null && !client.isAlive()){
+               client.start();
+
+        }
+        }catch(Exception ex){
+            Log.e("ManualFlighty", "ERROR", ex);
         }
     }
 
