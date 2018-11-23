@@ -64,7 +64,7 @@ public class FlightPlaner extends Fragment {
 
     private MapView mMapView;
 
-    private List<GeoPoint> points = new LinkedList<>();
+    private CircularArrayList<GeoPoint> points = new CircularArrayList<>();
 
     private SharedPreferences sp;
     private FloatingActionButton saveFAB;
@@ -92,7 +92,7 @@ public class FlightPlaner extends Fragment {
 
     public FlightPlaner() {
         // Required empty public constructor
-        points = new LinkedList<>();
+        points = new CircularArrayList<>();
     }
 
     public void onResume() {
@@ -375,7 +375,7 @@ public class FlightPlaner extends Fragment {
         return view;
     }
 
-    public void setPoints(List<GeoPoint> points) {
+    public void setPoints(CircularArrayList<GeoPoint> points) {
         this.points = points;
     }
 
