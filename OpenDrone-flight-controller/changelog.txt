@@ -12,6 +12,9 @@ USED LIBs
 	PCA9685.h devLib extension
 	Reinhard Sprung
 	--------------------
+	TCPServer.h
+	kashimAstro - SimpleNetworks
+	--------------------
 
 VERSIONS
 v0.0.1-alpha

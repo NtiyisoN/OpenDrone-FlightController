@@ -4,11 +4,15 @@
 #include "GyroAccelerometer.h"
 #include "Magnetometer.h"
 #include "PWMMotorTest.h"
+#include "TCPServer.h"
 #include <iostream>
 #include <fstream>
 #include <pthread.h>
 #include <wiringPi.h>
 using namespace std;
+
+TCPServer tcp;
+PWMMotorTest* pw = new PWMMotorTest();
 
 FlightController::FlightController()
 {
@@ -92,10 +96,32 @@ static void *runMagnetometer(void *interval)
 	}
 }
 
+static void *loop(void * m)
+{
+	pthread_detach(pthread_self());
+	while (1)
+	{
+		srand(time(NULL));
+		char ch = 'a' + rand() % 26;
+		string s(1, ch);
+		string str = tcp.getMessage();
+		if (str != "")
+		{
+			int b = atoi(str.c_str());
+			if (b >= 180 || b <= 400)
+			{
+				pw->SetSpeed(b);
+			}
+		}
+		usleep(1000);
+	}
+	tcp.detach();
+}
+
 int FlightController::run()
 {
 	/*//Creating the threads
-	int len = 4;
+	int len = 5;
 	pthread_t threadIds[len];
 	int threads[len];
 
@@ -121,21 +147,27 @@ int FlightController::run()
 	pthread_join(threadIds[2], (void**)1);
 	pthread_join(threadIds[3], (void**)1);*/
 
+	pthread_t msg;
 	int rc = wiringPiSetupGpio();
 	if (rc != 0)
 	{
 		cout << "Failed to wiringPiSetupGpio()\n";
 		exit(1);
 	}
-
-	PWMMotorTest* pw = new PWMMotorTest();
 	pw->ArmMotor(); //Start Motors !!ONLY one time!!
-	pw->SetSpeed(210); //Sets speed
 	delay(5000);
-	pw->SetSpeed(200);
+
+	tcp.setup(2018);
+	if (pthread_create(&msg, NULL, loop, (void *)0) == 0)
+	{
+		tcp.receive();
+	}
+	pthread_join(msg, (void**)1);
 
 	return (0);
 }
+
+
 
 FlightController::~FlightController()
 {

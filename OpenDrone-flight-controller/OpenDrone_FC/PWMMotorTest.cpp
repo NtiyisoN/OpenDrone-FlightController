@@ -24,8 +24,6 @@ PWMMotorTest::PWMMotorTest()
 
 void PWMMotorTest::SetSpeed(int num) {
 	pwmWrite(PIN_BASE + 16, num);
-	cout << num << "\n";
-	cout.flush();
 }
 
 void PWMMotorTest::ArmMotor() {

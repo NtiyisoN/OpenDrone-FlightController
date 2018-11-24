@@ -276,3 +276,5 @@ __pycache__/
 /OpenDrone_FC/readme
 OpenDrone-app/local.properties
 *.properties
+OpenDrone-app/google-services.json
+OpenDrone-app/mobile/google-services.json

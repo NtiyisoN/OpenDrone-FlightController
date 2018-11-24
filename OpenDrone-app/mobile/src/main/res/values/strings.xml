@@ -51,4 +51,5 @@
     <string name="alertDialog_Picture_Negative">Gallery</string>
     <string name="exception_sorry">Error</string>
     <string name="exception_no_location">Please enable the location in your phone\'s settings</string>
+    <string name="manual_flight_change_speed">Adjust the speed</string>
 </resources>
