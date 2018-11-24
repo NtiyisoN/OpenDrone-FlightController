@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Data -->
+<opendrone>
+  <!-- Name of the Drone -->
+  <droneName></droneName>
+  <!-- Motorconfiguration of the Drone -->
+  <droneConfiguration></droneConfiguration>
+  <!-- Pinconfiguration of the Drone
+        <possible></possible> -> do whatever you want
+        <possible>3.3V</possible> -> if there is only one you should not change anything
+        <possible>3.3V</possible> -> if there are more than one you can choose -->
+  <pinConfiguration>
+    <pin1 pin="3.3V">
+      <possible>3.3V</possible>
+    </pin1>
+    <pin2 pin="5V">
+      <possible>5V</possible>
+    </pin2>
+    <pin3 pin="I2C_SDA">
+      <possible>I2C_SDA</possible>
+    </pin3>
+    <pin4 pin="5V">
+      <possible>5V</possible>
+    </pin4>
+    <pin5 pin="I2C_SCL">
+      <possible>I2C_SCL</possible>
+    </pin5>
+    <pin6 pin="GND">
+      <possible>GND</possible>
+    </pin6>
+    <pin7 pin="">
+      <possible></possible>
+    </pin7>
+    <pin8 pin="">
+      <possible>UART_TX</possible>
+      <possible>GPIO</possible>
+    </pin8>
+    <pin9 pin="GND">
+      <possible>GND</possible>
+    </pin9>
+    <pin10 pin="">
+      <possible>UART_RX</possible>
+      <possible>GPIO</possible>
+    </pin10>
+    <pin11 pin="">
+      <possible></possible>
+    </pin11>
+    <pin12 pin="">
+      <possible></possible>
+    </pin12>
+    <pin13 pin="">
+      <possible></possible>
+    </pin13>
+    <pin14 pin="GND">
+      <possible>GND</possible>
+    </pin14>
+    <pin15 pin="">
+      <possible></possible>
+    </pin15>
+    <pin16 pin="">
+      <possible></possible>
+    </pin16>
+    <pin17 pin="3.3V">
+      <possible>3.3V</possible>
+    </pin17>
+    <pin18 pin="">
+      <possible></possible>
+    </pin18>
+    <pin19 pin="">
+      <possible></possible>
+    </pin19>
+    <pin20 pin="">
+      <possible></possible>
+    </pin20>
+    <pin21 pin="">
+      <possible></possible>
+    </pin21>
+    <pin22 pin="">
+      <possible></possible>
+    </pin22>
+    <pin23 pin="">
+      <possible></possible>
+    </pin23>
+    <pin24 pin="">
+      <possible></possible>
+    </pin24>
+    <pin25 pin="GND">
+      <possible>GND</possible>
+    </pin25>
+    <pin26 pin="">
+      <possible></possible>
+    </pin26>
+    <pin27 pin="DO NOT USE">
+      <possible></possible>
+    </pin27>
+    <pin28 pin="DO NOT USE">
+      <possible></possible>
+    </pin28>
+    <pin29 pin="">
+      <possible></possible>
+    </pin29>
+    <pin30 pin="GND">
+      <possible>GND</possible>
+    </pin30>
+    <pin31 pin="">
+      <possible></possible>
+    </pin31>
+    <pin32 pin="">
+      <possible></possible>
+    </pin32>
+    <pin33 pin="">
+      <possible></possible>
+    </pin33>
+    <pin34 pin="GND">
+      <possible>GND</possible>
+    </pin34>
+    <pin35 pin="">
+      <possible></possible>
+    </pin35>
+    <pin36 pin="">
+      <possible></possible>
+    </pin36>
+    <pin37 pin="">
+      <possible></possible>
+    </pin37>
+    <pin38 pin="">
+      <possible></possible>
+    </pin38>
+    <pin39 pin="GND">
+      <possible>GND</possible>
+    </pin39>
+    <pin40 pin="">
+      <possible></possible>
+    </pin40>
+  </pinConfiguration>
+  <!-- accesspoint Configuration -->
+  <accesspointName></accesspointName>
+  <accesspointPassword></accesspointPassword>
+  <!-- Timestamp of the last  Calibration -->
+  <lastCalibration></lastCalibration>
+</opendrone>
