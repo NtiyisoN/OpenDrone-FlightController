@@ -102,7 +102,7 @@ static void *loop(void * m)
 	while (1)
 	{
 		srand(time(NULL));
-		char ch = 'a' + rand() % 26;
+		char ch = 'a' + rand_r(0) % 26;
 		string s(1, ch);
 		string str = tcp.getMessage();
 		if (str != "")
