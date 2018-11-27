@@ -1,6 +1,7 @@
 package at.opendrone.opendrone;
 
 
+import android.content.pm.ActivityInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,7 +13,10 @@ import android.view.ViewGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import at.opendrone.opendrone.network.TCPClient;
+import io.github.controlwear.virtual.joystick.android.JoystickView;
 
 import static android.content.Context.WIFI_SERVICE;
 
@@ -22,18 +26,6 @@ import static android.content.Context.WIFI_SERVICE;
  */
 public class FlyManualFlight extends Fragment {
 
-    private TextView percentageTxt;
-    private SeekBar percentageSeekBar;
-
-    private TCPClient client;
-
-    private int lastValue;
-
-    private static final String FB_SPEED_QUEUE = "speedQueue";
-    private static final String TARGET_IP="192.168.1.88";
-
-    private static final int OFFSET = 200;
-
     private View view;
 
     public FlyManualFlight() {
@@ -42,91 +34,42 @@ public class FlyManualFlight extends Fragment {
 
     @Override
     public void onResume() {
-        startClient();
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        stopClient();
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
         super.onPause();
     }
 
-    private void findViews(){
-        percentageSeekBar = view.findViewById(R.id.sb_ChangeSpeed);
-        percentageTxt = view.findViewById(R.id.txtView_Percentage);
-        addListenerToSeekbar();
-    }
-
-    private void setPercentage(int value){
-        percentageTxt.setText(Math.round((value/(double)percentageSeekBar.getMax())*100)+"%");
-        //percentageTxt.setText(value+"%");
-    }
-
-    private void sendValue(final int value){
-        startClient();
-        client.setValue(value+OFFSET);
-
-    }
-
-    private void getIp(){
-        WifiManager wm = (WifiManager) getActivity().getApplicationContext().getSystemService(WIFI_SERVICE);
-        String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
-        Log.i("udpy", "IP: "+ip);
-    }
-
-    private void addListenerToSeekbar(){
-        percentageSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                Log.i("updy", i+"");
-                sendValue(i==0?-20:i);
-                setPercentage(i);
-                lastValue = i;
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                Log.i("seeky", "end");
-            }
-        });
-    }
-
-    private void initClient(){
-        client = new TCPClient(TARGET_IP, getActivity());
-    }
-
-    private void startClient(){
-        try{
-
-            if(client != null && !client.isAlive()){
-               client.start();
-
-        }
-        }catch(Exception ex){
-            Log.e("ManualFlighty", "ERROR", ex);
-        }
-    }
-
-    private void stopClient(){
-        if (client.isAlive()){
-            client.interrupt();
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view =  inflater.inflate(R.layout.fragment_fly_manual_flight, container, false);
-        initClient();
-        findViews();
-        getIp();
+
+        final TextView throttleStick = (TextView) view.findViewById(R.id.txtThrottle);
+        final TextView directionStick = (TextView) view.findViewById(R.id.txtDirection);
+
+
+        final JoystickView throttle = (JoystickView) view.findViewById(R.id.throttleStick);
+        throttle.setOnMoveListener(new JoystickView.OnMoveListener() {
+            @Override
+            public void onMove(int angle, int strength) {
+                throttleStick.setText("Angle: "+angle+" / Strength: "+strength);
+            }
+        });
+
+        JoystickView direction = (JoystickView) view.findViewById(R.id.directionStick);
+        direction.setOnMoveListener(new JoystickView.OnMoveListener() {
+            @Override
+            public void onMove(int angle, int strength) {
+                directionStick.setText("Angle: "+angle+" / Strength: "+strength);
+            }
+        });
 
         return view;
     }
