@@ -2,6 +2,7 @@ package at.opendrone.opendrone;
 
 
 import android.content.pm.ActivityInfo;
+import android.graphics.Path;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -27,6 +28,8 @@ import static android.content.Context.WIFI_SERVICE;
 public class FlyManualFlight extends Fragment {
 
     private View view;
+    private JoystickView throttle;
+    private JoystickView direction;
 
     public FlyManualFlight() {
         // Required empty public constructor
@@ -54,16 +57,16 @@ public class FlyManualFlight extends Fragment {
         final TextView throttleStick = (TextView) view.findViewById(R.id.txtThrottle);
         final TextView directionStick = (TextView) view.findViewById(R.id.txtDirection);
 
-
-        final JoystickView throttle = (JoystickView) view.findViewById(R.id.throttleStick);
+        throttle = (JoystickView) view.findViewById(R.id.throttleStick);
         throttle.setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
             public void onMove(int angle, int strength) {
                 throttleStick.setText("Angle: "+angle+" / Strength: "+strength);
+                interpret(throttle, angle, strength);
             }
         });
 
-        JoystickView direction = (JoystickView) view.findViewById(R.id.directionStick);
+        direction = (JoystickView) view.findViewById(R.id.directionStick);
         direction.setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
             public void onMove(int angle, int strength) {
@@ -72,6 +75,29 @@ public class FlyManualFlight extends Fragment {
         });
 
         return view;
+    }
+
+    private void interpret(JoystickView stick, int angle, int strength){
+        String returnValue = "";
+        double radius = (stick.getHeight()/2);
+
+        if(angle > 0 && angle <= 90){
+            Log.i("FlyManualFlighty",angle + " , " + strength);
+            //Calculation for the x-axis
+            double hypothenusis  = strength;
+            double adjacentX = (Math.cos(angle)*hypothenusis);
+            if(adjacentX < 0)
+                adjacentX = adjacentX * (-1);
+
+            //Calculation for the y-axis
+            double opposite = (Math.sin(angle)*hypothenusis);
+            if(opposite < 0)
+                opposite = opposite * (-1);
+
+            returnValue += "X: " + adjacentX + " / Y: "+ opposite;
+
+        }
+
     }
 
 }
