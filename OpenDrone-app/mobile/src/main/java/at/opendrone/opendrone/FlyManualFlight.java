@@ -80,24 +80,16 @@ public class FlyManualFlight extends Fragment {
     private void interpret(JoystickView stick, int angle, int strength){
         String returnValue = "";
         double radius = (stick.getHeight()/2);
+        double rad = angle*Math.PI/180;
+        //Calculation for the x-axis
+        double hypothenusis  = strength;
+        double adjacentX = (Math.cos(rad)*hypothenusis);
 
-        if(angle > 0 && angle <= 90){
-            Log.i("FlyManualFlighty",angle + " , " + strength);
-            //Calculation for the x-axis
-            double hypothenusis  = strength;
-            double adjacentX = (Math.cos(angle)*hypothenusis);
-            if(adjacentX < 0)
-                adjacentX = adjacentX * (-1);
+        //Calculation for the y-axis
+        double opposite = (Math.sin(rad)*hypothenusis);
 
-            //Calculation for the y-axis
-            double opposite = (Math.sin(angle)*hypothenusis);
-            if(opposite < 0)
-                opposite = opposite * (-1);
-
-            returnValue += "X: " + adjacentX + " / Y: "+ opposite;
-
-        }
-
+        returnValue += "X: " + adjacentX + " / Y: "+ opposite;
+        Log.i("TESTY",returnValue);
     }
 
 }
