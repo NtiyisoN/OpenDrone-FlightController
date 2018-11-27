@@ -16,6 +16,8 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.util.Stack;
+
 import at.opendrone.opendrone.network.TCPClient;
 import io.github.controlwear.virtual.joystick.android.JoystickView;
 
@@ -62,7 +64,7 @@ public class FlyManualFlight extends Fragment {
             @Override
             public void onMove(int angle, int strength) {
                 throttleStick.setText("Angle: "+angle+" / Strength: "+strength);
-                interpret(throttle, angle, strength);
+                String cmd = interpretThrottleStick(throttle, angle, strength);
             }
         });
 
@@ -71,25 +73,59 @@ public class FlyManualFlight extends Fragment {
             @Override
             public void onMove(int angle, int strength) {
                 directionStick.setText("Angle: "+angle+" / Strength: "+strength);
+                String cmd = interpretDirectionStick(direction, angle,strength);
             }
         });
 
         return view;
     }
 
-    private void interpret(JoystickView stick, int angle, int strength){
+    private String interpretThrottleStick(JoystickView stick, int angle, int strength){
         String returnValue = "";
-        double radius = (stick.getHeight()/2);
+
         double rad = angle*Math.PI/180;
+
         //Calculation for the x-axis
         double hypothenusis  = strength;
-        double adjacentX = (Math.cos(rad)*hypothenusis);
+        int adjacentX = (int) (Math.cos(rad)*hypothenusis);
+        if(adjacentX < 0){
+            returnValue += OpenDroneUtils.YAW_LEFT + "," + (adjacentX*(-1)) + ";";
+        }else{
+            returnValue += OpenDroneUtils.YAW_RIGHT + "," + adjacentX + ";";
+        }
 
         //Calculation for the y-axis
-        double opposite = (Math.sin(rad)*hypothenusis);
+        int opposite = (int) (Math.sin(rad)*hypothenusis);
+        if(opposite < 0){
+            returnValue += OpenDroneUtils.THROTTLE_DOWN + "," + (opposite*(-1)) + ";";
+        }else{
+            returnValue += OpenDroneUtils.THROTTLE_UP + "," + opposite + ";";
+        }
+        return returnValue;
+    }
 
-        returnValue += "X: " + adjacentX + " / Y: "+ opposite;
-        Log.i("TESTY",returnValue);
+    private String interpretDirectionStick(JoystickView stick, int angle, int strength){
+        String returnValue = "";
+
+        double rad = angle*Math.PI/180;
+
+        //Calculation for the x-axis
+        double hypothenusis  = strength;
+        int adjacentX = (int) (Math.cos(rad)*hypothenusis);
+        if(adjacentX < 0){
+            returnValue += OpenDroneUtils.ROLL_LEFT + "," + (adjacentX*(-1)) + ";";
+        }else{
+            returnValue += OpenDroneUtils.ROLL_RIGHT + "," + adjacentX + ";";
+        }
+
+        //Calculation for the y-axis
+        int opposite = (int) (Math.sin(rad)*hypothenusis);
+        if(opposite < 0){
+            returnValue += OpenDroneUtils.PITCH_BACKWARDS + "," + (opposite*(-1)) + ";";
+        }else{
+            returnValue += OpenDroneUtils.PITCH_FORWARDS + "," + opposite + ";";
+        }
+        return returnValue;
     }
 
 }

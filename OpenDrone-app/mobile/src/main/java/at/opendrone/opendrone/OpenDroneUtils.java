@@ -19,6 +19,6 @@ public class OpenDroneUtils {
     public static final String YAW_LEFT = "YAW_L";
     public static final String PITCH_FORWARDS = "PTCH_F";
     public static final String PITCH_BACKWARDS = "PTCH_B";
-    public static final String ROLL_FORWARDS = "ROLL_F";
-    public static final String ROLL_BACKWARDS = "ROLL_B";
+    public static final String ROLL_LEFT = "ROLL_L";
+    public static final String ROLL_RIGHT = "ROLL_R";
 }
