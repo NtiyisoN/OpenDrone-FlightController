@@ -1,42 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".FlyManualFlight">
 
+    <io.github.controlwear.virtual.joystick.android.JoystickView xmlns:custom="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/directionStick"
+        android:layout_width="185dp"
+        android:layout_height="179dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        custom:JV_autoReCenterButton="true"
+        custom:JV_backgroundColor="@color/secondaryColor"
+        custom:JV_buttonColor="@color/secondaryLightColor"
+        custom:JV_buttonSizeRatio="25%"
+        custom:JV_fixedCenter="false"
+        custom:layout_constraintBottom_toBottomOf="parent"
+        custom:layout_constraintEnd_toEndOf="parent" />
+
+    <io.github.controlwear.virtual.joystick.android.JoystickView xmlns:custom="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/throttleStick"
+        android:layout_width="185dp"
+        android:layout_height="179dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        custom:JV_autoReCenterButton="true"
+        custom:JV_backgroundColor="@color/secondaryColor"
+        custom:JV_buttonColor="@color/secondaryLightColor"
+        custom:JV_buttonSizeRatio="25%"
+        custom:JV_fixedCenter="false"
+        custom:layout_constraintBottom_toBottomOf="parent"
+        custom:layout_constraintStart_toStartOf="parent" />
+
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/manual_flight_change_speed"
-        android:layout_above="@id/sb_ChangeSpeed"
-        android:textAlignment="center"
-        android:textSize="21sp"
-        android:textColor="@color/primaryTextColor"
-        android:textStyle="bold"/>
-
-    <SeekBar
-        android:id="@+id/sb_ChangeSpeed"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        android:max="200"
-        android:progress="0" />
+        android:id="@+id/txtThrottle"
+        android:layout_width="161dp"
+        android:layout_height="38dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/txtView_Percentage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="0%"
-        android:layout_below="@id/sb_ChangeSpeed"
-        android:textAlignment="center"
-        android:textSize="35sp"
-        android:textColor="@color/primaryTextColor"
-        android:textStyle="bold"/>
+        android:id="@+id/txtDirection"
+        android:layout_width="122dp"
+        android:layout_height="33dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>
