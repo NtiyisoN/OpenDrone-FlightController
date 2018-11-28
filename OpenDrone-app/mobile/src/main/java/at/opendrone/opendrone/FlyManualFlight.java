@@ -16,12 +16,14 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.io.IOException;
 import java.util.Stack;
 
 import at.opendrone.opendrone.network.TCPClient;
 import io.github.controlwear.virtual.joystick.android.JoystickView;
 
 import static android.content.Context.WIFI_SERVICE;
+import static java.util.Objects.requireNonNull;
 
 
 /**
@@ -32,6 +34,13 @@ public class FlyManualFlight extends Fragment {
     private View view;
     private JoystickView throttle;
     private JoystickView direction;
+
+    private TextView position;
+    private TextView height;
+    private TextView temp;
+    private TextView status;
+
+    private TCPClient client;
 
     public FlyManualFlight() {
         // Required empty public constructor
@@ -56,15 +65,26 @@ public class FlyManualFlight extends Fragment {
         // Inflate the layout for this fragment
         view =  inflater.inflate(R.layout.fragment_fly_manual_flight, container, false);
 
-        final TextView throttleStick = (TextView) view.findViewById(R.id.txtThrottle);
-        final TextView directionStick = (TextView) view.findViewById(R.id.txtDirection);
+        client = new TCPClient("172.16.97.54", this.getActivity());
+        client.start();
+
+        position = (TextView) view.findViewById(R.id.txt_MF_Position);
+        height = (TextView) view.findViewById(R.id.txt_MF_Height);
+        temp = (TextView) view.findViewById(R.id.txt_MF_Temp);
+        status = (TextView) view.findViewById(R.id.txt_MF_Connection);
+
+        position.setText(position.getText() + "\nLat: 40°5324324234\nLong: 34°5243542352354");
+        height.setText("Height: 120m");
+        temp.setText("Temp: 14,8°C");
+        status.setText(status.getText() + " OK");
 
         throttle = (JoystickView) view.findViewById(R.id.throttleStick);
         throttle.setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
             public void onMove(int angle, int strength) {
-                throttleStick.setText("Angle: "+angle+" / Strength: "+strength);
                 String cmd = interpretThrottleStick(throttle, angle, strength);
+                requireNonNull(client);
+                client.setValue(cmd);
             }
         });
 
@@ -72,8 +92,9 @@ public class FlyManualFlight extends Fragment {
         direction.setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
             public void onMove(int angle, int strength) {
-                directionStick.setText("Angle: "+angle+" / Strength: "+strength);
                 String cmd = interpretDirectionStick(direction, angle,strength);
+                requireNonNull(client);
+                client.setValue(cmd);
             }
         });
 

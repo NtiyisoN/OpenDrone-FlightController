@@ -12,6 +12,7 @@
         android:layout_height="179dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
+        android:layout_marginEnd="150dp"
         custom:JV_autoReCenterButton="true"
         custom:JV_backgroundColor="@color/secondaryColor"
         custom:JV_buttonColor="@color/secondaryLightColor"
@@ -26,6 +27,7 @@
         android:layout_height="179dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
+        android:layout_marginStart="150dp"
         custom:JV_autoReCenterButton="true"
         custom:JV_backgroundColor="@color/secondaryColor"
         custom:JV_buttonColor="@color/secondaryLightColor"
@@ -35,23 +37,56 @@
         custom:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/txtThrottle"
-        android:layout_width="161dp"
-        android:layout_height="38dp"
+        android:id="@+id/txt_MF_Position"
+        android:layout_width="215dp"
+        android:layout_height="100dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="TextView"
+        android:text="Position:"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/txtDirection"
-        android:layout_width="122dp"
-        android:layout_height="33dp"
+        android:id="@+id/txt_MF_Height"
+        android:layout_width="110dp"
+        android:layout_height="22dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txt_MF_Temp"
+        android:layout_width="110dp"
+        android:layout_height="22dp"
+        android:layout_marginTop="42dp"
+        android:layout_marginEnd="16dp"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txt_MF_Connection"
+        android:layout_width="110dp"
+        android:layout_height="22dp"
+        android:layout_marginTop="68dp"
+        android:layout_marginEnd="16dp"
+        android:text="Status:"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        android:layout_width="84dp"
+        android:layout_height="84dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:src="@drawable/ic_home"
+        app:backgroundTint="@color/primaryColor"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:rippleColor="@color/secondaryDarkColor" />
 
 </android.support.constraint.ConstraintLayout>
