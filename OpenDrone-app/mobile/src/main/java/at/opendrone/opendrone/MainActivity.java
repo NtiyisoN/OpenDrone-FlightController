@@ -24,6 +24,8 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import at.opendrone.opendrone.network.TCPClient;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawerLayout;
@@ -31,6 +33,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static FragmentManager fm;
 
     private boolean isOpened = false;
+
+    public static TCPClient client;
+    public static String TARGET = "192.168.1.55";
 
     private void initFragments() {
         /*Do this when changing Fragment:
@@ -63,6 +68,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        client = new TCPClient(TARGET);
+        client.start();
 
         initToolbar();
         initNavView();
