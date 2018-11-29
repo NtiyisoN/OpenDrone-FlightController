@@ -1,6 +1,7 @@
 package at.opendrone.opendrone.network;
 
 import android.app.Activity;
+import android.os.NetworkOnMainThreadException;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Stack;
 
 import at.opendrone.opendrone.R;
 
@@ -22,8 +24,8 @@ public class TCPClient extends Thread{
 
     private Activity activity;
 
-    private int value;
-    private int lastValue;
+    private Stack<String> value = new Stack<String>();
+    private String rec = "";
 
     private static final int PORT = 2018;
     private static final String TAG = "udpy";
@@ -33,38 +35,51 @@ public class TCPClient extends Thread{
         this.activity = activity;
     }
 
-    public void setValue(int value){
-        this.value = value;
+    public void setValue(String msg){
+        this.value.push(msg);
     }
 
     @Override
     public void run() {
             initSocket();
             while(!this.isInterrupted()){
-                if(lastValue != value){
-                    sendValue();
+                if(this.value.size() > 0){
+                    sendMessage(this.value.pop());
+                    receiveMessage();
                 }
-                lastValue = value;
+
             }
     }
 
-    private void sendValue(){
-        Log.i(TAG, "Sending value "+value);
-        String sendText = ""+value;
-        sendMessage(sendText);
-        Log.i(TAG, "sent value "+sendText);
+    private void sendValue(String message){
+        sendMessage(message);
+    }
+
+    public String getMessage(){
+        return this.rec;
     }
 
     /*sends message to server*/
-    private void sendMessage(String message) {
+    public void sendMessage(String message) {
         try{
             requireNonNull(serverWriter);
-            serverWriter.print(message);
+            serverWriter.println(message);
             serverWriter.flush();
         }catch(Exception ex){
-            //Toast.makeText(activity, activity.getResources().getString(R.string.exception_sorry), Toast.LENGTH_SHORT).show();
             initSocket();
-            Log.e(TAG, "Error", ex);
+        }
+    }
+
+    public void receiveMessage(){
+        String line = null;
+        // *** My question is about the next line **/
+        try {
+            while ((line = serverReader.readLine()) != null) {
+                this.rec = line;
+                break;
+            }
+        }catch(Exception e){
+            Log.i("INFORMATIONY","Errorrly "+e.getLocalizedMessage());
         }
 
     }
