@@ -10,7 +10,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.Stack;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Logger;
 
 import at.opendrone.opendrone.R;
 
@@ -22,30 +26,49 @@ public class TCPClient extends Thread{
     private BufferedReader serverReader;
     private String target;
 
-    private Activity activity;
-
     private Stack<String> value = new Stack<String>();
-    private String rec = "";
+    public String rec;
+    private int state = 0;
 
     private static final int PORT = 2018;
     private static final String TAG = "udpy";
 
-    public TCPClient(String target, Activity activity){
+    public TCPClient(String target){
         this.target = target;
-        this.activity = activity;
     }
 
     public void setValue(String msg){
         this.value.push(msg);
     }
 
+
     @Override
     public void run() {
             initSocket();
             while(!this.isInterrupted()){
+                if(this.state > 0){
+                    // Please insert Error-Handling here
+                    Log.println(100,TCPClient.TAG,"No ACK");
+                    sendMessage("No ACK recieved, shutting down connection...");
+                    try {
+                        this.server.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    this.interrupt();
+                }
                 if(this.value.size() > 0){
                     sendMessage(this.value.pop());
-                    receiveMessage();
+                    TimerTask ft = new TimerTask(){
+                        public void run(){
+                            receiveMessage();
+                            if (TCPClient.this.rec == null || server.isClosed()){
+                                TCPClient.this.state = 1;
+                            }
+                        }
+                    };
+
+                    (new Timer()).schedule(ft, 100);
                 }
 
             }
@@ -72,12 +95,19 @@ public class TCPClient extends Thread{
 
     public void receiveMessage(){
         String line = null;
-        // *** My question is about the next line **/
+
         try {
-            while ((line = serverReader.readLine()) != null) {
-                this.rec = line;
-                break;
+            try {
+                if (serverReader.ready()) {
+                    while ((line = serverReader.readLine()) != null) {
+                        this.rec = line;
+                        break;
+                    }
+                }
+            }catch(SocketTimeoutException ex){
+                this.value.push("ERROR STATE");
             }
+
         }catch(Exception e){
             Log.i("INFORMATIONY","Errorrly "+e.getLocalizedMessage());
         }

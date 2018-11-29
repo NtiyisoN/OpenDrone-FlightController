@@ -40,7 +40,7 @@ public class FlyManualFlight extends Fragment {
     private TextView temp;
     private TextView status;
 
-    private TCPClient client;
+    private TCPClient client = MainActivity.client;
 
     public FlyManualFlight() {
         // Required empty public constructor
@@ -64,9 +64,6 @@ public class FlyManualFlight extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view =  inflater.inflate(R.layout.fragment_fly_manual_flight, container, false);
-
-        client = new TCPClient("172.16.97.54", this.getActivity());
-        client.start();
 
         position = (TextView) view.findViewById(R.id.txt_MF_Position);
         height = (TextView) view.findViewById(R.id.txt_MF_Height);
