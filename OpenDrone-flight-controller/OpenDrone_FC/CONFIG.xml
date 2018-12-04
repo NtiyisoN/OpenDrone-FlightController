@@ -91,10 +91,10 @@
       <possible></possible>
     </pin26>
     <pin27 pin="DO NOT USE">
-      <possible></possible>
+      <possible>DO NOT USE</possible>
     </pin27>
     <pin28 pin="DO NOT USE">
-      <possible></possible>
+      <possible>DO NOT USE</possible>
     </pin28>
     <pin29 pin="">
       <possible></possible>
