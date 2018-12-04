@@ -48,7 +48,7 @@ public class TCPClient extends Thread{
             while(!this.isInterrupted()){
                 if(this.state > 0){
                     // Please insert Error-Handling here
-                    Log.println(100,TCPClient.TAG,"No ACK");
+                    Log.i(TCPClient.TAG,"No ACK");
                     sendMessage("No ACK recieved, shutting down connection...");
                     try {
                         this.server.close();
@@ -70,8 +70,28 @@ public class TCPClient extends Thread{
 
                     (new Timer()).schedule(ft, 100);
                 }
-
             }
+            disconnect();
+    }
+
+    private void disconnect(){
+        try{
+            server.close();
+            serverWriter.close();
+            serverReader.close();
+        }catch(IOException ex){
+            Log.e("TCPy", "Error", ex);
+        }
+
+    }
+
+    public void changeIP(String newIP){
+        this.target = newIP;
+        this.interrupt();
+        while(this.isAlive()){
+            this.interrupt();
+        }
+        this.initSocket();
     }
 
     private void sendValue(String message){
@@ -95,7 +115,6 @@ public class TCPClient extends Thread{
 
     public void receiveMessage(){
         String line = null;
-
         try {
             try {
                 if (serverReader.ready()) {

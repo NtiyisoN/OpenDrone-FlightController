@@ -21,4 +21,9 @@ public class OpenDroneUtils {
     public static final String PITCH_BACKWARDS = "PTCH_B";
     public static final String ROLL_LEFT = "ROLL_L";
     public static final String ROLL_RIGHT = "ROLL_R";
+
+    public static final int LF_HOME = 0;
+    public static final int LF_DRONE = 1;
+    public static final int LF_FP = 2;
+    public static final int LF_FLY = 3;
 }
