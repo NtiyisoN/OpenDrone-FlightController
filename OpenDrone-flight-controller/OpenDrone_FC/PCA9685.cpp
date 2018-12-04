@@ -1,36 +1,36 @@
 #include "PCA9685.h"
 /*************************************************************************
- * PCA9685.c
- *
- * This software is a devLib extension to wiringPi <http://wiringpi.com/>
- * and enables it to control the Adafruit PCA9685 16-Channel 12-bit
- * PWM/Servo Driver <http://www.adafruit.com/products/815> via I2C interface.
- *
- * Copyright (c) 2014 Reinhard Sprung
- *
- * If you have questions or improvements email me at
- * reinhard.sprung[at]gmail.com
- *
- * This software is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published
- * by the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * The given code is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
- *
- * You can view the contents of the licence at <http://www.gnu.org/licenses/>.
- **************************************************************************
- */
+* PCA9685.c
+*
+* This software is a devLib extension to wiringPi <http://wiringpi.com/>
+* and enables it to control the Adafruit PCA9685 16-Channel 12-bit
+* PWM/Servo Driver <http://www.adafruit.com/products/815> via I2C interface.
+*
+* Copyright (c) 2014 Reinhard Sprung
+*
+* If you have questions or improvements email me at
+* reinhard.sprung[at]gmail.com
+*
+* This software is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as published
+* by the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* The given code is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Lesser General Public License for more details.
+*
+* You can view the contents of the licence at <http://www.gnu.org/licenses/>.
+**************************************************************************
+*/
 
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 
 #include "PCA9685.h"
 
- // Setup registers
+// Setup registers
 #define PCA9685_MODE1 0x0
 #define PCA9685_PRESCALE 0xFE
 
@@ -50,13 +50,13 @@ int baseReg(int pin);
 
 
 /**
- * Setup a PCA9685 device with wiringPi.
- *
- * pinBase: 	Use a pinBase > 64, eg. 300
- * i2cAddress:	The default address is 0x40
- * freq:		Frequency will be capped to range [40..1000] Hertz. Try 50 for servos
- */
-int PCA9685::PCA9685Setup(const int pinBase, const int i2cAddress, float freq)
+* Setup a PCA9685 device with wiringPi.
+*
+* pinBase: 	Use a pinBase > 64, eg. 300
+* i2cAddress:	The default address is 0x40
+* freq:		Frequency will be capped to range [40..1000] Hertz. Try 50 for servos
+*/
+int PCA9685Setup(const int pinBase, const int i2cAddress, float freq)
 {
 	// Create a node with 16 pins [0..15] + [16] for all
 	struct wiringPiNodeStruct *node = wiringPiNewNode(pinBase, PIN_ALL + 1);
@@ -91,10 +91,10 @@ int PCA9685::PCA9685Setup(const int pinBase, const int i2cAddress, float freq)
 }
 
 /**
- * Sets the frequency of PWM signals.
- * Frequency will be capped to range [40..1000] Hertz. Try 50 for servos.
- */
-void PCA9685::PCA9685PWMFreq(int fd, float freq)
+* Sets the frequency of PWM signals.
+* Frequency will be capped to range [40..1000] Hertz. Try 50 for servos.
+*/
+void PCA9685PWMFreq(int fd, float freq)
 {
 	// Cap at min and max
 	freq = (freq > 1000 ? 1000 : (freq < 40 ? 40 : freq));
@@ -110,7 +110,7 @@ void PCA9685::PCA9685PWMFreq(int fd, float freq)
 	int wake = settings & 0xEF;									// Set sleep bit to 0
 	int restart = wake | 0x80;										// Set restart bit to 1
 
-	// Go to sleep, set prescale and wake up again.
+																	// Go to sleep, set prescale and wake up again.
 	wiringPiI2CWriteReg8(fd, PCA9685_MODE1, sleep);
 	wiringPiI2CWriteReg8(fd, PCA9685_PRESCALE, prescale);
 	wiringPiI2CWriteReg8(fd, PCA9685_MODE1, wake);
@@ -121,19 +121,19 @@ void PCA9685::PCA9685PWMFreq(int fd, float freq)
 }
 
 /**
- * Set all leds back to default values (: fullOff = 1)
- */
-void PCA9685::PCA9685PWMReset(int fd)
+* Set all leds back to default values (: fullOff = 1)
+*/
+void PCA9685PWMReset(int fd)
 {
 	wiringPiI2CWriteReg16(fd, LEDALL_ON_L, 0x0);
 	wiringPiI2CWriteReg16(fd, LEDALL_ON_L + 2, 0x1000);
 }
 
 /**
- * Write on and off ticks manually to a pin
- * (Deactivates any full-on and full-off)
- */
-void PCA9685::PCA9685PWMWrite(int fd, int pin, int on, int off)
+* Write on and off ticks manually to a pin
+* (Deactivates any full-on and full-off)
+*/
+void PCA9685PWMWrite(int fd, int pin, int on, int off)
 {
 	int reg = baseReg(pin);
 
@@ -143,12 +143,12 @@ void PCA9685::PCA9685PWMWrite(int fd, int pin, int on, int off)
 }
 
 /**
- * Reads both on and off registers as 16 bit of data
- * To get PWM: mask each value with 0xFFF
- * To get full-on or off bit: mask with 0x1000
- * Note: ALL_LED pin will always return 0
- */
-void PCA9685::PCA9685PWMRead(int fd, int pin, int *on, int *off)
+* Reads both on and off registers as 16 bit of data
+* To get PWM: mask each value with 0xFFF
+* To get full-on or off bit: mask with 0x1000
+* Note: ALL_LED pin will always return 0
+*/
+void PCA9685PWMRead(int fd, int pin, int *on, int *off)
 {
 	int reg = baseReg(pin);
 
@@ -159,11 +159,11 @@ void PCA9685::PCA9685PWMRead(int fd, int pin, int *on, int *off)
 }
 
 /**
- * Enables or deactivates full-on
- * tf = true: full-on
- * tf = false: according to PWM
- */
-void PCA9685::PCA9685FullOn(int fd, int pin, int tf)
+* Enables or deactivates full-on
+* tf = true: full-on
+* tf = false: according to PWM
+*/
+void PCA9685FullOn(int fd, int pin, int tf)
 {
 	int reg = baseReg(pin) + 1;		// LEDX_ON_H
 	int state = wiringPiI2CReadReg8(fd, reg);
@@ -179,11 +179,11 @@ void PCA9685::PCA9685FullOn(int fd, int pin, int tf)
 }
 
 /**
- * Enables or deactivates full-off
- * tf = true: full-off
- * tf = false: according to PWM or full-on
- */
-void PCA9685::PCA9685FullOff(int fd, int pin, int tf)
+* Enables or deactivates full-off
+* tf = true: full-off
+* tf = false: according to PWM or full-on
+*/
+void PCA9685FullOff(int fd, int pin, int tf)
 {
 	int reg = baseReg(pin) + 3;		// LEDX_OFF_H
 	int state = wiringPiI2CReadReg8(fd, reg);
@@ -195,8 +195,8 @@ void PCA9685::PCA9685FullOff(int fd, int pin, int tf)
 }
 
 /**
- * Helper function to get to register
- */
+* Helper function to get to register
+*/
 int baseReg(int pin)
 {
 	return (pin >= PIN_ALL ? LEDALL_ON_L : LED0_ON_L + 4 * pin);
@@ -215,11 +215,11 @@ int baseReg(int pin)
 
 
 /**
- * Simple PWM control which sets on-tick to 0 and off-tick to value.
- * If value is <= 0, full-off will be enabled
- * If value is >= 4096, full-on will be enabled
- * Every value in between enables PWM output
- */
+* Simple PWM control which sets on-tick to 0 and off-tick to value.
+* If value is <= 0, full-off will be enabled
+* If value is >= 4096, full-on will be enabled
+* Every value in between enables PWM output
+*/
 static void myPwmWrite(struct wiringPiNodeStruct *node, int pin, int value)
 {
 	int fd = node->fd;
@@ -234,10 +234,10 @@ static void myPwmWrite(struct wiringPiNodeStruct *node, int pin, int value)
 }
 
 /**
- * Simple full-on and full-off control
- * If value is 0, full-off will be enabled
- * If value is not 0, full-on will be enabled
- */
+* Simple full-on and full-off control
+* If value is 0, full-off will be enabled
+* If value is not 0, full-on will be enabled
+*/
 static void myOnOffWrite(struct wiringPiNodeStruct *node, int pin, int value)
 {
 	int fd = node->fd;
@@ -250,11 +250,11 @@ static void myOnOffWrite(struct wiringPiNodeStruct *node, int pin, int value)
 }
 
 /**
- * Reads off registers as 16 bit of data
- * To get PWM: mask with 0xFFF
- * To get full-off bit: mask with 0x1000
- * Note: ALL_LED pin will always return 0
- */
+* Reads off registers as 16 bit of data
+* To get PWM: mask with 0xFFF
+* To get full-off bit: mask with 0x1000
+* Note: ALL_LED pin will always return 0
+*/
 static int myOffRead(struct wiringPiNodeStruct *node, int pin)
 {
 	int fd = node->fd;
@@ -267,11 +267,11 @@ static int myOffRead(struct wiringPiNodeStruct *node, int pin)
 }
 
 /**
- * Reads on registers as 16 bit of data
- * To get PWM: mask with 0xFFF
- * To get full-on bit: mask with 0x1000
- * Note: ALL_LED pin will always return 0
- */
+* Reads on registers as 16 bit of data
+* To get PWM: mask with 0xFFF
+* To get full-on bit: mask with 0x1000
+* Note: ALL_LED pin will always return 0
+*/
 static int myOnRead(struct wiringPiNodeStruct *node, int pin)
 {
 	int fd = node->fd;
