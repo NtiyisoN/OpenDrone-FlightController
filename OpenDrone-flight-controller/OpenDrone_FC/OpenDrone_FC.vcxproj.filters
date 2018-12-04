@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="FlightController.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Filter\Filter.cpp" />
+    <ClCompile Include="Motor\PCA9685.cpp" />
+    <ClCompile Include="Motor\PWMMotorTest.cpp" />
+    <ClCompile Include="Network\TCPServer.cpp" />
+    <ClCompile Include="Sensor\Barometer.cpp" />
+    <ClCompile Include="Sensor\GyroAccelerometer.cpp" />
+    <ClCompile Include="Sensor\Magnetometer.cpp" />
+    <ClCompile Include="Sensor\UltraSonic.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="FlightController.h" />
+    <ClInclude Include="Filter\Filter.h" />
+    <ClInclude Include="Motor\PCA9685.h" />
+    <ClInclude Include="Motor\PWMMotorTest.h" />
+    <ClInclude Include="Network\TCPServer.h" />
+    <ClInclude Include="Sensor\Barometer.h" />
+    <ClInclude Include="Sensor\GyroAccelerometer.h" />
+    <ClInclude Include="Sensor\Magnetometer.h" />
+    <ClInclude Include="Sensor\UltraSonic.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="CONFIG.xml" />
+  </ItemGroup>
+</Project>
