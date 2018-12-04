@@ -1,16 +1,20 @@
 package at.opendrone.opendrone;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.graphics.Path;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -39,6 +43,8 @@ public class FlyManualFlight extends Fragment {
     private TextView height;
     private TextView temp;
     private TextView status;
+    private EditText ip;
+    private FloatingActionButton homeFAB;
 
     private TCPClient client = MainActivity.client;
 
@@ -49,6 +55,7 @@ public class FlyManualFlight extends Fragment {
     @Override
     public void onResume() {
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        ((MainActivity)getActivity()).closeDrawer();
         super.onResume();
     }
 
@@ -64,17 +71,32 @@ public class FlyManualFlight extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view =  inflater.inflate(R.layout.fragment_fly_manual_flight, container, false);
+        setRetainInstance(true);
+        findViews();
+        setValues();
+        initJoysticks();
 
-        position = (TextView) view.findViewById(R.id.txt_MF_Position);
-        height = (TextView) view.findViewById(R.id.txt_MF_Height);
-        temp = (TextView) view.findViewById(R.id.txt_MF_Temp);
-        status = (TextView) view.findViewById(R.id.txt_MF_Connection);
+        return view;
+    }
 
-        position.setText(position.getText() + "\nLat: 40°5324324234\nLong: 34°5243542352354");
-        height.setText("Height: 120m");
-        temp.setText("Temp: 14,8°C");
-        status.setText(status.getText() + " OK");
+    private void displayHomeConfirmationDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("Do you rly want go home fam?")
+                .setPositiveButton("Hell yeah", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // FIRE ZE MISSILES!
+                    }
+                })
+                .setNegativeButton("What am i doing here?!", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+        builder.create().show();
+        // Create the AlertDialog object and return it
+    }
 
+    private void initJoysticks() {
         throttle = (JoystickView) view.findViewById(R.id.throttleStick);
         throttle.setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
@@ -94,8 +116,40 @@ public class FlyManualFlight extends Fragment {
                 client.setValue(cmd);
             }
         });
+    }
 
-        return view;
+    private void setValues() {
+        position.setText(position.getText() + "\nLat: 40°5324324234\nLong: 34°5243542352354");
+        height.setText("Height: 120m");
+        temp.setText("Temp: 14,8°C");
+        status.setText(status.getText() + " OK");
+    }
+
+    private void findViews() {
+        position = (TextView) view.findViewById(R.id.txt_MF_Position);
+        height = (TextView) view.findViewById(R.id.txt_MF_Height);
+        temp = (TextView) view.findViewById(R.id.txt_MF_Temp);
+        status = (TextView) view.findViewById(R.id.txt_MF_Connection);
+        ip = view.findViewById(R.id.editTxt_IP);
+        homeFAB = view.findViewById(R.id.homeFab);
+
+        homeFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayHomeConfirmationDialog();
+            }
+        });
+    }
+
+    private void addListenerToEditText(){
+        ip.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(!hasFocus){
+                    client.changeIP(ip.getText().toString());
+                }
+            }
+        });
     }
 
     private String interpretThrottleStick(JoystickView stick, int angle, int strength){

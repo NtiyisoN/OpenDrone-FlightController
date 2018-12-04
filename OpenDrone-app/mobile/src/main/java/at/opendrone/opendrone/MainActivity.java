@@ -22,20 +22,22 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import at.opendrone.opendrone.network.TCPClient;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private DrawerLayout drawerLayout;
-
-    public static FragmentManager fm;
-
-    private boolean isOpened = false;
-
     public static TCPClient client;
     public static String TARGET = "192.168.1.55";
+    public static FragmentManager fm;
+
+    private DrawerLayout drawerLayout;
+    private boolean isOpened = false;
+    private FrameLayout fragmentContainer;
+    private int lastFragment;
 
     private void initFragments() {
         /*Do this when changing Fragment:
@@ -72,11 +74,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         client = new TCPClient(TARGET);
         client.start();
 
+        findViews();
+
         initToolbar();
         initNavView();
         fm = getSupportFragmentManager();
         initHomeFragment();
+        //initHomeFragment();
     }
+
+    private void findViews(){
+        fragmentContainer = findViewById(R.id.frameLayout_FragmentContainer);
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -103,35 +113,73 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void initHomeFragment() {
+        lastFragment = OpenDroneUtils.LF_HOME;
         HomeFragment hf = new HomeFragment();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.add(R.id.frameLayout_FragmentContainer, hf);
-        ft.commit();
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        fragmentTransaction.replace(fragmentContainer.getId(), hf);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        fragmentTransaction.commit();
+        //updateFragment(hf);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        // Restore UI state from the savedInstanceState.
+        // This bundle has also been passed to onCreate.
+        lastFragment = savedInstanceState.getInt("LastFragment");
+        switch(lastFragment){
+            case OpenDroneUtils.LF_HOME:
+                initHomeFragment();
+                break;
+            case OpenDroneUtils.LF_DRONE:
+                initDronesFragment();
+                break;
+            case OpenDroneUtils.LF_FP:
+                initFlightplaner();
+                break;
+            case OpenDroneUtils.LF_FLY:
+                initFlyStartFragment();
+                break;
+            default:
+                Log.i("Mainy", "Default onRestore");
+                break;
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        // Save UI state changes to the savedInstanceState.
+        // This bundle will be passed to onCreate if the process is
+        // killed and restarted.
+        savedInstanceState.putInt("LastFragment", lastFragment);
+        // etc.
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.navItem_Home:
-                clearContainer();
+                //clearContainer();
                 initHomeFragment();
                 closeDrawer();
                 return true;
             case R.id.navItem_Drones:
                 //Toast.makeText(getApplicationContext(), "Pressed Drones", Toast.LENGTH_SHORT).show();
                 //initDroneSettingsFragment();
-                clearContainer();
-                initDroneRecyclerFragment();
+                //clearContainer();
+                initDronesFragment();
                 closeDrawer();
                 return true;
             case R.id.navItem_FlightPlanner:
-                clearContainer();
+                //clearContainer();
                 //Toast.makeText(getApplicationContext(), "Pressed FlightPlanner", Toast.LENGTH_SHORT).show();
                 initFlightplaner();
                 closeDrawer();
                 return true;
             case R.id.navItem_Fly:
-                clearContainer();
+                //clearContainer();
                 //Toast.makeText(getApplicationContext(), "Pressed Fly", Toast.LENGTH_SHORT).show();
                 initFlyStartFragment();
                 closeDrawer();
@@ -142,12 +190,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void closeDrawer() {
+    public void closeDrawer() {
         drawerLayout.closeDrawer(GravityCompat.START);
         isOpened = false;
     }
 
     private void openDrawer() {
+        drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View view, float v) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View view) {
+                isOpened = true;
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View view) {
+                isOpened = false;
+            }
+
+            @Override
+            public void onDrawerStateChanged(int i) {
+
+            }
+        });
         drawerLayout.openDrawer(GravityCompat.START);
         isOpened = true;
     }
@@ -159,40 +228,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initDronesFragment() {
-        DroneCardList defFragment = new DroneCardList();
-
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.frameLayout_FragmentContainer, defFragment.createFragment());
-        ft.commit();
+        lastFragment  = OpenDroneUtils.LF_DRONE;
+        Fragment defFragment = new DroneCardListRecyclerFragment();
+        updateFragment(defFragment);
     }
 
-    private void initDroneRecyclerFragment() {
-        DroneCardListRecyclerFragment defFragment = new DroneCardListRecyclerFragment();
-
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.add(R.id.frameLayout_FragmentContainer, defFragment);
-        ft.commit();
+    private void updateFragment(Fragment fragment) {
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        fragmentTransaction.replace(fragmentContainer.getId(), fragment);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        fragmentTransaction.commit();
     }
 
 
     private void initFlyStartFragment(){
         //FlyStart defFragment = new FlyStart();
+        lastFragment  = OpenDroneUtils.LF_FLY;
         FlyManualFlight defFragment = new FlyManualFlight();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.frameLayout_FragmentContainer, defFragment);
-        ft.commit();
+        updateFragment(defFragment);
     }
 
     private void initFlightplaner() {
-
+        lastFragment  = OpenDroneUtils.LF_FP;
         SharedPreferences sp = getApplication().getSharedPreferences("at.opendrone.opendrone", Context.MODE_PRIVATE);
         sp.edit().remove(OpenDroneUtils.SP_FLIGHTPLAN_HOLDER).apply();
-
         FlightPlanListFragment defFragment = new FlightPlanListFragment();
-
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.frameLayout_FragmentContainer, defFragment);
-        ft.commit();
+        updateFragment(defFragment);
     }
 
 
