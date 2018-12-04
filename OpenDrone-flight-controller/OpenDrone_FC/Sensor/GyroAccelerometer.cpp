@@ -1,5 +1,5 @@
 #include "GyroAccelerometer.h"
-#include "Filter.h"
+#include "../Filter/Filter.h"
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include <iostream>

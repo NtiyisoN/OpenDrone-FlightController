@@ -1,10 +1,10 @@
 #include "FlightController.h"
-#include "UltraSonic.h"
-#include "Barometer.h"
-#include "GyroAccelerometer.h"
-#include "Magnetometer.h"
-#include "PWMMotorTest.h"
-#include "TCPServer.h"
+#include "Sensor/UltraSonic.h"
+#include "Sensor/Barometer.h"
+#include "Sensor/GyroAccelerometer.h"
+#include "Sensor/Magnetometer.h"
+#include "Motor/PWMMotorTest.h"
+#include "Network/TCPServer.h"
 #include <iostream>
 #include <fstream>
 #include <pthread.h>

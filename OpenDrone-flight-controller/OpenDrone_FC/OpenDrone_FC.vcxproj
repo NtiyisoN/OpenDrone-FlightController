@@ -70,27 +70,30 @@
     </RemotePostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Barometer.cpp" />
-    <ClCompile Include="Filter.cpp" />
+    <ClCompile Include="Filter\Filter.cpp" />
     <ClCompile Include="FlightController.cpp" />
-    <ClCompile Include="GyroAccelerometer.cpp" />
-    <ClCompile Include="Magnetometer.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="PCA9685.cpp" />
-    <ClCompile Include="PWMMotorTest.cpp" />
-    <ClCompile Include="TCPServer.cpp" />
-    <ClCompile Include="UltraSonic.cpp" />
+    <ClCompile Include="Motor\PCA9685.cpp" />
+    <ClCompile Include="Motor\PWMMotorTest.cpp" />
+    <ClCompile Include="Network\TCPServer.cpp" />
+    <ClCompile Include="Sensor\Barometer.cpp" />
+    <ClCompile Include="Sensor\GyroAccelerometer.cpp" />
+    <ClCompile Include="Sensor\Magnetometer.cpp" />
+    <ClCompile Include="Sensor\UltraSonic.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Barometer.h" />
-    <ClInclude Include="Filter.h" />
+    <ClInclude Include="Filter\Filter.h" />
     <ClInclude Include="FlightController.h" />
-    <ClInclude Include="GyroAccelerometer.h" />
-    <ClInclude Include="Magnetometer.h" />
-    <ClInclude Include="PCA9685.h" />
-    <ClInclude Include="PWMMotorTest.h" />
-    <ClInclude Include="TCPServer.h" />
-    <ClInclude Include="UltraSonic.h" />
+    <ClInclude Include="Motor\PCA9685.h" />
+    <ClInclude Include="Motor\PWMMotorTest.h" />
+    <ClInclude Include="Network\TCPServer.h" />
+    <ClInclude Include="Sensor\Barometer.h" />
+    <ClInclude Include="Sensor\GyroAccelerometer.h" />
+    <ClInclude Include="Sensor\Magnetometer.h" />
+    <ClInclude Include="Sensor\UltraSonic.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="CONFIG.xml" />
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>

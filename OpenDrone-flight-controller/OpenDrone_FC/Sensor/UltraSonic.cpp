@@ -1,5 +1,5 @@
 #include "UltraSonic.h"
-#include "Filter.h"
+#include "../Filter/Filter.h"
 #include <wiringPi.h>
 
 UltraSonic::UltraSonic(int pin_trigger, int pin_echo, int id)
