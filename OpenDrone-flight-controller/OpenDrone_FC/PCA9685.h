@@ -1,31 +1,31 @@
 /*************************************************************************
- * PCA9685.h
- *
- * This software is a devLib extension to wiringPi <http://wiringpi.com/>
- * and enables it to control the Adafruit PCA9685 16-Channel 12-bit
- * PWM/Servo Driver <http://www.adafruit.com/products/815> via I2C interface.
- *
- * Copyright (c) 2014 Reinhard Sprung
- *
- * If you have questions or improvements email me at
- * reinhard.sprung[at]gmail.com
- *
- * This software is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published
- * by the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * The given code is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
- *
- * You can view the contents of the licence at <http://www.gnu.org/licenses/>.
- **************************************************************************
- */
+* PCA9685.h
+*
+* This software is a devLib extension to wiringPi <http://wiringpi.com/>
+* and enables it to control the Adafruit PCA9685 16-Channel 12-bit
+* PWM/Servo Driver <http://www.adafruit.com/products/815> via I2C interface.
+*
+* Copyright (c) 2014 Reinhard Sprung
+*
+* If you have questions or improvements email me at
+* reinhard.sprung[at]gmail.com
+*
+* This software is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as published
+* by the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* The given code is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Lesser General Public License for more details.
+*
+* You can view the contents of the licence at <http://www.gnu.org/licenses/>.
+**************************************************************************
+*/
 
- // Setup a PCA9685 at the specific i2c address
-
+// Setup a PCA9685 at the specific i2c address
+extern int PCA9685Setup(const int pinBase, const int i2cAddress/* = 0x40*/, float freq/* = 50*/);
 
 // You now have access to the following wiringPi functions:
 //
@@ -54,19 +54,10 @@
 
 // Advanced controls
 // You can use the file descriptor returned from the setup function to access the following features directly on each connected PCA9685
+extern void PCA9685PWMFreq(int fd, float freq);
+extern void PCA9685PWMReset(int fd);
+extern void PCA9685PWMWrite(int fd, int pin, int on, int off);
+extern void PCA9685PWMRead(int fd, int pin, int *on, int *off);
 
-
-#pragma once
-class PCA9685
-{
-public:
-	PCA9685();
-	int PCA9685Setup(const int pinBase, const int i2cAddress/* = 0x40*/, float freq/* = 50*/);
-	void PCA9685PWMFreq(int fd, float freq);
-	void PCA9685PWMReset(int fd);
-	void PCA9685PWMWrite(int fd, int pin, int on, int off);
-	void PCA9685PWMRead(int fd, int pin, int *on, int *off);
-	void PCA9685FullOn(int fd, int pin, int tf);
-	void PCA9685FullOff(int fd, int pin, int tf);
-	~PCA9685();
-};
+extern void PCA9685FullOn(int fd, int pin, int tf);
+extern void PCA9685FullOff(int fd, int pin, int tf);
