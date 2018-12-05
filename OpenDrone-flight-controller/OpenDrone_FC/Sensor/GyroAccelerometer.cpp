@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) OpenDrone, 2018.  All rights reserved.
+ * The entire project (including this file) is licensed under the GNU GPL v3.0
+ */
+
 #include "GyroAccelerometer.h"
 #include "../Filter/Filter.h"
 #include <wiringPi.h>

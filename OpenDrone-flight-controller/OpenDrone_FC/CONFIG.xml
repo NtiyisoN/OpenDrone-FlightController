@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Data -->
+<!--
+ * Copyright (c) OpenDrone, 2018.  All rights reserved.
+ * The entire project (including this file) is licensed under the GNU GPL v3.0
+ -->
 <opendrone>
   <!-- Name of the Drone -->
   <droneName></droneName>
