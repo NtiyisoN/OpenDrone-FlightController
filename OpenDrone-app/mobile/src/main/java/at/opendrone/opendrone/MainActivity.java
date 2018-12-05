@@ -7,6 +7,7 @@
 package at.opendrone.opendrone;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.support.annotation.NonNull;
@@ -25,6 +26,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 
 import at.opendrone.opendrone.network.TCPClient;
 
@@ -184,6 +187,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 initFlyStartFragment();
                 closeDrawer();
                 return true;
+            case R.id.navItem_Libs:
+                displayLibraries();
             default:
                 Log.i("MainActivity", "OnNavigationItem Default case");
                 return false;
@@ -254,6 +259,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         sp.edit().remove(OpenDroneUtils.SP_FLIGHTPLAN_HOLDER).apply();
         FlightPlanListFragment defFragment = new FlightPlanListFragment();
         updateFragment(defFragment);
+    }
+
+    private void displayLibraries(){
+// When the user selects an option to see the licenses:
+        startActivity(new Intent(this, OssLicensesMenuActivity.class));
     }
 
 

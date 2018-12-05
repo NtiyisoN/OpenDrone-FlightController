@@ -20,4 +20,8 @@
         android:id="@+id/navItem_Fly"
         android:title="@string/navItem_Fly"
         />
+    <item
+        android:id="@+id/navItem_Libs"
+        android:title="@string/navItem_Libs"
+        />
 </menu>

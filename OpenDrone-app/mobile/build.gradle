@@ -5,6 +5,8 @@
  */
 
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.android.gms.oss-licenses-plugin'
+
 
 android {
     compileSdkVersion 28
@@ -44,4 +46,6 @@ dependencies {
     implementation 'org.osmdroid:osmdroid-android:6.0.2'
     implementation 'com.google.android.gms:play-services-location:16.0.0'
     implementation 'io.github.controlwear:virtualjoystick:1.10.0'
+    implementation 'com.google.android.gms:play-services-oss-licenses:16.0.0'
+
 }
