@@ -9,14 +9,14 @@
 #include <iterator> 
 using namespace std;
 
-Filter::Filter(float minValue, float maxValue, float minSize)
+Filter::Filter(double minValue, double maxValue, double minSize)
 {
 	this->maxValue = maxValue;
 	this->minValue = minValue;
 	this->minSize = minSize;
 }
 
-float Filter::addValue(float value)
+double Filter::addValue(double value)
 {	
 	if (value <= maxValue && value > minValue)
 	{
@@ -28,8 +28,8 @@ float Filter::addValue(float value)
 		this->list1.pop_front();
 	}
 
-	float num;
-	list <float> ::iterator i;
+	double num;
+	list <double> ::iterator i;
 	for (i = this->list1.begin(); i != this->list1.end(); ++i)
 	{
 		num = num + *i;

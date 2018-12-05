@@ -3,11 +3,12 @@
  * The entire project (including this file) is licensed under the GNU GPL v3.0
  */
 
-#include "UltraSonic.h"
+#include "HCSR04.h"
 #include "../Filter/Filter.h"
+#include "./AbstractSensor/Ultrasonic.h"
 #include <wiringPi.h>
 
-UltraSonic::UltraSonic(int pin_trigger, int pin_echo, int id)
+HCSR04::HCSR04(int pin_trigger, int pin_echo, int id)
 {
 	this->pin_trigger = pin_trigger;
 	this->pin_echo = pin_echo;
@@ -21,12 +22,12 @@ UltraSonic::UltraSonic(int pin_trigger, int pin_echo, int id)
 	delay(50); 
 } 
 
-float UltraSonic::distance()
+double HCSR04::distance()
 {
 	long ping = 0;
 	long pong = 0;
-	float distance = 0;
-	long timeout = 25000;
+	double distance = 0;
+	unsigned int timeout = 25000;
 
 	digitalWrite(pin_trigger, LOW);
 	delayMicroseconds(2);
@@ -34,7 +35,7 @@ float UltraSonic::distance()
 	digitalWrite(pin_trigger, HIGH);
 	delayMicroseconds(10);
 	digitalWrite(pin_trigger, LOW);
-	long start = micros();
+	unsigned int start = micros();
 
 	while(digitalRead(pin_echo) == LOW && micros()-start < timeout) {}
 	ping = micros();
@@ -48,10 +49,10 @@ float UltraSonic::distance()
 }
 
 
-int UltraSonic::getId() {
+int HCSR04::getId() {
 	return this->id;
 }
 
-UltraSonic::~UltraSonic()
+HCSR04::~HCSR04()
 {
 }

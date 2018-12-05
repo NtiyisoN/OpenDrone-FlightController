@@ -4,12 +4,14 @@
  */
 
 #include "../Filter/Filter.h"
+#include "AbstractSensor/Accelerometer.h"
+#include "AbstractSensor/Gyroscope.h"
 #pragma once
-class GyroAccelerometer
+class MPU6050 : public virtual Accelerometer, public virtual Gyroscope
 {
 public:
-	GyroAccelerometer();
-	~GyroAccelerometer();
+	MPU6050();
+	~MPU6050();
 	int fd;
 	Filter *filterAccX;
 	Filter *filterAccY;
@@ -18,7 +20,9 @@ public:
 	Filter *filterGyroY;
 	Filter *filterGyroZ;
 
-	float *getValues(void);
 	short readRawData(int addr);
+
+	double *getGyroscopeValues();
+	double *getAccelerometerValues();
 };
 

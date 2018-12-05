@@ -8,10 +8,11 @@
 class Filter
 {
 public:
-	std::list<float> list1;
-	float maxValue, minValue, minSize;
+	std::list<double> list1;
+	double maxValue, minValue;
+	double minSize;
 
-	Filter(float minValue, float maxValue, float minSize);
+	Filter(double minValue, double maxValue, double minSize);
 	~Filter();
-	float addValue(float value);
+	double addValue(double value);
 };

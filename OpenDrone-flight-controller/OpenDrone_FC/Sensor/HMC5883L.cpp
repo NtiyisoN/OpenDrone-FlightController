@@ -3,7 +3,7 @@
  * The entire project (including this file) is licensed under the GNU GPL v3.0
  */
 
-#include "Magnetometer.h"
+#include "HMC5883L.h"
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include <iostream>
@@ -11,7 +11,7 @@ using namespace std;
 
 #define DEVICE_ADDRESS 0x1E
 
-Magnetometer::Magnetometer()
+HMC5883L::HMC5883L()
 {
 	this->fd = wiringPiI2CSetup(DEVICE_ADDRESS);
 	if (this->fd < 1) {
@@ -21,7 +21,7 @@ Magnetometer::Magnetometer()
 	wiringPiI2CWriteReg8(this->fd, 0x02, 0x00);
 }
 
-short Magnetometer::readRawData(int addr)
+short HMC5883L::readRawData(int addr)
 {
 	short high_byte, low_byte, value;
 
@@ -31,15 +31,15 @@ short Magnetometer::readRawData(int addr)
 	return value;
 }
 
-float *Magnetometer::getMagnetometerValues()
+int *HMC5883L::getMagnetometerValues()
 {
-	static float ar[3];  /* Declared locally, but saved in the data-segment (and not on the stack) */
+	static int ar[3];  /* Declared locally, but saved in the data-segment (and not on the stack) */
 	ar[0] = readRawData(0x03); //Magnet X
 	ar[1] = readRawData(0x05); //Magnet Y
 	ar[2] = readRawData(0x07); //Magnet Z
 	return ar;
 }
 
-Magnetometer::~Magnetometer()
+HMC5883L::~HMC5883L()
 {
 }

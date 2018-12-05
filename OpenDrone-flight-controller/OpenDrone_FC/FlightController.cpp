@@ -4,10 +4,15 @@
  */
 
 #include "FlightController.h"
-#include "Sensor/UltraSonic.h"
-#include "Sensor/Barometer.h"
-#include "Sensor/GyroAccelerometer.h"
-#include "Sensor/Magnetometer.h"
+#include "Sensor/HCSR04.h"
+#include "Sensor/AbstractSensor/Ultrasonic.h"
+#include "Sensor/AbstractSensor/Gyroscope.h"
+#include "Sensor/AbstractSensor/Accelerometer.h"
+#include "Sensor/AbstractSensor/Barometer.h"
+#include "Sensor/AbstractSensor/Magnetometer.h"
+#include "Sensor/BMP180.h"
+#include "Sensor/MPU6050.h"
+#include "Sensor/HMC5883L.h"
 #include "Motor/PWMMotorTest.h"
 #include "Network/TCPServer.h"
 #include <iostream>
@@ -35,12 +40,12 @@ static void *runUltrasonic(void *interval)
 
 	//Initialize the sensors
 	int len = 2;
-	UltraSonic* sensors[len];
-	sensors[0] = new UltraSonic(17, 27, 1);
-	sensors[1] = new UltraSonic(17, 27, 1);
+	Ultrasonic* sensors[len];
+	sensors[0] = new HCSR04(17, 27, 1);
+	sensors[1] = new HCSR04(17, 27, 1);
 
 	//Infinite loop to keep measuring --> TODO: Need to be changed
-	float curDistance;
+	double curDistance;
 	while (1)
 	{
 		for (int i = 0; i < len; i++)
@@ -56,32 +61,32 @@ static void *runUltrasonic(void *interval)
 static void *runGyroAccelerometer(void *interval)
 {
 	//Initializing the sensor
-	GyroAccelerometer* gyroAcc = new GyroAccelerometer();
-	//ofstream myfile;
-	//myfile.open("example.csv");
+	Gyroscope *gyro = new MPU6050();
+	Accelerometer *acc = new MPU6050();
 
 	//Infinite loop to keep measuring --> TODO: Need to be changed
 	while (1)
 	{
-		float *values = gyroAcc->getValues();
-		cout << "Acc x=" << values[1] << " y=" << values[2] << " z=" << values[3];
-		cout << " Gyrometer x=" << values[4] << " y=" << values[5] << " z=" << values[6] << "\n";
+		double *valuesGyro = gyro->getGyroscopeValues();
+		double *valuesAcc = acc->getAccelerometerValues();
+
+		cout << "Gyroscope x=" << valuesGyro[1] << " y=" << valuesGyro[2] << " z=" << valuesGyro[3] << "\n";
+		cout << "Acc x=" << valuesAcc[1] << " y=" << valuesAcc[2] << " z=" << valuesAcc[3] << "\n";
+
 		//myfile << values[0] << ";" << values[1] << ";" << values[2] << ";" << values[3] << ";" << values[4] << ";" << values[5] << ";" << values[6] << ";\n";
 		delay((int)interval);
 	}
-
-	//myfile.close();
 }
 
 static void *runBarometer(void *interval)
 {
 	//Initializing the sensor
-	Barometer *barometer = new Barometer();
+	Barometer *barometer = new BMP180();
 
 	//Infinite loop to keep measuring --> TODO: Need to be changed
 	while (1)
 	{
-		float *values = barometer->getBarometerValues();
+		int *values = barometer->getBarometerValues();
 		cout << "Barometer Temperature: " << values[0] << " Pressure: " << values[1] << "\n";
 		delay((int)interval);
 	}
@@ -90,12 +95,12 @@ static void *runBarometer(void *interval)
 static void *runMagnetometer(void *interval)
 {
 	//Initializing the sensor
-	Magnetometer *magnetometer = new Magnetometer();
+	Magnetometer *magnetometer = new HMC5883L();
 
 	//Infinite loop to keep measuring --> TODO: Need to be changed
 	while (1)
 	{
-		float *values = magnetometer->getMagnetometerValues();
+		int *values = magnetometer->getMagnetometerValues();
 		cout << "Magnet x=" << values[0] << " y=" << values[1] << " z=" << values[2] << "\n";
 		delay((int)interval);
 	}

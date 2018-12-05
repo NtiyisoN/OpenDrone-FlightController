@@ -7,10 +7,10 @@
     <ClCompile Include="Motor\PCA9685.cpp" />
     <ClCompile Include="Motor\PWMMotorTest.cpp" />
     <ClCompile Include="Network\TCPServer.cpp" />
-    <ClCompile Include="Sensor\Barometer.cpp" />
-    <ClCompile Include="Sensor\GyroAccelerometer.cpp" />
-    <ClCompile Include="Sensor\Magnetometer.cpp" />
-    <ClCompile Include="Sensor\UltraSonic.cpp" />
+    <ClCompile Include="Sensor\MPU6050.cpp" />
+    <ClCompile Include="Sensor\HMC5883L.cpp" />
+    <ClCompile Include="Sensor\BMP180.cpp" />
+    <ClCompile Include="Sensor\HCSR04.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FlightController.h" />
@@ -18,10 +18,15 @@
     <ClInclude Include="Motor\PCA9685.h" />
     <ClInclude Include="Motor\PWMMotorTest.h" />
     <ClInclude Include="Network\TCPServer.h" />
-    <ClInclude Include="Sensor\Barometer.h" />
-    <ClInclude Include="Sensor\GyroAccelerometer.h" />
-    <ClInclude Include="Sensor\Magnetometer.h" />
-    <ClInclude Include="Sensor\UltraSonic.h" />
+    <ClInclude Include="Sensor\MPU6050.h" />
+    <ClInclude Include="Sensor\HMC5883L.h" />
+    <ClInclude Include="Sensor\BMP180.h" />
+    <ClInclude Include="Sensor\HCSR04.h" />
+    <ClInclude Include="Sensor\AbstractSensor\Ultrasonic.h" />
+    <ClInclude Include="Sensor\AbstractSensor\Accelerometer.h" />
+    <ClInclude Include="Sensor\AbstractSensor\Gyroscope.h" />
+    <ClInclude Include="Sensor\AbstractSensor\Barometer.h" />
+    <ClInclude Include="Sensor\AbstractSensor\Magnetometer.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="CONFIG.xml" />
