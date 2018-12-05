@@ -5,7 +5,7 @@
 
 #include "../Filter/Filter.h"
 #pragma once
-class UltraSonic
+class HCSR04
 {
 public:
 	int pin_trigger;
@@ -13,8 +13,8 @@ public:
 	int id;
 	Filter *filter;
 
-	UltraSonic(int pin_trigger, int pin_echo, int num);
-	~UltraSonic();
+	HCSR04(int pin_trigger, int pin_echo, int num);
+	~HCSR04();
 	float distance();
 	int getId();
 };

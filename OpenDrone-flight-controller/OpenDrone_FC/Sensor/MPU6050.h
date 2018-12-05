@@ -5,11 +5,11 @@
 
 #include "../Filter/Filter.h"
 #pragma once
-class GyroAccelerometer
+class MPU6050
 {
 public:
-	GyroAccelerometer();
-	~GyroAccelerometer();
+	MPU6050();
+	~MPU6050();
 	int fd;
 	Filter *filterAccX;
 	Filter *filterAccY;

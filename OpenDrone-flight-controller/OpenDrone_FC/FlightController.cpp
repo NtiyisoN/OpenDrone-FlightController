@@ -4,10 +4,10 @@
  */
 
 #include "FlightController.h"
-#include "Sensor/UltraSonic.h"
-#include "Sensor/Barometer.h"
-#include "Sensor/GyroAccelerometer.h"
-#include "Sensor/Magnetometer.h"
+#include "Sensor/HCSR04.h"
+#include "Sensor/BMP180.h"
+#include "Sensor/MPU6050.h"
+#include "Sensor/HMC5883L.h"
 #include "Motor/PWMMotorTest.h"
 #include "Network/TCPServer.h"
 #include <iostream>
@@ -35,9 +35,9 @@ static void *runUltrasonic(void *interval)
 
 	//Initialize the sensors
 	int len = 2;
-	UltraSonic* sensors[len];
-	sensors[0] = new UltraSonic(17, 27, 1);
-	sensors[1] = new UltraSonic(17, 27, 1);
+	HCSR04* sensors[len];
+	sensors[0] = new HCSR04(17, 27, 1);
+	sensors[1] = new HCSR04(17, 27, 1);
 
 	//Infinite loop to keep measuring --> TODO: Need to be changed
 	float curDistance;
@@ -56,7 +56,7 @@ static void *runUltrasonic(void *interval)
 static void *runGyroAccelerometer(void *interval)
 {
 	//Initializing the sensor
-	GyroAccelerometer* gyroAcc = new GyroAccelerometer();
+	MPU6050* gyroAcc = new MPU6050();
 	//ofstream myfile;
 	//myfile.open("example.csv");
 
@@ -76,7 +76,7 @@ static void *runGyroAccelerometer(void *interval)
 static void *runBarometer(void *interval)
 {
 	//Initializing the sensor
-	Barometer *barometer = new Barometer();
+	BMP180 *barometer = new BMP180();
 
 	//Infinite loop to keep measuring --> TODO: Need to be changed
 	while (1)
@@ -90,7 +90,7 @@ static void *runBarometer(void *interval)
 static void *runMagnetometer(void *interval)
 {
 	//Initializing the sensor
-	Magnetometer *magnetometer = new Magnetometer();
+	HMC5883L *magnetometer = new HMC5883L();
 
 	//Infinite loop to keep measuring --> TODO: Need to be changed
 	while (1)

@@ -24,7 +24,7 @@ using namespace std;
 #define GYRO_YOUT_H  0x45
 #define GYRO_ZOUT_H  0x47
 
-GyroAccelerometer::GyroAccelerometer()
+MPU6050::MPU6050()
 {
 	this->fd = wiringPiI2CSetup(DEVICE_ADDRESS);
 	if (this->fd < 1) {
@@ -48,7 +48,7 @@ GyroAccelerometer::GyroAccelerometer()
 }
 
 
-short GyroAccelerometer::readRawData(int addr)
+short MPU6050::readRawData(int addr)
 {
 	short high_byte, low_byte, value;
 
@@ -58,7 +58,7 @@ short GyroAccelerometer::readRawData(int addr)
 	return value;
 }
 
-float *GyroAccelerometer::getValues()
+float *MPU6050::getValues()
 {
 	static float ar[7];
 
@@ -77,6 +77,6 @@ float *GyroAccelerometer::getValues()
 }
 
 
-GyroAccelerometer::~GyroAccelerometer()
+MPU6050::~MPU6050()
 {
 }

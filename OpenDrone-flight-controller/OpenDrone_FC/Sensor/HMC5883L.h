@@ -4,11 +4,14 @@
  */
 
 #pragma once
-class Barometer
+class HMC5883L
 {
 public:
-	Barometer();
-	float *getBarometerValues();
-	~Barometer();
+	int fd;
+
+	HMC5883L();
+	float *getMagnetometerValues();
+	short readRawData(int addr);
+	~HMC5883L();
 };
 

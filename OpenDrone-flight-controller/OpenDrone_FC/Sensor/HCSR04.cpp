@@ -3,11 +3,11 @@
  * The entire project (including this file) is licensed under the GNU GPL v3.0
  */
 
-#include "UltraSonic.h"
+#include "HCSR04.h"
 #include "../Filter/Filter.h"
 #include <wiringPi.h>
 
-UltraSonic::UltraSonic(int pin_trigger, int pin_echo, int id)
+HCSR04::HCSR04(int pin_trigger, int pin_echo, int id)
 {
 	this->pin_trigger = pin_trigger;
 	this->pin_echo = pin_echo;
@@ -21,7 +21,7 @@ UltraSonic::UltraSonic(int pin_trigger, int pin_echo, int id)
 	delay(50); 
 } 
 
-float UltraSonic::distance()
+float HCSR04::distance()
 {
 	long ping = 0;
 	long pong = 0;
@@ -48,10 +48,10 @@ float UltraSonic::distance()
 }
 
 
-int UltraSonic::getId() {
+int HCSR04::getId() {
 	return this->id;
 }
 
-UltraSonic::~UltraSonic()
+HCSR04::~HCSR04()
 {
 }

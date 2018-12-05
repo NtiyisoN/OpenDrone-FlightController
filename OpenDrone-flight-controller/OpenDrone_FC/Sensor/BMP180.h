@@ -4,14 +4,11 @@
  */
 
 #pragma once
-class Magnetometer
+class BMP180
 {
 public:
-	int fd;
-
-	Magnetometer();
-	float *getMagnetometerValues();
-	short readRawData(int addr);
-	~Magnetometer();
+	BMP180();
+	float *getBarometerValues();
+	~BMP180();
 };
 
