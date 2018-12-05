@@ -5,6 +5,7 @@
 
 #include "HCSR04.h"
 #include "../Filter/Filter.h"
+#include "./AbstractSensor/Ultrasonic.h"
 #include <wiringPi.h>
 
 HCSR04::HCSR04(int pin_trigger, int pin_echo, int id)
@@ -21,12 +22,12 @@ HCSR04::HCSR04(int pin_trigger, int pin_echo, int id)
 	delay(50); 
 } 
 
-float HCSR04::distance()
+double HCSR04::distance()
 {
 	long ping = 0;
 	long pong = 0;
-	float distance = 0;
-	long timeout = 25000;
+	double distance = 0;
+	unsigned int timeout = 25000;
 
 	digitalWrite(pin_trigger, LOW);
 	delayMicroseconds(2);
@@ -34,7 +35,7 @@ float HCSR04::distance()
 	digitalWrite(pin_trigger, HIGH);
 	delayMicroseconds(10);
 	digitalWrite(pin_trigger, LOW);
-	long start = micros();
+	unsigned int start = micros();
 
 	while(digitalRead(pin_echo) == LOW && micros()-start < timeout) {}
 	ping = micros();

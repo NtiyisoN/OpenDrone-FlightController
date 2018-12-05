@@ -12,9 +12,9 @@ BMP180::BMP180()
 	bmp180Setup(200);
 }
 
-float *BMP180::getBarometerValues()
+int *BMP180::getBarometerValues()
 {
-	static float ar[2];
+	static int ar[2];
 	ar[0] = analogRead(200 + 0); //Temperatur
 	ar[1] = analogRead(200 + 1); //Pressure - hPa
 	return ar;

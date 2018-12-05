@@ -22,6 +22,11 @@
     <ClInclude Include="Sensor\HMC5883L.h" />
     <ClInclude Include="Sensor\BMP180.h" />
     <ClInclude Include="Sensor\HCSR04.h" />
+    <ClInclude Include="Sensor\AbstractSensor\Ultrasonic.h" />
+    <ClInclude Include="Sensor\AbstractSensor\Accelerometer.h" />
+    <ClInclude Include="Sensor\AbstractSensor\Gyroscope.h" />
+    <ClInclude Include="Sensor\AbstractSensor\Barometer.h" />
+    <ClInclude Include="Sensor\AbstractSensor\Magnetometer.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="CONFIG.xml" />

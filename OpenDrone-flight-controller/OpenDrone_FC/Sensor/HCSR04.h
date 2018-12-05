@@ -3,9 +3,11 @@
  * The entire project (including this file) is licensed under the GNU GPL v3.0
  */
 
-#include "../Filter/Filter.h"
 #pragma once
-class HCSR04
+#include "./AbstractSensor/Ultrasonic.h"
+#include "../Filter/Filter.h"
+
+class HCSR04 : public virtual Ultrasonic
 {
 public:
 	int pin_trigger;
@@ -15,6 +17,6 @@ public:
 
 	HCSR04(int pin_trigger, int pin_echo, int num);
 	~HCSR04();
-	float distance();
+	double distance();
 	int getId();
 };

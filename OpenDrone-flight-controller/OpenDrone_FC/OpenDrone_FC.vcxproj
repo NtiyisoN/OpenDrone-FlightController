@@ -87,10 +87,15 @@
     <ClInclude Include="Motor\PCA9685.h" />
     <ClInclude Include="Motor\PWMMotorTest.h" />
     <ClInclude Include="Network\TCPServer.h" />
+    <ClInclude Include="Sensor\AbstractSensor\Accelerometer.h" />
+    <ClInclude Include="Sensor\AbstractSensor\Barometer.h" />
+    <ClInclude Include="Sensor\AbstractSensor\Gyroscope.h" />
+    <ClInclude Include="Sensor\AbstractSensor\Magnetometer.h" />
     <ClInclude Include="Sensor\BMP180.h" />
     <ClInclude Include="Sensor\MPU6050.h" />
     <ClInclude Include="Sensor\HMC5883L.h" />
     <ClInclude Include="Sensor\HCSR04.h" />
+    <ClInclude Include="Sensor\AbstractSensor\Ultrasonic.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="CONFIG.xml" />

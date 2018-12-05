@@ -3,7 +3,7 @@
  * The entire project (including this file) is licensed under the GNU GPL v3.0
  */
 
-#include "GyroAccelerometer.h"
+#include "MPU6050.h"
 #include "../Filter/Filter.h"
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
@@ -58,9 +58,9 @@ short MPU6050::readRawData(int addr)
 	return value;
 }
 
-float *MPU6050::getValues()
+double *MPU6050::getAccelerometerValues()
 {
-	static float ar[7];
+	static double ar[4];
 
 	//Read new value and divide raw value by sensitivity scale factor
 	ar[0] = millis();
@@ -68,14 +68,21 @@ float *MPU6050::getValues()
 	ar[1] = this->filterAccX->addValue(readRawData(ACCEL_XOUT_H) / 16384.0);
 	ar[2] = this->filterAccY->addValue(readRawData(ACCEL_YOUT_H) / 16384.0);
 	ar[3] = this->filterAccZ->addValue(readRawData(ACCEL_ZOUT_H) / 16384.0);
-	//degree/seconds
-	ar[4] = this->filterGyroX->addValue(readRawData(GYRO_XOUT_H) / 131.0);
-	ar[5] = this->filterGyroY->addValue(readRawData(GYRO_YOUT_H) / 131.0);
-	ar[6] = this->filterGyroZ->addValue(readRawData(GYRO_ZOUT_H) / 131.0);
-
 	return ar;
 }
 
+double *MPU6050::getGyroscopeValues()
+{
+	static double ar[4];
+
+	//Read new value and divide raw value by sensitivity scale factor
+	ar[0] = millis();
+	//degree/seconds
+	ar[1] = this->filterGyroX->addValue(readRawData(GYRO_XOUT_H) / 131.0);
+	ar[2] = this->filterGyroY->addValue(readRawData(GYRO_YOUT_H) / 131.0);
+	ar[3] = this->filterGyroZ->addValue(readRawData(GYRO_ZOUT_H) / 131.0);
+	return ar;
+}
 
 MPU6050::~MPU6050()
 {
