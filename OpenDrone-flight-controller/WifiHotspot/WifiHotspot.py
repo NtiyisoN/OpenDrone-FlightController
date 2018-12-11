@@ -23,13 +23,14 @@ def loadJSON():
                 pwd = j['password']
 
         with open('/etc/accesspoint/accesspoint.json', 'w+') as f:
-                f.write('{"ssid": "'+str(name)+'", "inet": null, "wlan": "wlan0", "password": "'+str(pwd)+'", "netmask": "255.255.255.0", "ip": "192.168.1.254"}')
+                f.write('{"ssid": "'+str(name)+'", "inet": null, "wlan": "wlan0", "password": "'+str(pwd)+'", "netmask": "255.255.255.252", "ip": "192.168.1.254"}')
                 f.seek(0)
     os.system("sudo pyaccesspoint --config start")
 
 if os.path.isfile('/etc/accesspoint/accesspoint.json'):
     loadJSON()
 else:
-    os.system("sudo bash "+os.path.dirname(os.path.realpath(__file__))+"/install.sh")
+    cmd="sudo bash "+os.path.dirname(os.path.realpath(__file__))+"/install.sh";
+    os.system(cmd)
     print("started hotspot")
     loadJSON()
