@@ -23,6 +23,7 @@
     <string name="navItem_Drones">Drones</string>
     <string name="navItem_Fly">Fly</string>
     <string name="navItem_Home">Home</string>
+    <string name="navItem_Libs">Used Libraries</string>
     <string name="txt_Drone_description">Drone Description</string>
     <string name="btn_saveChanges">Save</string>
     <string name="txt_calibration">Place the Drone on a flat surface</string>
@@ -51,4 +52,6 @@
     <string name="alertDialog_Picture_Negative">Gallery</string>
     <string name="exception_sorry">Error</string>
     <string name="exception_no_location">Please enable the location in your phone\'s settings</string>
+    <string name="manual_flight_change_speed">Adjust the speed</string>
+    <string name="manual_flight_ip_txt">Enter an IP to connect to</string>
 </resources>

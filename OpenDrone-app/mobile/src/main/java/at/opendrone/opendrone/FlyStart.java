@@ -12,6 +12,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,27 +52,33 @@ public class FlyStart extends Fragment {
         txtView_Mission = view.findViewById(R.id.txtView_Mission);
         cl_FlightPlan = view.findViewById(R.id.cl_FlightMode);
 
+        //TODO: Open the manual Fragment
         btn_FlyAuto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String flightMode = (String) spinner_FlightMode.getSelectedItem();
                 String mission;
 
-                switch (flightMode){
-                    case "Manual":
-                        //TODO: Open the manual Fragment
+                switch (flightMode) {
+                    case "Manual": {
+                        Log.i("FlyStart", "Pressed Manual");
                         break;
-                    case "Automatic":
+                    }
+                    case "Automatic": {
                         mission = (String) spinner_Mission.getSelectedItem();
                         initFlyAutoFlyFragment();
                         break;
+                    }
+                    default: {
+                        //No default case defined
+                    }
                 }
             }
         });
+        //TODO: implement TestConnection
         btn_TestConnection.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                //TODO: implement TestConnection
                 Toast.makeText(getActivity(), "Connection established", Toast.LENGTH_SHORT).show(); //We always have a connection!
             }
         });

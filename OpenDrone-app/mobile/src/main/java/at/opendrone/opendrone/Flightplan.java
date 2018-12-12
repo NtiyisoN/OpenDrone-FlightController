@@ -9,17 +9,19 @@ package at.opendrone.opendrone;
 import org.osmdroid.util.GeoPoint;
 
 import java.io.Serializable;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class Flightplan implements Serializable {
     private int id;
     private String name;
     private String description;
-    public List<GeoPoint> points;
+    public LinkedHashMap<Double, GeoPoint> points;
 
-    public Flightplan(){
+    public Flightplan() {
     }
-    public Flightplan(int id, String name, String desc, List<GeoPoint> coords){
+
+    public Flightplan(int id, String name, String desc, LinkedHashMap<Double, GeoPoint> coords) {
         this.name = name;
         this.description = desc;
         this.id = id;
@@ -50,11 +52,11 @@ public class Flightplan implements Serializable {
         this.description = description;
     }
 
-    public List<GeoPoint> getCoordinates() {
+    public LinkedHashMap<Double, GeoPoint> getCoordinates() {
         return points;
     }
 
-    public void setCoordinates(List<GeoPoint> points) {
+    public void setCoordinates(LinkedHashMap<Double, GeoPoint> points) {
         this.points = points;
     }
 }

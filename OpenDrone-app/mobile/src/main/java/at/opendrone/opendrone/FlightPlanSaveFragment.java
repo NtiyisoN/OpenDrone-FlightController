@@ -29,6 +29,7 @@ import com.google.gson.Gson;
 import org.osmdroid.util.GeoPoint;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class FlightPlanSaveFragment extends Fragment {
     private String name = "";
     private String desc = "";
     private int position = -1;
-    private List<GeoPoint> points;
+    private LinkedHashMap<Double, GeoPoint> points;
     private List<Flightplan> flightplans = new LinkedList<Flightplan>();
     private FlightPlaner planer;
 
@@ -58,18 +59,18 @@ public class FlightPlanSaveFragment extends Fragment {
 
     }
 
-    public FlightPlanSaveFragment(List<GeoPoint> points){
+    public FlightPlanSaveFragment(LinkedHashMap<Double, GeoPoint> points) {
         this.points = points;
     }
 
-    public FlightPlanSaveFragment(String name, String desc, List<GeoPoint> list, int position) {
+    public FlightPlanSaveFragment(String name, String desc, LinkedHashMap<Double, GeoPoint> points, int position) {
         this.name = name;
         this.desc = desc;
-        this.points = list;
+        this.points = points;
         this.position = position;
     }
 
-    private void findViews(){
+    private void findViews() {
         nameTxt = view.findViewById(R.id.flightPlan_Name);
         descTxt = view.findViewById(R.id.flightPlan_Description);
         save = view.findViewById(R.id.btn_SaveFlightPlan);
@@ -84,8 +85,8 @@ public class FlightPlanSaveFragment extends Fragment {
         flightPlanContainer.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
-    private void setAdapter(){
-        GeoPointRecyclerViewAdapter adapter = new GeoPointRecyclerViewAdapter(points,getActivity(),this);
+    private void setAdapter() {
+        GeoPointRecyclerViewAdapter adapter = new GeoPointRecyclerViewAdapter(new LinkedList<GeoPoint>(points.values()), getActivity(), this);
         flightPlanContainer.setAdapter(adapter);
     }
 
@@ -99,9 +100,9 @@ public class FlightPlanSaveFragment extends Fragment {
         setListeners();
         setAttributes();
 
-        if(points.size() <= 0){
+        if (points.size() <= 0) {
             showAddFAB();
-        }else{
+        } else {
             showFAB();
         }
 
@@ -112,12 +113,13 @@ public class FlightPlanSaveFragment extends Fragment {
         save.setVisibility(View.VISIBLE);
         add.setVisibility(View.INVISIBLE);
     }
+
     private void showAddFAB() {
         save.setVisibility(View.INVISIBLE);
         add.setVisibility(View.VISIBLE);
     }
 
-    private void setListeners(){
+    private void setListeners() {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -128,33 +130,33 @@ public class FlightPlanSaveFragment extends Fragment {
                     flightplans = new LinkedList<>(Arrays.asList(gson.fromJson(sp.getString(OpenDroneUtils.SP_FLIGHTPLANS, ""), Flightplan[].class)));
                     String object = sp.getString(OpenDroneUtils.SP_FLIGHTPLAN_HOLDER, "");
                     flightplan = gson.fromJson(object, Flightplan.class);
-                }catch(Exception e){
-                    Toast.makeText(getContext(),"Could not read flightplans", Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), "Could not read flightplans", Toast.LENGTH_LONG).show();
                     flightplans = new LinkedList<Flightplan>();
                 }
-                    Flightplan fp = new Flightplan();
-                    fp.setName(nameTxt.getText().toString());
-                    fp.setDescription(descTxt.getText().toString());
-                    fp.setCoordinates(points);
+                Flightplan fp = new Flightplan();
+                fp.setName(nameTxt.getText().toString());
+                fp.setDescription(descTxt.getText().toString());
+                fp.setCoordinates(points);
 
-                    if(flightplan != null){
-                        position = flightplan.getId();
-                    }
+                if (flightplan != null) {
+                    position = flightplan.getId();
+                }
 
-                    if(position == -1){
-                        flightplans.add(fp);
-                    }else{
-                        flightplans.set(position,fp);
-                    }
+                if (position == -1) {
+                    flightplans.add(fp);
+                } else {
+                    flightplans.set(position, fp);
+                }
 
 
-                    String serialized = gson.toJson(flightplans.toArray());
-                    sp.edit().putString(OpenDroneUtils.SP_FLIGHTPLANS, serialized).apply();
+                String serialized = gson.toJson(flightplans.toArray());
+                sp.edit().putString(OpenDroneUtils.SP_FLIGHTPLANS, serialized).apply();
 
-                    FlightPlanListFragment fpsf = new FlightPlanListFragment();
-                    FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-                    ft.replace(R.id.frameLayout_FragmentContainer, fpsf);
-                    ft.commit();
+                FlightPlanListFragment fpsf = new FlightPlanListFragment();
+                FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.frameLayout_FragmentContainer, fpsf);
+                ft.commit();
 
             }
         });
@@ -163,6 +165,14 @@ public class FlightPlanSaveFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 displayAddDialog();
+            }
+        });
+
+        save.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                displayAddDialog();
+                return true;
             }
         });
 
@@ -179,15 +189,15 @@ public class FlightPlanSaveFragment extends Fragment {
                 flight.setCoordinates(points);
                 flight.setId(position);
                 String object = gson.toJson(flight);
-                sp.edit().putString(OpenDroneUtils.SP_FLIGHTPLAN_HOLDER,object).apply();
+                sp.edit().putString(OpenDroneUtils.SP_FLIGHTPLAN_HOLDER, object).apply();
 
-                if(planer != null){
+                if (planer != null) {
                     FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
                     ft.replace(R.id.frameLayout_FragmentContainer, planer);
                     ft.commit();
                     //planer.setPoints(points);
                     //planer.drawPoints();
-                }else{
+                } else {
                     FlightPlaner fp = new FlightPlaner();
                     FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
                     ft.replace(R.id.frameLayout_FragmentContainer, fp);
@@ -198,32 +208,32 @@ public class FlightPlanSaveFragment extends Fragment {
         });
     }
 
-    public void setAttributes(){
+    public void setAttributes() {
         SharedPreferences sp = getActivity().getSharedPreferences("at.opendrone.opendrone", Context.MODE_PRIVATE);
         Gson gson = new Gson();
 
         Flightplan fp = null;
-        try{
-            if(sp.contains(OpenDroneUtils.SP_FLIGHTPLAN_HOLDER)) {
+        try {
+            if (sp.contains(OpenDroneUtils.SP_FLIGHTPLAN_HOLDER)) {
                 String object = sp.getString(OpenDroneUtils.SP_FLIGHTPLAN_HOLDER, "");
                 fp = gson.fromJson(object, Flightplan.class);
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             //TODO: Error handling
-            Toast.makeText(getContext(),"Could not read flightplan", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Could not read flightplan", Toast.LENGTH_LONG).show();
         }
 
-        if(fp != null) {
+        if (fp != null) {
             this.nameTxt.setText(fp.getName());
             this.descTxt.setText(fp.getDescription());
         }
     }
 
-    public void setFlightPlaner(FlightPlaner fp){
+    public void setFlightPlaner(FlightPlaner fp) {
         this.planer = fp;
     }
 
-    private void displayAddDialog(){
+    private void displayAddDialog() {
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
         View promptView = layoutInflater.inflate(R.layout.fragment_edit_geopoint, null);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
@@ -240,13 +250,13 @@ public class FlightPlanSaveFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 String latitude = txt_latitude.getText().toString();
                 String longitude = txt_longitude.getText().toString();
-                try{
+                try {
                     double lat = Double.parseDouble(latitude);
                     double lon = Double.parseDouble(longitude);
                     GeoPoint p = new GeoPoint(lat, lon);
-                    points.add(p);
+                    points.put(points.size() + 0d, p);
                     showFAB();
-                }catch(NumberFormatException e){
+                } catch (NumberFormatException e) {
                     Toast.makeText(getActivity(), "Please enter a correct format in the fields!", Toast.LENGTH_LONG).show();
                 }
 

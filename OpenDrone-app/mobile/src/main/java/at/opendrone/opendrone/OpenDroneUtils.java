@@ -13,4 +13,17 @@ public class OpenDroneUtils {
     public static String SP_FLIGHTPLAN_HOLDER = "sp_flightplan";
     public static final double DEFAULT_LAT = 48.2468036;
     public static final double DEFAULT_LNG = 14.6199875;
+    public static final String THROTTLE_UP = "THRT_UP";
+    public static final String THROTTLE_DOWN = "THRT_DOWN";
+    public static final String YAW_RIGHT = "YAW_R";
+    public static final String YAW_LEFT = "YAW_L";
+    public static final String PITCH_FORWARDS = "PTCH_F";
+    public static final String PITCH_BACKWARDS = "PTCH_B";
+    public static final String ROLL_LEFT = "ROLL_L";
+    public static final String ROLL_RIGHT = "ROLL_R";
+
+    public static final int LF_HOME = 0;
+    public static final int LF_DRONE = 1;
+    public static final int LF_FP = 2;
+    public static final int LF_FLY = 3;
 }

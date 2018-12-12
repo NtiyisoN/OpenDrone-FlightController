@@ -14,6 +14,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -27,6 +34,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -53,19 +61,25 @@ import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Polyline;
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static android.content.Context.LOCATION_SERVICE;
 
-public class FlightPlaner extends Fragment{
+public class FlightPlaner extends Fragment {
 
     private MapView mMapView;
 
-    private List<GeoPoint> points = new LinkedList<>();
+    private LinkedHashMap<Double, GeoPoint> points = new LinkedHashMap<>();
 
     private SharedPreferences sp;
     private FloatingActionButton saveFAB;
+    private FloatingActionButton removeFAB;
     private boolean canAddMarker = true;
     private Location location;
 
@@ -78,12 +92,18 @@ public class FlightPlaner extends Fragment{
 
     private Polyline line = new Polyline();
 
-    private int draggedPosition = -1;
+    private Rect outRect = new Rect();
+    private int[] locationAr = new int[2];
 
+    private MotionEvent lastEvent;
+
+    private List<Marker> markers = new LinkedList<>();
+
+    private int draggedPosition = -1;
 
     public FlightPlaner() {
         // Required empty public constructor
-        points = new LinkedList<>();
+        points = new LinkedHashMap<>();
     }
 
     public void onResume() {
@@ -155,6 +175,9 @@ public class FlightPlaner extends Fragment{
                 }
                 return;
             }
+            default: {
+                Toast.makeText(getContext(), "Didn't grant all Permissions", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -214,10 +237,11 @@ public class FlightPlaner extends Fragment{
         mMapView.setMultiTouchControls(true);
 
         //Manually entered a point -> jump to that location
-        if(points.size() > 0){
-            GeoPoint p = points.get(0);
+        if (points.size() > 0) {
+            List<GeoPoint> pointList = new LinkedList<>(points.values());
+            GeoPoint p = pointList.get(0);
             setCenter(p.getLatitude(), p.getLongitude());
-        }else {
+        } else {
             requestPermissionAndSetLocation();
         }
         //mLocationManager.getLastKnownLocation().getLongitude();
@@ -248,24 +272,30 @@ public class FlightPlaner extends Fragment{
         startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         startMarker.setEnableTextLabelsWhenNoImage(true);
 
+        //BitmapDrawable drawable =writeOnDrawable(R.drawable.marker_background, markers.size()+"");
+        //startMarker.setIcon(drawable);
+
+
         addListenersToMarker(startMarker);
 
 
         mMapView.getOverlays().add(startMarker);
+        markers.add(startMarker);
 
-        addToLine(startMarker.getPosition());
+        addToLine(points.size(), startMarker.getPosition());
         showFAB();
     }
 
-    private void drawLine(){
-        line.setPoints(points);
+    private void drawLine() {
+        List<GeoPoint> pointList = new LinkedList<GeoPoint>((points.values()));
+        line.setPoints(new ArrayList<GeoPoint>(pointList));
         mMapView.getOverlayManager().remove(line);
         mMapView.getOverlayManager().add(line);
         mMapView.invalidate();
     }
 
-    private void addToLine(GeoPoint p) {
-        points.add(p);
+    private void addToLine(double index, GeoPoint p) {
+        points.put(index + 0d, p);
         drawLine();
     }
 
@@ -345,6 +375,7 @@ public class FlightPlaner extends Fragment{
 
     private void findViews(View view) {
         saveFAB = view.findViewById(R.id.fpFAB);
+        removeFAB = view.findViewById(R.id.deleteFab);
         mMapView = view.findViewById(R.id.map);
     }
 
@@ -361,33 +392,34 @@ public class FlightPlaner extends Fragment{
         return view;
     }
 
-    public void setPoints(List<GeoPoint> points) {
+    public void setPoints(LinkedHashMap<Double, GeoPoint> points) {
         this.points = points;
     }
 
-    private void addListenersToMarker(Marker marker){
+    private double getKeyAtIndex(int index) {
+        List<Double> keys = new ArrayList<Double>(points.keySet());
+        return keys.get(index);
+    }
+
+    private void addListenersToMarker(Marker marker) {
         Log.i("flightplany", "setMarker");
         marker.setDraggable(true);
         marker.setOnMarkerDragListener(new Marker.OnMarkerDragListener() {
             @Override
             public void onMarkerDrag(Marker marker) {
-                if((!canAddMarker && draggedPosition == points.size()-1) || (!canAddMarker && draggedPosition == 0) ){
-                    points.set(0, marker.getPosition());
-                    points.set(points.size()-1, marker.getPosition());
-                }else{
-                    points.set(draggedPosition, marker.getPosition());
-                }
+                moveMarker(marker);
                 drawLine();
             }
 
             @Override
             public void onMarkerDragEnd(Marker marker) {
-                if((!canAddMarker && draggedPosition == points.size()-1) || (!canAddMarker && draggedPosition == 0) ){
-                    points.set(0, marker.getPosition());
-                    points.set(points.size()-1, marker.getPosition());
-                }else{
-                    points.set(draggedPosition, marker.getPosition());
+                if (lastEvent != null && isViewInBounds(removeFAB, (int) lastEvent.getX(), (int) lastEvent.getY() + (int) (marker.getIcon().getIntrinsicHeight() * 1.5))) {
+                    removeMarker(marker);
+                } else {
+                    moveMarker(marker);
                 }
+                removeFAB.setVisibility(View.GONE);
+                saveFAB.setVisibility(View.VISIBLE);
                 drawLine();
             }
 
@@ -396,26 +428,133 @@ public class FlightPlaner extends Fragment{
                 //poiMarkers.invalidate();
                 //mapView.invalidate();
                 Log.i("flightplany", "dragstart");
-                draggedPosition = points.lastIndexOf(marker.getPosition());
+                LinkedList<GeoPoint> pointList = new LinkedList<>(points.values());
+                draggedPosition = pointList.lastIndexOf(marker.getPosition());
+                removeFAB.setVisibility(View.VISIBLE);
+                saveFAB.setVisibility(View.GONE);
 
             }
         });
         marker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker, MapView mapView) {
-
                 //savePointsAndAddInfo();
-                addToLine(marker.getPosition());
+                if(!canAddMarker){
+                    return true;
+                }
+                LinkedList<GeoPoint> pointList = new LinkedList<>(points.values());
+                int index = pointList.lastIndexOf(marker.getPosition());
+                double key = getKeyAtIndex(index);
+                addToLine(key + 0.1d, marker.getPosition());
+                markers.add(marker);
                 canAddMarker = false;
                 return true;
             }
         });
+
+        mMapView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                lastEvent = motionEvent;
+                return false;
+            }
+        });
+    }
+
+    private void moveMarker(Marker marker) {
+        if (!canAddMarker) {
+            int lastIndex = points.size() - 1;
+            Double originalPosition = Math.floor(getKeyAtIndex(lastIndex));
+
+            if (draggedPosition == originalPosition || draggedPosition == lastIndex) {
+                double lastKey = getKeyAtIndex(lastIndex);
+                points.put(originalPosition, marker.getPosition());
+                points.put(lastKey, marker.getPosition());
+            } else {
+                points.put(draggedPosition + 0d, marker.getPosition());
+            }
+        } else {
+            points.put(draggedPosition + 0d, marker.getPosition());
+        }
+    }
+
+    private void removeMarker(Marker marker) {
+        Toast.makeText(getContext(), "DELETE", Toast.LENGTH_SHORT).show();
+        int lastIndex = points.size() - 1;
+        Double originalPosition = Math.floor(getKeyAtIndex(lastIndex));
+        Log.i("Flightplany", "0"+canAddMarker);
+        if(!canAddMarker){
+            Log.i("Flightplany", "1");
+            if(draggedPosition == originalPosition || draggedPosition == lastIndex){
+                double lastKey = getKeyAtIndex(lastIndex);
+                removeFromMarkers(lastIndex);
+                removeFromMarkers(originalPosition.intValue());
+                removeFromPoints(lastKey);
+                removeFromPoints(originalPosition);
+                Log.i("Flightplany", "2");
+                Log.i("Flightplany", points.size()+" / "+markers.size());
+                updateKeys(originalPosition);
+                canAddMarker = true;
+            }else{
+                Log.i("Flightplany", "3");
+                removeFromMarkers(draggedPosition);
+                removeFromPoints(draggedPosition+0d);
+                updateKeys(draggedPosition+0d);
+            }
+        }else{
+            Log.i("Flightplany", "4");
+            removeFromMarkers(draggedPosition);
+            removeFromPoints(draggedPosition+0d);
+            updateKeys(draggedPosition+0d);
+        }
+        /*if ((draggedPosition == originalPosition || draggedPosition == lastIndex) && !canAddMarker) {
+
+        } else {
+            removeFromMarkers(draggedPosition);
+            removeFromPoints(draggedPosition+0d);
+            updateKeys(draggedPosition+0d);
+            //points.remove(draggedPosition);
+            //mMapView.getOverlayManager().remove(marker);
+        }*/
+        drawLine();
+    }
+
+    private void updateKeys(double start){
+        LinkedHashMap<Double, GeoPoint> newPoints = new LinkedHashMap<>();
+        for(Map.Entry<Double, GeoPoint> entry : points.entrySet()){
+            double key = entry.getKey();
+            if(key > start){
+                key = key -1;
+            }
+            newPoints.put(key, entry.getValue());
+        }
+        points = newPoints;
+    }
+
+    private void removeFromMarkers(int position) {
+        Marker tmp = markers.remove(position);
+        mMapView.getOverlayManager().remove(tmp);
+        mMapView.invalidate();
+    }
+
+    private void removeFromPoints(double key){
+        points.remove(key);
+        mMapView.invalidate();
+    }
+
+    private boolean isViewInBounds(View view, int x, int y) {
+        view.getDrawingRect(outRect);
+        view.getLocationOnScreen(locationAr);
+        outRect.offset(locationAr[0], locationAr[1]);
+        Log.i("flightplany", outRect.left + " / " + outRect.bottom + " / " + outRect.top + " / " + outRect.right);
+        return outRect.contains(x, y);
     }
 
     public void drawPoints() {
-        for (int i = 0; i < points.size(); i++) {
+        List<GeoPoint> pointList = new LinkedList<>(points.values());
+        for (int i = 0; i < pointList.size(); i++) {
             Marker startMarker = new Marker(mMapView);
-            startMarker.setPosition(points.get(i));
+            startMarker.setPosition(pointList.get(i));
             startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
             addListenersToMarker(startMarker);
             mMapView.getOverlays().add(startMarker);

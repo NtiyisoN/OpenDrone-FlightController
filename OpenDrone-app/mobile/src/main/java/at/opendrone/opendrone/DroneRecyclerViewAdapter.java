@@ -33,14 +33,14 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.util.List;
 
-public class DroneRecyclerViewAdapter extends RecyclerView.Adapter<DroneRecyclerViewAdapter.ViewHolder>{
+public class DroneRecyclerViewAdapter extends RecyclerView.Adapter<DroneRecyclerViewAdapter.ViewHolder> {
 
     private List<Drone> drones;
     private Activity activity;
     private DroneCardListRecyclerFragment fragment;
     private SharedPreferences sp;
 
-    public DroneRecyclerViewAdapter(List<Drone> drones, Activity activity, DroneCardListRecyclerFragment fragment, SharedPreferences sp){
+    public DroneRecyclerViewAdapter(List<Drone> drones, Activity activity, DroneCardListRecyclerFragment fragment, SharedPreferences sp) {
         this.drones = drones;
         this.activity = activity;
         this.fragment = fragment;
@@ -62,23 +62,16 @@ public class DroneRecyclerViewAdapter extends RecyclerView.Adapter<DroneRecycler
         holder.text_droneDescription.setText(drone.description);
         final ConstraintLayout sourceView = holder.itemView.findViewById(R.id.constraintLayout_Item);
 
-        final String imgString = sp.getString("DroneImg"+position, "");
-        if(!imgString.equals("")){
+        final String imgString = sp.getString("DroneImg" + position, "");
+        if (!imgString.equals("")) {
             Uri imgUri = Uri.fromFile(new File(imgString));
-            Log.i("Picky", "asdf: "+imgString);
+            Log.i("Picky", "asdf: " + imgString);
             Picasso.get().load(imgUri).into(holder.imageView);
         }
 
         holder.btn_Settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    /*DroneSettings defFragment = new DroneSettings();
-                    defFragment.setDrone(drone);
-                    defFragment.setMode("edit");
-                    FragmentManager fm = getFragmentManager();
-                    FragmentTransaction ft  = fm.beginTransaction();
-                    ft.replace(R.id.frameLayout_FragmentContainer, defFragment);
-                    ft.commit();*/
                 Intent intent = new Intent(activity, DroneSettingsActivity.class);
                 intent.putExtra("Mode", "edit");
                 intent.putExtra("Drone", drone);
@@ -104,7 +97,7 @@ public class DroneRecyclerViewAdapter extends RecyclerView.Adapter<DroneRecycler
                     public void onClick(DialogInterface dialog, int id) {
                         fragment.remove(position);
 
-                        sp.edit().putString("DroneImg"+position,"").apply();
+                        sp.edit().putString("DroneImg" + position, "").apply();
 
                         /*SharedPreferences sp = activity.getSharedPreferences("at.opendrone.opendrone", MODE_PRIVATE);
                         String droneJSON = sp.getString("DroneList","");
@@ -135,14 +128,14 @@ public class DroneRecyclerViewAdapter extends RecyclerView.Adapter<DroneRecycler
                 return true;
             }
         });
-        }
+    }
 
     @Override
     public int getItemCount() {
         return drones.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private CardView mCardView;
         private TextView text_droneName;
         private TextView text_droneDescription;
