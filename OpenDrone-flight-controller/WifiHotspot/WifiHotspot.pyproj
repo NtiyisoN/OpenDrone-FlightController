@@ -26,9 +26,6 @@
     <Compile Include="WifiHotspot.py" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="initialize.sh">
-      <SubType>Code</SubType>
-    </Content>
     <Content Include="install.sh">
       <SubType>Code</SubType>
     </Content>

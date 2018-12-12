@@ -30,7 +30,7 @@ def loadJSON():
 if os.path.isfile('/etc/accesspoint/accesspoint.json'):
     loadJSON()
 else:
-    cmd="sudo bash "+os.path.dirname(os.path.realpath(__file__))+"/install.sh";
+    cmd="sudo bash "+os.path.dirname(os.path.realpath(__file__))+"/install.sh"
     os.system(cmd)
     print("started hotspot")
     loadJSON()
