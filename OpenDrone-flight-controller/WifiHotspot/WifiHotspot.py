@@ -7,7 +7,7 @@ def loadJSON():
         doc = xmltodict.parse(fd.read())
 
     if 'accesspointName' in doc['opendrone'] or 'accesspointPassword' in doc['opendrone']:
-        if os.path.isfile('/etc/accesspoint/accesspoint.json') == False:
+        if os.path.isfile('/etc/accesspoint/accesspoint.json') is False:
             os.system('sudo touch /etc/accesspoint/accesspoint.json')
 
         json_data=open('/etc/accesspoint/accesspoint.json').read()
