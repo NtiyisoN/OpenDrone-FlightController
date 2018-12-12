@@ -17,6 +17,7 @@
 #include "Network/TCPServer.h"
 #include <iostream>
 #include <fstream>
+#include <math.h>
 #include <pthread.h>
 #include <wiringPi.h>
 using namespace std;
@@ -70,8 +71,12 @@ static void *runGyroAccelerometer(void *interval)
 		double *valuesGyro = gyro->getGyroscopeValues();
 		double *valuesAcc = acc->getAccelerometerValues();
 
-		cout << "Gyroscope x=" << valuesGyro[1] << " y=" << valuesGyro[2] << " z=" << valuesGyro[3] << "\n";
+		//cout << "Gyroscope x=" << valuesGyro[1] << " y=" << valuesGyro[2] << " z=" << valuesGyro[3] << "\n";
 		cout << "Acc x=" << valuesAcc[1] << " y=" << valuesAcc[2] << " z=" << valuesAcc[3] << "\n";
+
+		double pitch = 180 * atan(valuesAcc[1] / sqrt(valuesAcc[2] * valuesAcc[2] + valuesAcc[3] * valuesAcc[3])) / M_PI;
+		double roll = 180 * atan(valuesAcc[2] / sqrt(valuesAcc[1] * valuesAcc[1] + valuesAcc[3] * valuesAcc[3])) / M_PI;
+		cout << "Pitch: " << pitch << " Roll: " << roll << "\n";
 
 		//myfile << values[0] << ";" << values[1] << ";" << values[2] << ";" << values[3] << ";" << values[4] << ";" << values[5] << ";" << values[6] << ";\n";
 		delay((int)interval);
@@ -100,7 +105,7 @@ static void *runMagnetometer(void *interval)
 	//Infinite loop to keep measuring --> TODO: Need to be changed
 	while (1)
 	{
-		int *values = magnetometer->getMagnetometerValues();
+		double *values = magnetometer->getMagnetometerValues();
 		cout << "Magnet x=" << values[0] << " y=" << values[1] << " z=" << values[2] << "\n";
 		delay((int)interval);
 	}
@@ -154,8 +159,8 @@ static void *sendTemp(void *m) {
 
 int FlightController::run()
 {
-	//Creating the threads
-	int len = 5;
+	/*//Creating the threads
+	int len = 1;
 	pthread_t threadIds[len];
 	int threads[len];
 
@@ -179,7 +184,11 @@ int FlightController::run()
 	pthread_join(threadIds[0], (void**)1);
 	pthread_join(threadIds[1], (void**)1);
 	pthread_join(threadIds[2], (void**)1);
-	pthread_join(threadIds[3], (void**)1);
+	pthread_join(threadIds[3], (void**)1);*/
+
+	pthread_t t;
+	int i = pthread_create(&t, NULL, runGyroAccelerometer, (void *)500);
+	pthread_join(t, (void**)1);
 
 	/*pthread_t msg;
 	int rc = wiringPiSetupGpio();

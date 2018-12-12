@@ -76,12 +76,16 @@
     <ClCompile Include="Motor\PCA9685.cpp" />
     <ClCompile Include="Motor\PWMMotorTest.cpp" />
     <ClCompile Include="Network\TCPServer.cpp" />
+    <ClCompile Include="Sensor\BMF055.cpp" />
     <ClCompile Include="Sensor\BMP180.cpp" />
+    <ClCompile Include="Sensor\BMP388.cpp" />
     <ClCompile Include="Sensor\MPU6050.cpp" />
     <ClCompile Include="Sensor\HMC5883L.cpp" />
     <ClCompile Include="Sensor\HCSR04.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Sensor\BMF055.h" />
+    <ClInclude Include="Sensor\BMP388.h" />
     <ClInclude Include="Filter\Filter.h" />
     <ClInclude Include="FlightController.h" />
     <ClInclude Include="Motor\PCA9685.h" />
