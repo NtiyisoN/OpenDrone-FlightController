@@ -11,7 +11,7 @@ public:
 	int fd;
 
 	HMC5883L();
-	int *getMagnetometerValues();
+	double *getMagnetometerValues();
 	short readRawData(int addr);
 	~HMC5883L();
 };

@@ -7,5 +7,5 @@
 class Magnetometer
 {
 public:
-	virtual int *getMagnetometerValues() = 0;
+	virtual double *getMagnetometerValues() = 0;
 };

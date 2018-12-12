@@ -11,6 +11,8 @@
     <ClCompile Include="Sensor\HMC5883L.cpp" />
     <ClCompile Include="Sensor\BMP180.cpp" />
     <ClCompile Include="Sensor\HCSR04.cpp" />
+    <ClCompile Include="Sensor\BMP388.cpp" />
+    <ClCompile Include="Sensor\BMF055.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FlightController.h" />
@@ -27,6 +29,8 @@
     <ClInclude Include="Sensor\AbstractSensor\Gyroscope.h" />
     <ClInclude Include="Sensor\AbstractSensor\Barometer.h" />
     <ClInclude Include="Sensor\AbstractSensor\Magnetometer.h" />
+    <ClInclude Include="Sensor\BMP388.h" />
+    <ClInclude Include="Sensor\BMF055.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="CONFIG.xml" />

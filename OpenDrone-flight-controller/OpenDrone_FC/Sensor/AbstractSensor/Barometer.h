@@ -7,5 +7,6 @@
 class Barometer
 {
 public:
+	//ar[0] = Temperature, ar[1] = Pressure
 	virtual int *getBarometerValues() = 0;
 };
