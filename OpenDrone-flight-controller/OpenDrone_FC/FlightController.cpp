@@ -159,7 +159,7 @@ static void *sendTemp(void *m) {
 
 int FlightController::run()
 {
-	/*//Creating the threads
+	//Creating the threads
 	int len = 1;
 	pthread_t threadIds[len];
 	int threads[len];
@@ -184,11 +184,7 @@ int FlightController::run()
 	pthread_join(threadIds[0], (void**)1);
 	pthread_join(threadIds[1], (void**)1);
 	pthread_join(threadIds[2], (void**)1);
-	pthread_join(threadIds[3], (void**)1);*/
-
-	pthread_t t;
-	int i = pthread_create(&t, NULL, runGyroAccelerometer, (void *)500);
-	pthread_join(t, (void**)1);
+	pthread_join(threadIds[3], (void**)1);
 
 	/*pthread_t msg;
 	int rc = wiringPiSetupGpio();
