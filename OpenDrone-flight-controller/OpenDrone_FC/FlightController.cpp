@@ -111,12 +111,25 @@ static void *runMagnetometer(void *interval)
 	}
 }
 
-/*static void *loop(void * m)
+static void *loop(void * m)
 {
 	pthread_detach(pthread_self());
-	cout << "Starting TCP-Server";
+	cout << "Starting Motors";
 	cout.flush();
-	while (1)
+
+	pw->SetSpeed(0, 350);
+	delay(2000);
+	pw->SetSpeed(0, 180);
+	pw->SetSpeed(1, 350);
+	delay(2000);
+	pw->SetSpeed(1, 180);
+	pw->SetSpeed(2, 350);
+	delay(2000);
+	pw->SetSpeed(2, 180);
+	pw->SetSpeed(3, 350);
+	delay(2000);
+	pw->SetSpeed(3, 180);
+	/*while (1)
 	{
 		srand(time(NULL));
 		string str = tcp.getMessage();
@@ -132,10 +145,10 @@ static void *runMagnetometer(void *interval)
 			}
 		}
 		usleep(1000);
-	}
+	}*/
 }
 
-static void *sendTemp(void *m) {
+/*static void *sendTemp(void *m) {
 	FILE *temperatureFile;
 	int temp;
 
@@ -159,7 +172,7 @@ static void *sendTemp(void *m) {
 
 int FlightController::run()
 {
-	//Creating the threads
+	/*//Creating the threads
 	int len = 1;
 	pthread_t threadIds[len];
 	int threads[len];
@@ -184,9 +197,9 @@ int FlightController::run()
 	pthread_join(threadIds[0], (void**)1);
 	pthread_join(threadIds[1], (void**)1);
 	pthread_join(threadIds[2], (void**)1);
-	pthread_join(threadIds[3], (void**)1);
+	pthread_join(threadIds[3], (void**)1);*/
 
-	/*pthread_t msg;
+	pthread_t msg;
 	int rc = wiringPiSetupGpio();
 	if (rc != 0)
 	{
@@ -194,15 +207,16 @@ int FlightController::run()
 		exit(1);
 	}
 
-	//pw->ArmMotor(); //Start Motors !!ONLY one time!!
-	//delay(5000);
+	pw->ArmMotor(); //Start Motors !!ONLY one time!!
+	delay(5000);
+	pthread_create(&msg, NULL, loop, (void *)0);
+	pthread_join(msg, (void**)1);
 
-	tcp.setup(2018);
+	/*tcp.setup(2018);
 	if (pthread_create(&msg, NULL, loop, (void *)0) == 0)
 	{
 		tcp.receive();
 	}
-	pthread_join(msg, (void**)1);
 	tcp.detach();*/
 	return (0);
 }
