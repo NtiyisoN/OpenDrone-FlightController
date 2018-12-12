@@ -9,7 +9,7 @@ class PWMMotorTest
 public:
 	int fd;
 	PWMMotorTest();
-	void SetSpeed(int num);
+	void SetSpeed(short pin, int speed);
 	void ArmMotor();
 	void Test();
 	void Setup();
