@@ -7,7 +7,11 @@ def loadJSON():
         doc = xmltodict.parse(fd.read())
 
     if 'accesspointName' in doc['opendrone'] or 'accesspointPassword' in doc['opendrone']:
+        if os.path.isfile('/etc/accesspoint/accesspoint.json') == False:
+            os.system('sudo touch /etc/accesspoint/accesspoint.json')
+
         json_data=open('/etc/accesspoint/accesspoint.json').read()
+
         j = json.loads(json_data)
         name=''
         pwd=''
@@ -23,14 +27,15 @@ def loadJSON():
                 pwd = j['password']
 
         with open('/etc/accesspoint/accesspoint.json', 'w+') as f:
-                f.write('{"ssid": "'+str(name)+'", "inet": null, "wlan": "wlan0", "password": "'+str(pwd)+'", "netmask": "255.255.255.252", "ip": "192.168.1.254"}')
+                f.write('{"ssid": "'+str(name)+'", "inet": null, "wlan": "wlan0", "password": "'+str(pwd)+'", "netmask": "255.255.255.0", "ip": "192.168.1.254"}')
                 f.seek(0)
-    os.system("sudo pyaccesspoint --config start")
 
+os.system('sudo pyaccesspoint stop')
 if os.path.isfile('/etc/accesspoint/accesspoint.json'):
     loadJSON()
+    os.system("sudo pyaccesspoint --config start")
 else:
     cmd="sudo bash "+os.path.dirname(os.path.realpath(__file__))+"/install.sh"
     os.system(cmd)
-    print("started hotspot")
     loadJSON()
+    os.system("sudo pyaccesspoint --config start")
