@@ -20,9 +20,27 @@ Used technologies:
 * Android - Our App runs on Android  
 * C++ - Our flight controller runs on C++  
 * Raspberry Pi - The brain of the drone  
----
+---  
+## How to contribute  
+### FC  
+* Visual Studio  
+* Visual C++ for Linux Development  
+### Android App  
+* Android Studio 3.1  
+---  
 ## Features  
----
+### App
+* Configure Drone ✔  
+* Create/Modify Flightplans ✔   
+* GUI for Manual Flight ✔  
+* Communtication ⏳  
+### FC  
+* Rotors rotating round and round ✔  
+* Reading Sensors ✔  
+* Filtering sensor values ✔ 
+* PID Controller ⏳  
+* Communtication ⏳  
+---  
 ## Requirements  
 ### App  
 * Android 6.0  
