@@ -24,4 +24,16 @@ Used technologies:
 ## Features  
 ---
 ## Requirements  
+### App  
+* Android 6.0  
+* WiFi  
+### Flight Controller  
+* Raspberry Pi 3B or better
+* Gyro, Accelerometer
+* Magnetometer
+* Barometer
+* GPS only Auto. Flight
+* ESC
+* Motors  
+  
 ---
