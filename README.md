@@ -1,7 +1,8 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/opendroneat/opendrone/badge/develop)](https://www.codefactor.io/repository/github/opendroneat/opendrone/overview/develop)
 [![Gitter chat](https://badges.gitter.im/USER/REPO.png)](https://gitter.im/OpenDroneAT/Lobby "Gitter chat")
   
-  !! Work in Progress !!
+# !! Work in Progress !!  
+## Infomation
   
 Open Drone Open-source Project  
 LICENSE GNU GPLv3  
@@ -19,3 +20,8 @@ Used technologies:
 * Android - Our App runs on Android  
 * C++ - Our flight controller runs on C++  
 * Raspberry Pi - The brain of the drone  
+---
+## Features  
+---
+## Requirements  
+---
