@@ -70,6 +70,7 @@
     </RemotePostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Controller\Calibration.cpp" />
     <ClCompile Include="Filter\Filter.cpp" />
     <ClCompile Include="FlightController.cpp" />
     <ClCompile Include="main.cpp" />
@@ -84,6 +85,7 @@
     <ClCompile Include="Sensor\HCSR04.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Controller\Calibration.h" />
     <ClInclude Include="Sensor\BMF055.h" />
     <ClInclude Include="Sensor\BMP388.h" />
     <ClInclude Include="Filter\Filter.h" />

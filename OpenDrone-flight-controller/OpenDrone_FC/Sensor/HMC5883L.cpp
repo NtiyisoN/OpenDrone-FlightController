@@ -33,10 +33,11 @@ short HMC5883L::readRawData(int addr)
 
 double *HMC5883L::getMagnetometerValues()
 {
-	static double ar[3];  /* Declared locally, but saved in the data-segment (and not on the stack) */
-	ar[0] = readRawData(0x03); //Magnet X
-	ar[1] = readRawData(0x05); //Magnet Y
-	ar[2] = readRawData(0x07); //Magnet Z
+	static double ar[4];  /* Declared locally, but saved in the data-segment (and not on the stack) */
+	ar[0] = millis();
+	ar[1] = readRawData(0x03); //Magnet X
+	ar[2] = readRawData(0x05); //Magnet Y
+	ar[3] = readRawData(0x07); //Magnet Z
 	return ar;
 }
 

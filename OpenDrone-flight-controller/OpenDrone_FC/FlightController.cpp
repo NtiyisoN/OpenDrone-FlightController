@@ -15,6 +15,7 @@
 #include "Sensor/HMC5883L.h"
 #include "Motor/PWMMotorTest.h"
 #include "Network/TCPServer.h"
+#include "Controller/Calibration.h"
 #include <iostream>
 #include <fstream>
 #include <math.h>
@@ -24,6 +25,10 @@ using namespace std;
 
 TCPServer tcp;
 PWMMotorTest* pw = new PWMMotorTest();
+//Initializing the sensor
+Gyroscope *gyro = new MPU6050();
+Accelerometer *acc = new MPU6050();
+Magnetometer *magnetometer = new HMC5883L();
 
 FlightController::FlightController()
 {
@@ -38,10 +43,9 @@ static void *runUltrasonic(void *interval)
 		cout << "Failed to wiringPiSetupGpio()\n";
 		exit(1);
 	}
-
-	//Initialize the sensors
 	int len = 2;
 	Ultrasonic* sensors[len];
+	//Initialize the sensors
 	sensors[0] = new HCSR04(17, 27, 1);
 	sensors[1] = new HCSR04(17, 27, 1);
 
@@ -61,10 +65,6 @@ static void *runUltrasonic(void *interval)
 
 static void *runGyroAccelerometer(void *interval)
 {
-	//Initializing the sensor
-	Gyroscope *gyro = new MPU6050();
-	Accelerometer *acc = new MPU6050();
-
 	//Infinite loop to keep measuring --> TODO: Need to be changed
 	while (1)
 	{
@@ -106,12 +106,12 @@ static void *runMagnetometer(void *interval)
 	while (1)
 	{
 		double *values = magnetometer->getMagnetometerValues();
-		cout << "Magnet x=" << values[0] << " y=" << values[1] << " z=" << values[2] << "\n";
+		cout << "Magnet x=" << values[1] << " y=" << values[2] << " z=" << values[3] << "\n";
 		delay((int)interval);
 	}
 }
 
-static void *loop(void * m)
+/*static void *loop(void * m)
 {
 	pthread_detach(pthread_self());
 	cout << "Starting Motors";
@@ -145,8 +145,8 @@ static void *loop(void * m)
 			}
 		}
 		usleep(1000);
-	}*/
-}
+	}
+}*/
 
 /*static void *sendTemp(void *m) {
 	FILE *temperatureFile;
@@ -172,6 +172,10 @@ static void *loop(void * m)
 
 int FlightController::run()
 {
+	//Calibrate the drone
+	Calibration* calibration = new Calibration(gyro, acc, magnetometer);
+	calibration->calibrate();
+
 	/*//Creating the threads
 	int len = 1;
 	pthread_t threadIds[len];
@@ -199,7 +203,7 @@ int FlightController::run()
 	pthread_join(threadIds[2], (void**)1);
 	pthread_join(threadIds[3], (void**)1);*/
 
-	pthread_t msg;
+	/*pthread_t msg;
 	int rc = wiringPiSetupGpio();
 	if (rc != 0)
 	{
@@ -210,7 +214,7 @@ int FlightController::run()
 	pw->ArmMotor(); //Start Motors !!ONLY one time!!
 	delay(5000);
 	pthread_create(&msg, NULL, loop, (void *)0);
-	pthread_join(msg, (void**)1);
+	pthread_join(msg, (void**)1);*/
 
 	/*tcp.setup(2018);
 	if (pthread_create(&msg, NULL, loop, (void *)0) == 0)

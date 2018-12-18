@@ -18,6 +18,9 @@
     <magX></magX>
     <magY></magY>
     <magZ></magZ>
+    <pitch></pitch>
+    <roll></roll>
+    <yaw></yaw>
   </droneCalibration>
   <!-- Pinconfiguration of the Drone
         <possible></possible> -> do whatever you want

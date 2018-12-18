@@ -13,6 +13,7 @@
     <ClCompile Include="Sensor\HCSR04.cpp" />
     <ClCompile Include="Sensor\BMP388.cpp" />
     <ClCompile Include="Sensor\BMF055.cpp" />
+    <ClCompile Include="Controller\Calibration.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FlightController.h" />
@@ -31,6 +32,7 @@
     <ClInclude Include="Sensor\AbstractSensor\Magnetometer.h" />
     <ClInclude Include="Sensor\BMP388.h" />
     <ClInclude Include="Sensor\BMF055.h" />
+    <ClInclude Include="Controller\Calibration.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="CONFIG.xml" />
