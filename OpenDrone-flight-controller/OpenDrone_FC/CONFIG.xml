@@ -8,6 +8,17 @@
   <droneName></droneName>
   <!-- Motorconfiguration of the Drone -->
   <droneConfiguration></droneConfiguration>
+  <droneCalibration>
+    <gyroX></gyroX>
+    <gyroY></gyroY>
+    <gyroZ></gyroZ>
+    <accX></accX>
+    <accY></accY>
+    <accZ></accZ>
+    <magX></magX>
+    <magY></magY>
+    <magZ></magZ>
+  </droneCalibration>
   <!-- Pinconfiguration of the Drone
         <possible></possible> -> do whatever you want
         <possible>3.3V</possible> -> if there is only one you should not change anything
