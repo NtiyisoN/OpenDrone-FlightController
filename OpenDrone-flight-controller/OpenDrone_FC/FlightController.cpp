@@ -15,6 +15,7 @@
 #include "Sensor/HMC5883L.h"
 #include "Motor/PWMMotorTest.h"
 #include "Network/TCPServer.h"
+#include "Network/Modbus.h"
 #include <iostream>
 #include <fstream>
 #include <math.h>
@@ -111,8 +112,9 @@ static void *runMagnetometer(void *interval)
 	}
 }
 
-/*static void *loop(void * m)
+static void *loop(void * m)
 {
+    Modbus *mb = new Modbus();
 	pthread_detach(pthread_self());
 	cout << "Starting TCP-Server";
 	cout.flush();
@@ -120,9 +122,12 @@ static void *runMagnetometer(void *interval)
 	{
 		srand(time(NULL));
 		string str = tcp.getMessage();
-		cout << str;
-		cout.flush();
-		tcp.Send(str);
+        if (str != "") {
+            mb->Interpret(str);
+            tcp.clean();
+        }
+        
+		/*tcp.Send(str);
 		if (str != "")
 		{
 			int b = atoi(str.c_str());
@@ -130,10 +135,10 @@ static void *runMagnetometer(void *interval)
 			{
 				//pw->SetSpeed(b);
 			}
-		}
-		usleep(1000);
+		}*/
+		usleep(100);
 	}
-}
+}/*
 
 static void *sendTemp(void *m) {
 	FILE *temperatureFile;
@@ -186,7 +191,7 @@ int FlightController::run()
 	pthread_join(threadIds[2], (void**)1);
 	pthread_join(threadIds[3], (void**)1);
 
-	/*pthread_t msg;
+	pthread_t msg;
 	int rc = wiringPiSetupGpio();
 	if (rc != 0)
 	{
@@ -203,7 +208,7 @@ int FlightController::run()
 		tcp.receive();
 	}
 	pthread_join(msg, (void**)1);
-	tcp.detach();*/
+	tcp.detach();
 	return (0);
 }
 
