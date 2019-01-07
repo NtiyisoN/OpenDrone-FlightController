@@ -24,6 +24,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -47,5 +52,4 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:16.0.0'
     implementation 'io.github.controlwear:virtualjoystick:1.10.0'
     implementation 'com.google.android.gms:play-services-oss-licenses:16.0.0'
-
 }

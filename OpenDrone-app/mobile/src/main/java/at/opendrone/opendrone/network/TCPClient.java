@@ -1,158 +1,118 @@
 package at.opendrone.opendrone.network;
 
-import android.app.Activity;
-import android.os.NetworkOnMainThreadException;
+import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
+
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
-import java.util.Stack;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.logging.Logger;
 
-import at.opendrone.opendrone.R;
+import at.opendrone.opendrone.OpenDroneUtils;
 
-import static java.util.Objects.requireNonNull;
-
-public class TCPClient extends Thread{
-    private Socket server;
-    private PrintWriter serverWriter;
-    private BufferedReader serverReader;
-    private String target;
-
-    private Stack<String> value = new Stack<String>();
-    public String rec;
-    private int state = 0;
-
+public class TCPClient extends AsyncTask<Void, Void, String> {
     private static final int PORT = 2018;
-    private static final String TAG = "udpy";
+    private static final String TAG = "modbusy";
+    private static final int UNIT_ID = 1;
+    private static String target;
 
-    public TCPClient(String target){
+    private int data1 = 0;
+    private byte code1 = OpenDroneUtils.CODE_THROTTLE_UP;
+    private int data2 = 0;
+    private byte code2 = OpenDroneUtils.CODE_YAW_LEFT;
+
+
+    private Socket clientSocket;
+
+    public TCPClient(String target) {
         this.target = target;
     }
 
-    public void setValue(String msg){
-        this.value.push(msg);
+    public void updateValues(int data1, byte code1, int data2, byte code2){
+        this.data1 = data1;
+        Log.i("Testy23", data1+"");
+        this.code1 = code1;
+        this.code2 = code2;
+        this.data2 = data2;
     }
 
+    private void send(){
+
+        if(clientSocket == null){
+            Log.i(TAG, "Socket is null!");
+            return;
+        }
+
+        Log.i("Testy2", data1+"");
+        OpenDroneFrame f = new OpenDroneFrame((byte)1, code1, data1, code2, data2);
+        Log.i("Testy2", data1+"");
+
+        //Log.i("tcpy")
+
+       /* try {
+            boolean before = master.readCoils(UNIT_ID, 1, 1).getBit(0);
+            SerialParameters params = new SerialParameters();
+            params.setBaudRate(9600);
+            params.setParity(0);
+            params.setStopbits(1);
+            params.setDatabits(8);
+
+            master = new ModbusSerialMaster(params);
+            master.writeCoil(1,1, before);
+        } catch (ModbusException e) {
+            e.printStackTrace();
+        }*/
+
+
+
+        try {
+            BufferedOutputStream dos = new BufferedOutputStream(new DataOutputStream(clientSocket.getOutputStream()));
+            BufferedReader clientIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            dos.write(f.toString().getBytes());
+            dos.flush();
+            Log.i("tcpy", "sent: "+ f.toString());
+            clientSocket.close();
+        } catch (IOException ex) {
+            System.err.println(ex.getMessage());
+        }
+    }
+
+    private void disconnect() {
+        if(clientSocket != null && clientSocket.isConnected()){
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                Log.e("tcpy", "ERROR", e);
+            }
+        }
+    }
+
+    private void connect() {
+        try {
+            if(clientSocket != null && clientSocket.isConnected()){
+                return;
+            }
+            clientSocket = new Socket(target, 2018);
+            send();
+        } catch (IOException e) {
+            Log.i("tcpy", "connect");
+            Log.e("tcpy", "ERROR", e);
+        }
+    }
 
     @Override
-    public void run() {
-            initSocket();
-            while(!this.isInterrupted()){
-                if(this.state > 0){
-                    // Please insert Error-Handling here
-                    Log.i(TCPClient.TAG,"No ACK");
-                    sendMessage("No ACK recieved, shutting down connection...");
-                    try {
-                        this.server.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    this.interrupt();
-                }
-                if(this.value.size() > 0){
-                    sendMessage(this.value.pop());
-                    TimerTask ft = new TimerTask(){
-                        public void run(){
-                            receiveMessage();
-                            if (TCPClient.this.rec == null || server.isClosed()){
-                                TCPClient.this.state = 1;
-                            }
-                        }
-                    };
-
-                    (new Timer()).schedule(ft, 100);
-                }
-            }
-            disconnect();
+    protected String doInBackground(Void... voids) {
+        connect();
+        send();
+        return "success";
     }
 
-    private void disconnect(){
-        try{
-            server.close();
-            serverWriter.close();
-            serverReader.close();
-        }catch(IOException ex){
-            Log.e("TCPy", "Error", ex);
-        }
-
-    }
-
-    public void changeIP(String newIP){
-        this.target = newIP;
-        this.interrupt();
-        while(this.isAlive()){
-            this.interrupt();
-        }
-        this.initSocket();
-    }
-
-    private void sendValue(String message){
-        sendMessage(message);
-    }
-
-    public String getMessage(){
-        return this.rec;
-    }
-
-    /*sends message to server*/
-    public void sendMessage(String message) {
-        try{
-            requireNonNull(serverWriter);
-            serverWriter.println(message);
-            serverWriter.flush();
-        }catch(Exception ex){
-            initSocket();
-        }
-    }
-
-    public void receiveMessage(){
-        String line = null;
-        try {
-            try {
-                if (serverReader.ready()) {
-                    while ((line = serverReader.readLine()) != null) {
-                        this.rec = line;
-                        break;
-                    }
-                }
-            }catch(SocketTimeoutException ex){
-                this.value.push("ERROR STATE");
-            }
-
-        }catch(Exception e){
-            Log.i("INFORMATIONY","Errorrly "+e.getLocalizedMessage());
-        }
-
-    }
-
-    /*Creates the necessary streams*/
-    private void createStreams() {
-        requireNonNull(server);
-        try {
-            serverReader = new BufferedReader(new
-                    InputStreamReader(server.getInputStream()));
-            serverWriter = new PrintWriter(server.getOutputStream());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    private void initSocket(){
-        if(server == null){
-            try {
-                server = new Socket(target, PORT);
-                createStreams();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    @Override
+    protected void onPostExecute(String s) {
+        super.onPostExecute(s);
+        disconnect();
     }
 }
