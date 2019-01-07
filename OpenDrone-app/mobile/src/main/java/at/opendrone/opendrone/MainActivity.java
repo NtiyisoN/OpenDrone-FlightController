@@ -33,8 +33,7 @@ import at.opendrone.opendrone.network.TCPClient;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static TCPClient client;
-    public static String TARGET = "192.168.1.55";
+    //public static TCPClient client;
     public static FragmentManager fm;
 
     private DrawerLayout drawerLayout;
@@ -74,8 +73,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        client = new TCPClient(TARGET);
-        client.start();
+        //client = new TCPClient(TARGET);
+        //client.start();
 
         findViews();
 

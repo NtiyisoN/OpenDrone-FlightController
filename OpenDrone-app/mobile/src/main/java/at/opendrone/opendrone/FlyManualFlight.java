@@ -46,7 +46,9 @@ public class FlyManualFlight extends Fragment {
     private EditText ip;
     private FloatingActionButton homeFAB;
 
-    private TCPClient client = MainActivity.client;
+    public static String TARGET = "192.168.1.254";
+
+    private TCPClient client;
 
     public FlyManualFlight() {
         // Required empty public constructor
@@ -56,12 +58,23 @@ public class FlyManualFlight extends Fragment {
     public void onResume() {
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         ((MainActivity)getActivity()).closeDrawer();
+
+        if(client == null){
+            client = new TCPClient(TARGET);
+            client.execute();
+        }
         super.onResume();
     }
 
     @Override
     public void onPause() {
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+
+        /*if(client != null){
+            while(client.isAlive()){
+                client.interrupt();
+            }
+        }*/
         super.onPause();
     }
 
@@ -96,14 +109,29 @@ public class FlyManualFlight extends Fragment {
         // Create the AlertDialog object and return it
     }
 
+    private void printAR(int[][] ar){
+        for(int i = 0; i<ar.length; i++){
+            for(int j = 0; j<ar.length; j++){
+                Log.i("Testy", "Index: "+i+"/"+j+": "+ar[i][j]);
+            }
+        }
+    }
+
     private void initJoysticks() {
         throttle = (JoystickView) view.findViewById(R.id.throttleStick);
         throttle.setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
             public void onMove(int angle, int strength) {
-                String cmd = interpretThrottleStick(throttle, angle, strength);
+                int[][] cmd = interpretThrottleStick(throttle, angle, strength);
                 requireNonNull(client);
-                client.setValue(cmd);
+                Log.i("manualFlightys", cmd[0][0]+"");
+
+
+                client = new TCPClient(TARGET);
+                client.updateValues(cmd[0][1], (byte)cmd[0][0], cmd[1][1], (byte)cmd[1][0]);
+                client.execute();
+                //client.execute();
+                //client.setValue(cmd);
             }
         });
 
@@ -111,9 +139,15 @@ public class FlyManualFlight extends Fragment {
         direction.setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
             public void onMove(int angle, int strength) {
-                String cmd = interpretDirectionStick(direction, angle,strength);
+                int[][] cmd = interpretDirectionStick(direction, angle,strength);
+                printAR(cmd);
                 requireNonNull(client);
-                client.setValue(cmd);
+                Log.i("manualFlighty", "direction");
+                //Log.i("manualFlighty", cmd);
+                client = new TCPClient(TARGET);
+                client.updateValues(cmd[0][1], (byte)cmd[0][0], cmd[1][1], (byte)cmd[1][0]);
+                client.execute();
+                //client.setValue(cmd);
             }
         });
     }
@@ -146,13 +180,14 @@ public class FlyManualFlight extends Fragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if(!hasFocus){
-                    client.changeIP(ip.getText().toString());
+                    //client.changeIP(ip.getText().toString());
                 }
             }
         });
     }
 
-    private String interpretThrottleStick(JoystickView stick, int angle, int strength){
+    private int[][] interpretThrottleStick(JoystickView stick, int angle, int strength){
+        int[][] values = new int[2][2];
         String returnValue = "";
 
         double rad = angle*Math.PI/180;
@@ -161,22 +196,35 @@ public class FlyManualFlight extends Fragment {
         double hypothenusis  = strength;
         int adjacentX = (int) (Math.cos(rad)*hypothenusis);
         if(adjacentX < 0){
-            returnValue += OpenDroneUtils.YAW_LEFT + "," + (adjacentX*(-1)) + ";";
+            //returnValue += OpenDroneUtils.CODE_YAW_LEFT + "," + (adjacentX*(-1)) + ";";
+            values[0][0] =  OpenDroneUtils.CODE_YAW_LEFT;
+            values[0][1] = (adjacentX*(-1));
         }else{
-            returnValue += OpenDroneUtils.YAW_RIGHT + "," + adjacentX + ";";
+            //returnValue += OpenDroneUtils.CODE_YAW_RIGHT + "," + adjacentX + ";";
+            values[0][0] =  OpenDroneUtils.CODE_YAW_RIGHT;
+            values[0][1] = adjacentX;
         }
 
         //Calculation for the y-axis
         int opposite = (int) (Math.sin(rad)*hypothenusis);
         if(opposite < 0){
-            returnValue += OpenDroneUtils.THROTTLE_DOWN + "," + (opposite*(-1)) + ";";
+            //returnValue += OpenDroneUtils.CODE_THROTTLE_DOWN + "," + (opposite*(-1)) + ";";
+            values[1][0] =  OpenDroneUtils.CODE_THROTTLE_DOWN;
+            values[1][1] =  (opposite*(-1));
         }else{
-            returnValue += OpenDroneUtils.THROTTLE_UP + "," + opposite + ";";
+            //returnValue += OpenDroneUtils.CODE_THROTTLE_UP + "," + opposite + ";";
+            values[1][0] =  OpenDroneUtils.CODE_THROTTLE_UP;
+            values[1][1] =  opposite;
         }
-        return returnValue;
+
+        Log.i("manualFlightys", values[1][1]+"");
+
+        return values;
     }
 
-    private String interpretDirectionStick(JoystickView stick, int angle, int strength){
+    private int[][] interpretDirectionStick(JoystickView stick, int angle, int strength){
+        int[][] values = new int[2][2];
+
         String returnValue = "";
 
         double rad = angle*Math.PI/180;
@@ -185,19 +233,27 @@ public class FlyManualFlight extends Fragment {
         double hypothenusis  = strength;
         int adjacentX = (int) (Math.cos(rad)*hypothenusis);
         if(adjacentX < 0){
-            returnValue += OpenDroneUtils.ROLL_LEFT + "," + (adjacentX*(-1)) + ";";
+            values[0][0] = OpenDroneUtils.CODE_ROLL_LEFT;
+            values[0][1] = (adjacentX*(-1));
+            //returnValue += OpenDroneUtils.CODE_ROLL_LEFT + "," + (adjacentX*(-1)) + ";";
         }else{
-            returnValue += OpenDroneUtils.ROLL_RIGHT + "," + adjacentX + ";";
+            values[0][0] = OpenDroneUtils.CODE_ROLL_RIGHT;
+            values[0][1] = adjacentX;
+            //returnValue += OpenDroneUtils.CODE_ROLL_RIGHT + "," + adjacentX + ";";
         }
 
         //Calculation for the y-axis
         int opposite = (int) (Math.sin(rad)*hypothenusis);
         if(opposite < 0){
-            returnValue += OpenDroneUtils.PITCH_BACKWARDS + "," + (opposite*(-1)) + ";";
+            values[1][0] = OpenDroneUtils.CODE_PITCH_BACKWARD;
+            values[1][1] = (opposite*(-1));
+            //returnValue += OpenDroneUtils.CODE_PITCH_BACKWARD + "," + (opposite*(-1)) + ";";
         }else{
-            returnValue += OpenDroneUtils.PITCH_FORWARDS + "," + opposite + ";";
+            values[1][0] = OpenDroneUtils.CODE_PITCH_FORWARD;
+            values[1][1] = opposite;
+            //returnValue += OpenDroneUtils.CODE_PITCH_FORWARD + "," + opposite + ";";
         }
-        return returnValue;
+        return values;
     }
 
 }
