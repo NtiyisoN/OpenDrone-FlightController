@@ -35,4 +35,7 @@
   <ItemGroup>
     <Xml Include="CONFIG.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="OpenDrone_FC.licenseheader" />
+  </ItemGroup>
 </Project>
