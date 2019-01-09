@@ -1,18 +1,14 @@
-#include "../Sensor/AbstractSensor/Gyroscope.h"
-#include "../Sensor/AbstractSensor/Accelerometer.h"
-#include "../Sensor/AbstractSensor/Magnetometer.h"
+#include "Orientation.h"
 
 #pragma once
 class Calibration
 {
 public:
-	Calibration(Gyroscope* g, Accelerometer* a, Magnetometer* m);
+	Calibration(Orientation *o);
 	~Calibration();
 	bool calibrate();
 private:
-	Gyroscope* gyro;
-	Accelerometer* acc;
-	Magnetometer* magnet;
+	Orientation *orientation;
 	bool writeToXML(double *values);
 };
 

@@ -8,5 +8,7 @@ class Barometer
 {
 public:
 	//ar[0] = Temperature, ar[1] = Pressure
-	virtual int *getBarometerValues() = 0;
+	virtual double *getBarometerValues() = 0;
+	virtual void runBarometer() = 0;
+	virtual void interruptBaromter() = 0;
 };

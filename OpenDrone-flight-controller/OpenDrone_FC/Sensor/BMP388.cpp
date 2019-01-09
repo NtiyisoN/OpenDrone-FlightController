@@ -9,9 +9,10 @@
 #include <iostream>
 using namespace std;
 
-#define DEVICE_ADDRESS 0x77
-#define OSR 0x1C
+#define DEVICE_ADDRESS 0x76
 #define PWR_CTRL 0x1B
+#define OSR 0x1C
+#define ODR 0x1D
 #define CONFIG 0x1F
 
 BMP388::BMP388()
@@ -21,10 +22,13 @@ BMP388::BMP388()
 		cout << "wiringPiI2CSetup(addressBarometer)\n";
 		exit(1);
 	}
-
+	wiringPiI2CWriteReg8(this->fd, PWR_CTRL, 0x33); //Power-mode normal
 	wiringPiI2CWriteReg8(this->fd, OSR, 0x03);		//Pressure = high resolution, temperature = 1x
-	wiringPiI2CWriteReg8(this->fd, PWR_CTRL, 0x30); //Power-mode normal
-	wiringPiI2CWriteReg8(this->fd, CONFIG, 0x04);	//Filter coefficient = 3
+	wiringPiI2CWriteReg8(this->fd, CONFIG, 0x00);	//Filter coefficient = 3
+	wiringPiI2CWriteReg8(this->fd, ODR, 0x00); //Sampling-Rate
+	delay(2000);
+
+	cout << wiringPiI2CReadReg8(this->fd, 0x02);
 }
 
 int BMP388::readRawData(int addr)
@@ -33,18 +37,47 @@ int BMP388::readRawData(int addr)
 
 	low_byte = wiringPiI2CReadReg8(fd, addr);
 	middle_byte = wiringPiI2CReadReg8(fd, addr + 1);
+	value = (middle_byte << 8) | low_byte;
 	high_byte = wiringPiI2CReadReg8(fd, addr + 2);
-	value = (high_byte << 16) | (middle_byte << 8) | low_byte;
+	value = (high_byte << 16) | value;
 
 	return value;
 }
 
-int *BMP388::getBarometerValues()
+void BMP388::calcBaromter()
 {
-	static int ar[2];
-	ar[0] = readRawData(0x07);	//Temperature
-	ar[1] = readRawData(0x04);	//Pressure
+	this->temperature = readRawData(0x07);	//Temperature
+	this->pressure = readRawData(0x04);		//Pressure
+}
+
+double *BMP388::getBarometerValues()
+{
+	static double ar[2];
+	if (this->run)
+	{
+		ar[0] = this->temperature;
+		ar[1] = this->pressure;
+	}
+	else
+	{
+		ar[0] = NULL;
+		ar[1] = NULL;
+	}
 	return ar;
+}
+
+void BMP388::runBarometer()
+{
+	this->run = true;
+	while (this->run)
+	{
+		this->calcBaromter();
+	}
+}
+
+void BMP388::interruptBaromter()
+{
+	this->run = false;
 }
 
 BMP388::~BMP388()

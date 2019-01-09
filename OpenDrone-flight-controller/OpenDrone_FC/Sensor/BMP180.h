@@ -9,7 +9,13 @@ class BMP180 : public virtual Barometer
 {
 public:
 	BMP180();
-	int *getBarometerValues();
+	double *getBarometerValues();
+	void runBarometer();
+	void interruptBaromter();
 	~BMP180();
+private:
+	bool run = false;
+	double temperature = 0, pressure = 0;
+	void calcBaromter();
 };
 
