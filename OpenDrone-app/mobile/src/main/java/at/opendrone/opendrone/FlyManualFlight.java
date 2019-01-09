@@ -27,10 +27,11 @@ public class FlyManualFlight extends Fragment {
     private JoystickView throttle;
     private JoystickView direction;
 
-    private TextView position;
-    private TextView height;
-    private TextView temp;
-    private TextView status;
+    private TextView positionTxtView;
+    private TextView heightTxtView;
+    private TextView airTempTxtView;
+    private TextView controllerTempTxtView;
+    private TextView statusTxtView;
     private ImageButton homeBtn;
 
     public static final String TARGET = "192.168.1.254";
@@ -38,6 +39,12 @@ public class FlyManualFlight extends Fragment {
 
     private static final String TAG = "manualFlighty";
     private static final String TAG_ERROR = "errortcpreceive";
+
+    private String positionTxt = "";
+    private String heightTxt = "";
+    private String airTempTxt = "";
+    private String controllerTempTxt = "";
+    private String statusTxt = "";
 
     private TCPHandler mTCPHandler;
 
@@ -69,13 +76,21 @@ public class FlyManualFlight extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_fly_manual_flight, container, false);
+        initStrings();
         setRetainInstance(true);
         findViews();
         setValues();
         initJoysticks();
 
-
         return view;
+    }
+
+    private void initStrings(){
+        positionTxt = getString(R.string.manual_flight_TxtView_Position);
+        heightTxt = getString(R.string.manual_flight_TxtView_Height);
+        airTempTxt = getString(R.string.manual_flight_TxtView_AirTemp);
+        controllerTempTxt = getString(R.string.manual_flight_TxtView_ControllerTemp);
+        statusTxt = getString(R.string.manual_flight_TxtView_Status);
     }
 
     private void displayHomeConfirmationDialog() {
@@ -130,17 +145,20 @@ public class FlyManualFlight extends Fragment {
     }
 
     private void setValues() {
-        position.setText(position.getText() + "\nLat: 40°5324324234\nLong: 34°5243542352354");
-        height.setText("Height: 120m");
-        temp.setText("Temp: 14,8°C");
-        status.setText(status.getText() + " OK");
+        positionTxtView.setText(String.format(positionTxt, "40°5324324234", "34°5243542352354"));
+        //positionTxtView.setText(positionTxtView.getText() + "\nLat: 40°5324324234\nLong: 34°5243542352354");
+        heightTxtView.setText(String.format(heightTxt, "120"));
+        airTempTxtView.setText(String.format(airTempTxt, "14.8"));
+        controllerTempTxtView.setText(String.format(controllerTempTxt, "120"));
+        statusTxtView.setText(String.format(statusTxt, "OK"));
     }
 
     private void findViews() {
-        position = (TextView) view.findViewById(R.id.txt_MF_Position);
-        height = (TextView) view.findViewById(R.id.txt_MF_Height);
-        temp = (TextView) view.findViewById(R.id.txt_MF_Temp);
-        status = (TextView) view.findViewById(R.id.txt_MF_Connection);
+        positionTxtView = (TextView) view.findViewById(R.id.txt_MF_Position);
+        heightTxtView = (TextView) view.findViewById(R.id.txt_MF_Height);
+        airTempTxtView = (TextView) view.findViewById(R.id.txt_MF_AirTemp);
+        controllerTempTxtView = (TextView) view.findViewById(R.id.txt_MF_ControllerTemp);
+        statusTxtView = (TextView) view.findViewById(R.id.txt_MF_Connection);
         homeBtn = view.findViewById(R.id.homeFab);
 
         homeBtn.setOnClickListener(v -> displayHomeConfirmationDialog());

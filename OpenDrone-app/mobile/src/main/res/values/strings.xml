@@ -56,4 +56,9 @@
     <string name="manual_flight_ip_txt">Enter an IP to connect to</string>
     <string name="manual_flight_connection_failed">Ooops, the app could not connect to an OpenDrone :/</string>
     <string name="manual_flight_connection_success">Connected</string>
+    <string name="manual_flight_TxtView_Position">Position:\nLat: %1$s\nLng: %2$s</string>
+    <string name="manual_flight_TxtView_Height">Height: %1$sm</string>
+    <string name="manual_flight_TxtView_AirTemp">Air Temperature: %1$s°C</string>
+    <string name="manual_flight_TxtView_ControllerTemp">Controller Temperature: %1$s°C</string>
+    <string name="manual_flight_TxtView_Status">Status: %1$s</string>
 </resources>
