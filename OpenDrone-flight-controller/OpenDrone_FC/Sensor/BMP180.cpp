@@ -9,18 +9,47 @@
 #include "BMP180.h"
 #include <bmp180.h>
 #include <wiringPi.h>
+#include <iostream>
 
 BMP180::BMP180()
 {
 	bmp180Setup(200);
 }
 
-int *BMP180::getBarometerValues()
+void BMP180::calcBaromter()
 {
-	static int ar[2];
-	ar[0] = analogRead(200 + 0); //Temperatur
-	ar[1] = analogRead(200 + 1); //Pressure - hPa
+	this->temperature = analogRead(200 + 0) / 10.0; //Temperatur
+	this->pressure = analogRead(200 + 1) / 10.0; //Pressure - hPa
+}
+
+double *BMP180::getBarometerValues()
+{
+	static double ar[2];
+	if (this->run)
+	{
+		ar[0] = this->temperature;
+		ar[1] = this->pressure;
+	}
+	else
+	{
+		ar[0] = NULL;
+		ar[1] = NULL;
+	}
 	return ar;
+}
+
+void BMP180::runBarometer()
+{
+	this->run = true;
+	while (this->run)
+	{
+		this->calcBaromter();
+	}
+}
+
+void BMP180::interruptBaromter() 
+{
+	this->run = false;
 }
 
 BMP180::~BMP180()

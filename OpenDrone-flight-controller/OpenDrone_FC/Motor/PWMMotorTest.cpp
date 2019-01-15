@@ -30,8 +30,8 @@ PWMMotorTest::PWMMotorTest()
 	PCA9685PWMReset(this->fd);
 }
 
-void PWMMotorTest::SetSpeed(int num) {
-	pwmWrite(PIN_BASE + 16, num);
+void PWMMotorTest::SetSpeed(short pin ,int speed) {
+	pwmWrite(PIN_BASE + pin, speed);
 }
 
 void PWMMotorTest::ArmMotor() {

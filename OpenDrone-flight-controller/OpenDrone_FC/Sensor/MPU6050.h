@@ -15,6 +15,11 @@ class MPU6050 : public virtual Accelerometer, public virtual Gyroscope
 public:
 	MPU6050();
 	~MPU6050();
+
+	double *getGyroscopeValues();
+	double *getAccelerometerValues();
+
+private:
 	int fd;
 	Filter *filterAccX;
 	Filter *filterAccY;
@@ -24,8 +29,5 @@ public:
 	Filter *filterGyroZ;
 
 	short readRawData(int addr);
-
-	double *getGyroscopeValues();
-	double *getAccelerometerValues();
 };
 

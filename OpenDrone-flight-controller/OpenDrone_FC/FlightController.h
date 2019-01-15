@@ -13,5 +13,8 @@ public:
 	FlightController();
 	~FlightController();
 	int run();
+
+private:
+	bool initObjects();
 };
 

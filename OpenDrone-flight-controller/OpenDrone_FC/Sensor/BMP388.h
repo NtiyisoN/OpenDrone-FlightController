@@ -12,11 +12,17 @@ class BMP388 :
 	public virtual Barometer
 {
 public:
-	int fd;
-
 	BMP388();
-	int *getBarometerValues();
-	int readRawData(int addr);
 	~BMP388();
+	double *getBarometerValues();
+	void runBarometer();
+	void interruptBaromter();
+
+private:
+	int fd;
+	bool run = false;
+	double temperature = 0, pressure = 0;
+	int readRawData(int addr);
+	void calcBaromter();
 };
 

@@ -23,12 +23,12 @@ int main(void)
 	int status = fc->run();
 	if (status == 0)
 	{
-		cout << "Stopping Flight Controller!";
+		cout << "Stopping Flight Controller!\n";
 		return (0);
 	}
 	else
 	{
-		cout << "Stopping Flight Controller!";
+		cout << "Stopping Flight Controller!\n";
 		return (status);
 	}
 }
