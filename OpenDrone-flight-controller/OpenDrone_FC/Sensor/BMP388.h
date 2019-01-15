@@ -9,6 +9,7 @@ public:
 	double *getBarometerValues();
 	void runBarometer();
 	void interruptBaromter();
+
 private:
 	int fd;
 	bool run = false;

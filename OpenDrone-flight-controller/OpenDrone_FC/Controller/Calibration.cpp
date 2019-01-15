@@ -19,7 +19,7 @@ bool Calibration::calibrate() {
 	for (int i = 0; i <= length; i++) {
 		double* ar = orientation->getPitchRoll();
 		pitch += ar[0];
-		roll += ar[0];
+		roll += ar[1];
 	}
 	pitch = pitch / length;
 	roll = roll / length;

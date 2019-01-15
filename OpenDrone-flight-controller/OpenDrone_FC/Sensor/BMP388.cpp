@@ -14,6 +14,8 @@ using namespace std;
 #define OSR 0x1C
 #define ODR 0x1D
 #define CONFIG 0x1F
+#define REG_TEMPERATURE 0x07
+#define REG_PRESSURE 0x04
 
 BMP388::BMP388()
 {
@@ -22,10 +24,10 @@ BMP388::BMP388()
 		cout << "wiringPiI2CSetup(addressBarometer)\n";
 		exit(1);
 	}
-	wiringPiI2CWriteReg8(this->fd, PWR_CTRL, 0x33); //Power-mode normal
 	wiringPiI2CWriteReg8(this->fd, OSR, 0x03);		//Pressure = high resolution, temperature = 1x
-	wiringPiI2CWriteReg8(this->fd, CONFIG, 0x00);	//Filter coefficient = 3
-	wiringPiI2CWriteReg8(this->fd, ODR, 0x00); //Sampling-Rate
+	wiringPiI2CWriteReg8(this->fd, CONFIG, 0x00);	//Filter coefficient
+	wiringPiI2CWriteReg8(this->fd, ODR, 0x00);		//Sampling-Rate
+	wiringPiI2CWriteReg8(this->fd, PWR_CTRL, 0x6B); //Power-mode normal
 	delay(2000);
 
 	cout << wiringPiI2CReadReg8(this->fd, 0x02);
@@ -41,13 +43,15 @@ int BMP388::readRawData(int addr)
 	high_byte = wiringPiI2CReadReg8(fd, addr + 2);
 	value = (high_byte << 16) | value;
 
+	cout << low_byte << " " << middle_byte << " " << high_byte << "\n";
+
 	return value;
 }
 
 void BMP388::calcBaromter()
 {
-	this->temperature = readRawData(0x07);	//Temperature
-	this->pressure = readRawData(0x04);		//Pressure
+	this->temperature = readRawData(REG_TEMPERATURE);	//Temperature
+	this->pressure = readRawData(REG_PRESSURE);		//Pressure
 }
 
 double *BMP388::getBarometerValues()

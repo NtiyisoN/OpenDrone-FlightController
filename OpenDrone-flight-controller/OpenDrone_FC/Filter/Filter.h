@@ -8,11 +8,12 @@
 class Filter
 {
 public:
-	std::list<double> list1;
-	double maxValue, minValue;
-	double minSize;
-
 	Filter(double minValue, double maxValue, double minSize);
 	~Filter();
 	double addValue(double value);
+
+private:
+	std::list<double> list1;
+	double maxValue, minValue;
+	double minSize;
 };

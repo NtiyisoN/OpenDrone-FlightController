@@ -16,6 +16,7 @@
     <ClCompile Include="Controller\Calibration.cpp" />
     <ClCompile Include="Sensor\BMM150.cpp" />
     <ClCompile Include="Controller\Orientation.cpp" />
+    <ClCompile Include="Controller\UltrasonicDistance.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FlightController.h" />
@@ -37,6 +38,7 @@
     <ClInclude Include="Controller\Calibration.h" />
     <ClInclude Include="Sensor\BMM150.h" />
     <ClInclude Include="Controller\Orientation.h" />
+    <ClInclude Include="Controller\UltrasonicDistance.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="CONFIG.xml" />

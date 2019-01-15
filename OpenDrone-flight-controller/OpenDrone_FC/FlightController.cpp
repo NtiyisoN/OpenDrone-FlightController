@@ -5,54 +5,31 @@
 
 #include "FlightController.h"
 
-#include "Sensor/AbstractSensor/Ultrasonic.h"
 #include "Sensor/AbstractSensor/Barometer.h"
-#include "Sensor/HCSR04.h"
+#include "Sensor/AbstractSensor/Ultrasonic.h"
 #include "Sensor/BMP388.h"
 #include "Sensor/BMP180.h"
 
 #include "Controller/Calibration.h"
 #include "Controller/Orientation.h"
+#include "Controller/UltrasonicDistance.h"
 
 #include <wiringPi.h>
 #include <iostream>
 #include <thread>
 using namespace std;
 
-Orientation *orientation = new Orientation();
-Barometer *barometer = new BMP388();
+Orientation *orientation;
+Barometer *barometer;
+UltrasonicDistance *ultrasonic;
 
 FlightController::FlightController()
 {
 }
 
-static void *runUltrasonic()
+static void runUltrasonic()
 {
-	//TODO: Ultrasonic not working properly right now
-	/*//Initializing the wiringPi-Gpio's
-	int rc = wiringPiSetupGpio();
-	if (rc != 0)
-	{
-		cout << "Failed to wiringPiSetupGpio()\n";
-		exit(1);
-	}
-
-	Ultrasonic* sensors[2];
-	//Initialize the sensors
-	sensors[0] = new HCSR04(17, 27, 1);
-	sensors[1] = new HCSR04(17, 27, 1);
-
-	//Infinite loop to keep measuring --> TODO: Need to be changed
-	double curDistance;
-	while (1)
-	{
-		for (int i = 0; i < 2; i++)
-		{
-			curDistance = sensors[i]->distance();
-			cout << "Ultrasonic " << sensors[i]->getId() << ": Distance: " << curDistance << "\n";
-			delay(2);
-		}
-	*/
+	ultrasonic->runUltrasonic();
 }
 
 static void runBarometer()
@@ -65,11 +42,34 @@ static void runOrientation()
 	orientation->runOrientation();
 }
 
-int FlightController::run()
+bool FlightController::initObjects() 
 {
+	int rc = wiringPiSetupGpio();
+	if (rc != 0)
+	{
+		cout << "Failed to wiringPiSetupGpio()\n";
+		return false;
+	}
+
+	orientation = new Orientation();
+	barometer = new BMP180();
+	ultrasonic = new UltrasonicDistance();
+
+	return true;
+}
+
+int FlightController::run()
+{	
+	bool worked = initObjects();
+	if (!worked) {
+		return (1);
+	}
+
+	delay(250);
+
 	thread pitchRollThread(runOrientation);
 	thread barometerThread(runBarometer);
-	thread ultrasonicThread(runUltrasonic);
+	//thread ultrasonicThread(runUltrasonic);
 
 	delay(1000);
 
@@ -82,6 +82,8 @@ int FlightController::run()
 	while (i < 20) {
 		double *valuesPitchRoll = orientation->getPitchRoll();
 		double *valuesBarometer = barometer->getBarometerValues();
+		list<double> valuesUltrasonic = ultrasonic->getDistance();
+
 		cout << i << " Pitch: " << valuesPitchRoll[0] << " Roll: " << valuesPitchRoll[1] <<
 			" Temperature: " << valuesBarometer[0] << " Pressure: " << valuesBarometer[1] << "\n";
 		i++;
@@ -92,7 +94,7 @@ int FlightController::run()
 
 	pitchRollThread.join();
 	barometerThread.join();
-	ultrasonicThread.join();
+	//ultrasonicThread.join();
 
 	return (0);
 }

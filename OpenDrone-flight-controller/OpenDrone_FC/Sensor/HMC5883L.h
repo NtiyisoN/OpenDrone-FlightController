@@ -8,11 +8,12 @@
 class HMC5883L : public virtual Magnetometer
 {
 public:
-	int fd;
-
 	HMC5883L();
-	double *getMagnetometerValues();
-	short readRawData(int addr);
 	~HMC5883L();
+	double *getMagnetometerValues();
+
+private:
+	int fd;
+	short readRawData(int addr);
 };
 
