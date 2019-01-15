@@ -219,7 +219,8 @@ public class FlightPlanSaveFragment extends Fragment {
                 fp = gson.fromJson(object, Flightplan.class);
             }
         } catch (Exception e) {
-            //TODO: Error handling
+            //Go back
+            getActivity().onBackPressed();
             Toast.makeText(getContext(), "Could not read flightplan", Toast.LENGTH_LONG).show();
         }
 
