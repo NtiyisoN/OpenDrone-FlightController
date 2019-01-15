@@ -56,4 +56,16 @@
     <string name="manual_flight_ip_txt">Enter an IP to connect to</string>
     <string name="manual_flight_connection_failed">Ooops, the app could not connect to an OpenDrone :/</string>
     <string name="manual_flight_connection_success">Connected</string>
+    <string name="manual_flight_TxtView_Position">Lat: %1$s\nLng: %2$s</string>
+    <string name="manual_flight_TxtView_Height">%1$sm</string>
+    <string name="manual_flight_TxtView_AirTemp">Air: %1$s°C</string>
+    <string name="manual_flight_TxtView_ControllerTemp">Controller: %1$s°C</string>
+    <string name="manual_flight_TxtView_Status">Status: %1$s</string>
+    <string name="manual_flight_TxtView_Velocity">%1$s km/h</string>
+    <string name="stop_rotor_alarm_message">Do you really want to stop all rotors? this will result in an uncontrolled crash!</string>
+    <string name="stop_rotor_alarm_pos">Crash it!</string>
+    <string name="stop_rotor_alarm_neg">No</string>
+    <string name="go_home_alarm_message">Do you rly want go home fam?</string>
+    <string name="go_home_alarm_pos">Hell yeah</string>
+    <string name="go_home_alarm_neg">What am i doing here?!</string>
 </resources>

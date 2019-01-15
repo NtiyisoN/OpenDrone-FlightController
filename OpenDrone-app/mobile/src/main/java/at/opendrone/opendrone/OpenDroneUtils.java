@@ -35,4 +35,12 @@ public class OpenDroneUtils {
     public static final byte CODE_PITCH_BACKWARD= (byte) 6;
     public static final byte CODE_ROLL_LEFT= (byte) 7;
     public static final byte CODE_ROLL_RIGHT= (byte) 8;
+
+    public static final int CODE_CONTROLLER_TEMP = 1;
+    public static final int CODE_AIR_TEMP = 2;
+    public static final int CODE_POSITTION = 3;
+    public static final int CODE_PRESSURE = 4;
+    public static final int CODE_HEIGHT = 5;
+    public static final int CODE_STATUS = 6;
+    public static final int CODE_VELOCITY = 7;
 }

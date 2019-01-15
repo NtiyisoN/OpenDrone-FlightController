@@ -6,6 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".FlyManualFlight">
 
+    <FrameLayout
+        android:id="@+id/cameraView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <org.osmdroid.views.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        />
+
     <io.github.controlwear.virtual.joystick.android.JoystickView xmlns:custom="http://schemas.android.com/apk/res-auto"
         android:id="@+id/directionStick"
         android:layout_width="180dp"
@@ -36,45 +48,82 @@
         custom:layout_constraintBottom_toBottomOf="parent"
         custom:layout_constraintStart_toStartOf="parent" />
 
-    <TextView
+    <at.opendrone.opendrone.CustomFontTextView
         android:id="@+id/txt_MF_Position"
-        android:layout_width="215dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:text="Position:"
+        android:textColor="@color/primaryTextColor"
+        app:customFont="Roboto-Bold.ttf"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_MF_Velocity" />
+
+    <at.opendrone.opendrone.CustomFontTextView
+        android:id="@+id/txt_MF_Velocity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Velocity:"
+        android:textColor="@color/primaryTextColor"
+        app:customFont="Roboto-Bold.ttf"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <at.opendrone.opendrone.CustomFontTextView
+        android:id="@+id/txt_MF_AirTemp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="AirTemp"
+        android:textColor="@color/primaryTextColor"
+        android:textAlignment="center"
+        app:customFont="Roboto-Bold.ttf"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <at.opendrone.opendrone.CustomFontTextView
+        android:id="@+id/txt_MF_ControllerTemp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:textAlignment="textEnd"
+        android:text="ControllerTemp"
+        android:textColor="@color/primaryTextColor"
+        app:customFont="Roboto-Bold.ttf"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_MF_AirTemp" />
+
+    <at.opendrone.opendrone.CustomFontTextView
         android:id="@+id/txt_MF_Height"
-        android:layout_width="110dp"
-        android:layout_height="22dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="Height"
+        android:textColor="@color/primaryTextColor"
+        android:textAlignment="textEnd"
+        app:customFont="Roboto-Bold.ttf"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/txt_MF_ControllerTemp" />
 
-    <TextView
-        android:id="@+id/txt_MF_Temp"
-        android:layout_width="110dp"
-        android:layout_height="22dp"
-        android:layout_marginTop="42dp"
-        android:layout_marginEnd="16dp"
-        android:text="TextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
+    <at.opendrone.opendrone.CustomFontTextView
         android:id="@+id/txt_MF_Connection"
-        android:layout_width="110dp"
-        android:layout_height="22dp"
-        android:layout_marginTop="68dp"
-        android:layout_marginEnd="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:textAlignment="textEnd"
         android:text="Status:"
+        android:textColor="@color/primaryTextColor"
+        app:customFont="Roboto-Bold.ttf"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/txt_MF_Height" />
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -87,13 +136,33 @@
         app:layout_constraintStart_toEndOf="@+id/throttleStick">
 
         <ImageButton
-            android:id="@+id/homeFab"
+            android:id="@+id/homeBtn"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:background="@drawable/round_primary_color"
+            android:background="#00ffffff"
             android:padding="20dp"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_home" />
+
+        <ImageButton
+            android:id="@+id/changeViewBtn"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="#00ffffff"
+            android:padding="20dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_view_map"
+            android:layout_toEndOf="@id/homeBtn"/>
+
+        <ImageButton
+            android:id="@+id/stopRotorBtn"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="#00ffffff"
+            android:padding="20dp"
+            android:scaleType="fitCenter"
+            android:layout_toEndOf="@id/changeViewBtn"
+            android:src="@drawable/ic_stoprotor" />
     </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

@@ -11,8 +11,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Polyline;
 
 import at.opendrone.opendrone.network.OpenDroneFrame;
 import at.opendrone.opendrone.network.TCPHandler;
@@ -27,17 +32,32 @@ public class FlyManualFlight extends Fragment {
     private JoystickView throttle;
     private JoystickView direction;
 
-    private TextView position;
-    private TextView height;
-    private TextView temp;
-    private TextView status;
+    private TextView positionTxtView;
+    private TextView heightTxtView;
+    private TextView airTempTxtView;
+    private TextView controllerTempTxtView;
+    private TextView statusTxtView;
+    private TextView velocityTxtView;
     private ImageButton homeBtn;
+    private ImageButton stopRotorBtn;
+    private ImageButton changeViewBtn;
+    private MapView mapView;
+    private FrameLayout cameraView;
+
+    private boolean mapViewShown = false;
 
     public static final String TARGET = "192.168.1.254";
     public static final int PORT = 2018;
 
     private static final String TAG = "manualFlighty";
     private static final String TAG_ERROR = "errortcpreceive";
+
+    private String positionTxt = "";
+    private String heightTxt = "";
+    private String airTempTxt = "";
+    private String controllerTempTxt = "";
+    private String statusTxt = "";
+    private String velocityTxt = "";
 
     private TCPHandler mTCPHandler;
 
@@ -49,8 +69,12 @@ public class FlyManualFlight extends Fragment {
     public void onResume() {
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         ((MainActivity) getActivity()).closeDrawer();
-
         super.onResume();
+
+        if(mapView != null){
+            mapView.onResume();
+        }
+
     }
 
     @Override
@@ -61,6 +85,10 @@ public class FlyManualFlight extends Fragment {
             // disconnect
             new DisconnectTask().execute();
         }
+
+        if(mapView != null) {
+            mapView.onPause();
+        }
     }
 
 
@@ -69,28 +97,22 @@ public class FlyManualFlight extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_fly_manual_flight, container, false);
+        initStrings();
         setRetainInstance(true);
         findViews();
         setValues();
         initJoysticks();
 
-
         return view;
     }
 
-    private void displayHomeConfirmationDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Do you rly want go home fam?")
-                .setPositiveButton("Hell yeah", (dialog, id) -> new ConnectTask().execute(""))
-                .setNegativeButton("What am i doing here?!", (dialog, id) -> {
-                    if (mTCPHandler == null) {
-                        return;
-                    }
-
-                    new DisconnectTask().execute();
-                });
-        builder.create().show();
-        // Create the AlertDialog object and return it
+    private void initStrings(){
+        positionTxt = getString(R.string.manual_flight_TxtView_Position);
+        heightTxt = getString(R.string.manual_flight_TxtView_Height);
+        airTempTxt = getString(R.string.manual_flight_TxtView_AirTemp);
+        controllerTempTxt = getString(R.string.manual_flight_TxtView_ControllerTemp);
+        statusTxt = getString(R.string.manual_flight_TxtView_Status);
+        velocityTxt = getString(R.string.manual_flight_TxtView_Velocity);
     }
 
     private void printAR(int[][] ar) {
@@ -125,25 +147,144 @@ public class FlyManualFlight extends Fragment {
         }
     }
 
-    public void updateTextViews(int data, int type) {
+    public void extractData(String raw){
+        String[] dataAr = raw.split(";");
+        String val = dataAr[0];
+        int code = 0;
 
+        try{
+            code = Integer.parseInt(dataAr[0]);
+        }catch (Exception ex){
+            Log.e(TAG_ERROR, "ERROR", ex);
+            return;
+        }
+
+        TextView txtView = null;
+        String format = "";
+        switch(code){
+            case OpenDroneUtils.CODE_CONTROLLER_TEMP:
+                txtView = controllerTempTxtView;
+                format = controllerTempTxt;
+                break;
+            case OpenDroneUtils.CODE_AIR_TEMP:
+                txtView = airTempTxtView;
+                format = airTempTxt;
+                break;
+            case OpenDroneUtils.CODE_POSITTION:
+                txtView = positionTxtView;
+                format = positionTxt;
+                break;
+            case OpenDroneUtils.CODE_HEIGHT:
+                txtView = heightTxtView;
+                format = heightTxt;
+                break;
+            case OpenDroneUtils.CODE_STATUS:
+                txtView = statusTxtView;
+                format = statusTxt;
+                break;
+            case OpenDroneUtils.CODE_VELOCITY:
+                txtView = velocityTxtView;
+                format = velocityTxt;
+                break;
+            default:
+                return;
+        }
+
+        updateTextViews(txtView, format, val);
+    }
+
+    public void updateTextViews(TextView txtView, String format, String value) {
+        txtView.setText(String.format(format, value));
     }
 
     private void setValues() {
-        position.setText(position.getText() + "\nLat: 40°5324324234\nLong: 34°5243542352354");
-        height.setText("Height: 120m");
-        temp.setText("Temp: 14,8°C");
-        status.setText(status.getText() + " OK");
+        positionTxtView.setText(String.format(positionTxt, "40°5324324234", "34°5243542352354"));
+        //positionTxtView.setText(positionTxtView.getText() + "\nLat: 40°5324324234\nLong: 34°5243542352354");
+        heightTxtView.setText(String.format(heightTxt, "120"));
+        airTempTxtView.setText(String.format(airTempTxt, "14.8"));
+        controllerTempTxtView.setText(String.format(controllerTempTxt, "120"));
+        statusTxtView.setText(String.format(statusTxt, "OK"));
+        velocityTxtView.setText(String.format(velocityTxt, "302"));
     }
 
     private void findViews() {
-        position = (TextView) view.findViewById(R.id.txt_MF_Position);
-        height = (TextView) view.findViewById(R.id.txt_MF_Height);
-        temp = (TextView) view.findViewById(R.id.txt_MF_Temp);
-        status = (TextView) view.findViewById(R.id.txt_MF_Connection);
-        homeBtn = view.findViewById(R.id.homeFab);
+        positionTxtView = view.findViewById(R.id.txt_MF_Position);
+        heightTxtView = view.findViewById(R.id.txt_MF_Height);
+        airTempTxtView = view.findViewById(R.id.txt_MF_AirTemp);
+        controllerTempTxtView = view.findViewById(R.id.txt_MF_ControllerTemp);
+        statusTxtView = view.findViewById(R.id.txt_MF_Connection);
+        velocityTxtView = view.findViewById(R.id.txt_MF_Velocity);
+        homeBtn = view.findViewById(R.id.homeBtn);
+        changeViewBtn = view.findViewById(R.id.changeViewBtn);
+        stopRotorBtn = view.findViewById(R.id.stopRotorBtn);
+        mapView = view.findViewById(R.id.mapView);
+        cameraView = view.findViewById(R.id.cameraView);
 
+
+        initMapView();
         homeBtn.setOnClickListener(v -> displayHomeConfirmationDialog());
+        stopRotorBtn.setOnClickListener(v -> displayStopRotorDialog());
+        changeViewBtn.setOnClickListener(v-> changeView());
+    }
+
+    private void initMapView(){
+        mapView.setTileSource(TileSourceFactory.MAPNIK);
+
+        mapView.setBuiltInZoomControls(false);
+        mapView.setMultiTouchControls(true);
+    }
+
+    private void changeView(){
+        if(mapViewShown){
+            hideMapView();
+        }else{
+            showMapView();
+        }
+    }
+
+    private void setImageBtnImage(ImageButton btn, int drawableID){
+        btn.setImageDrawable(getResources().getDrawable(drawableID));
+    }
+
+    private void showMapView(){
+        mapView.setVisibility(View.VISIBLE);
+        setImageBtnImage(changeViewBtn, R.drawable.ic_view_live_feed);
+        mapViewShown = true;
+    }
+
+    private void hideMapView(){
+        mapView.setVisibility(View.GONE);
+        setImageBtnImage(changeViewBtn, R.drawable.ic_view_map);
+        mapViewShown = false;
+    }
+
+    private void displayStopRotorDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(getString(R.string.stop_rotor_alarm_message))
+                .setPositiveButton(getString(R.string.stop_rotor_alarm_pos), (dialog, id) -> new ConnectTask().execute(""))
+                .setNegativeButton(getString(R.string.stop_rotor_alarm_neg), (dialog, id) -> {
+                    if (mTCPHandler == null) {
+                        return;
+                    }
+
+                    new DisconnectTask().execute();
+                });
+        builder.create().show();
+    }
+
+    private void displayHomeConfirmationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(getString(R.string.go_home_alarm_message))
+                .setPositiveButton(getString(R.string.go_home_alarm_pos), (dialog, id) -> new ConnectTask().execute(""))
+                .setNegativeButton(getString(R.string.go_home_alarm_neg), (dialog, id) -> {
+                    if (mTCPHandler == null) {
+                        return;
+                    }
+
+                    new DisconnectTask().execute();
+                });
+        builder.create().show();
+        // Create the AlertDialog object and return it
     }
 
     private int[][] interpretThrottleStick(JoystickView stick, int angle, int strength) {
@@ -257,6 +398,7 @@ public class FlyManualFlight extends Fragment {
         protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
             Log.i(TAG, "RECEIVE: "+values[0]);
+            extractData(values[0]);
         }
     }
 
