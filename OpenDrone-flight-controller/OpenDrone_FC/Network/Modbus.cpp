@@ -38,6 +38,8 @@ void Modbus::Interpret(string str)
         result.push_back(substr);
     }
 
+    //if(result.size)
+    //cout << "--------------------------------Packets:" << result.size();
     int i;
     cout << endl;
     int slaveID = stoi(result.at(1));
@@ -49,8 +51,7 @@ void Modbus::Interpret(string str)
         int functionCode = stoi(result.at(3+(i*3)));
         string data = result.at(4+(i*3));
         string parity = result.at(5+(i*3));
-
-        string am = "SlaveID: " + to_string(slaveID) + ", FC: " + to_string(functionCode) + ", Data: " + data + ", parity: " + parity;
+        string am = "Packages: "+ to_string(packages) + "SlaveID: " + to_string(slaveID) + "(1)" + ", FC: " + to_string(functionCode) + "("  +to_string(3+(i*3)) +")" + ", Data: " + data + "(" + to_string(4 + (i * 3)) + ")" + ", parity: " + parity + "(" + to_string(5 + (i * 3)) + ")";
         cout << am << " / ";
     }
     cout << endl;
