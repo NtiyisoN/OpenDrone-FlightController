@@ -90,7 +90,6 @@ void BMM150::calibrate() {
 			value_x_min = dataX;
 			// Serial.print("Update value_x_min: ");
 			// Serial.println(value_x_min);
-
 		}
 		else if (value_x_max < dataX)
 		{
@@ -105,7 +104,6 @@ void BMM150::calibrate() {
 			value_y_min = dataY;
 			// Serial.print("Update value_y_min: ");
 			// Serial.println(value_y_min);
-
 		}
 		else if (value_y_max < dataY)
 		{
@@ -120,7 +118,6 @@ void BMM150::calibrate() {
 			value_z_min = dataZ;
 			// Serial.print("Update value_z_min: ");
 			// Serial.println(value_z_min);
-
 		}
 		else if (value_z_max < dataZ)
 		{
@@ -131,7 +128,6 @@ void BMM150::calibrate() {
 
 		cout << ".";
 		delay(100);
-
 	}
 
 	int16_t value_offsetX = value_x_min + (value_x_max - value_x_min) / 2;
