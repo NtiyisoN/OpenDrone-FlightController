@@ -112,6 +112,9 @@
   <ItemGroup>
     <Xml Include="CONFIG.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="OpenDrone_FC.licenseheader" />
+  </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
       <CppLanguageStandard>c++11</CppLanguageStandard>

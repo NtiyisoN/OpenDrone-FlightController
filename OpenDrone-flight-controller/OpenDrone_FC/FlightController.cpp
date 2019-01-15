@@ -1,8 +1,11 @@
 /*
  * Copyright (c) OpenDrone, 2018.  All rights reserved.
  * The entire project (including this file) is licensed under the GNU GPL v3.0
+ * Purpose: TODO
+ *
+ * 	@author Tim Klecka
+ * 	@version 0.0.1 07.01.2019
  */
-
 #include "FlightController.h"
 
 #include "Sensor/AbstractSensor/Barometer.h"
@@ -50,7 +53,7 @@ bool FlightController::initObjects()
 		cout << "Failed to wiringPiSetupGpio()\n";
 		return false;
 	}
-
+  
 	orientation = new Orientation();
 	barometer = new BMP180();
 	ultrasonic = new UltrasonicDistance();
@@ -95,7 +98,7 @@ int FlightController::run()
 	pitchRollThread.join();
 	barometerThread.join();
 	//ultrasonicThread.join();
-
+  
 	return (0);
 }
 

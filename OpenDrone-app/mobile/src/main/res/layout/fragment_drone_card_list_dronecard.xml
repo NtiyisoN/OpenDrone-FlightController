@@ -15,7 +15,8 @@
     android:layout_marginRight="15dp"
     android:layout_marginTop="10dp"
     android:layout_marginBottom="10dp"
-    app:cardCornerRadius="15dp">
+    app:cardCornerRadius="2dp"
+    app:cardElevation="4dp">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/constraintLayout_Item"
@@ -61,10 +62,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text_DroneName" />
 
+        <View
+            android:id="@+id/droneCardDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/primaryTextColor"
+            app:layout_constraintBottom_toTopOf="@+id/btn_Settings"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"/>
+
         <Button
             android:id="@+id/btn_Settings"
-            android:textColor="@color/secondaryTextColor"
-            android:layout_width="345dp"
+            android:textColor="@color/primaryColor"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="92dp"
@@ -76,8 +86,7 @@
             app:layout_constraintHorizontal_bias="0.571"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView_FlightPlan"
-            android:background="@drawable/button_shape_round_orange"/>
-            app:layout_constraintTop_toBottomOf="@+id/textView_Description" />
+            android:background="#00ffffff"/>
 
         <ImageButton
             android:id="@+id/imgBtn_Delete"

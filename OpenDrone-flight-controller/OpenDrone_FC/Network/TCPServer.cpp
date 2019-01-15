@@ -1,9 +1,13 @@
 /*
  * Copyright (c) OpenDrone, 2018.  All rights reserved.
  * The entire project (including this file) is licensed under the GNU GPL v3.0
+ * Purpose: TODO
+ *
+ * 	@author Tim Klecka
+ * 	@version 0.0.1 07.01.2019
  */
-
 #include "TCPServer.h" 
+#include "./Modbus.h"
 
 string TCPServer::Message;
 
@@ -23,14 +27,14 @@ void* TCPServer::Task(void *arg)
 		}
 		msg[n] = 0;
 		//send(newsockfd,msg,n,0);
-		Message = string(msg);
+		Message = (string) msg;
 	}
 	return 0;
 }
 
 void TCPServer::setup(int port)
 {
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	memset(&serverAddress, 0, sizeof(serverAddress));
 	serverAddress.sin_family = AF_INET;
 	serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
