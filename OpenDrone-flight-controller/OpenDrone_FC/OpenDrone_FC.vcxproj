@@ -92,6 +92,7 @@
     <ClInclude Include="Controller\Calibration.h" />
     <ClInclude Include="Controller\Orientation.h" />
     <ClInclude Include="Controller\UltrasonicDistance.h" />
+    <ClInclude Include="Network\Modbus.h" />
     <ClInclude Include="Sensor\BMF055.h" />
     <ClInclude Include="Sensor\BMM150.h" />
     <ClInclude Include="Sensor\BMP388.h" />

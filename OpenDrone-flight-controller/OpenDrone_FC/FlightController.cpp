@@ -13,6 +13,8 @@
 #include "Sensor/BMP388.h"
 #include "Sensor/BMP180.h"
 
+#include "Network/TCPServer.h"
+
 #include "Controller/Calibration.h"
 #include "Controller/Orientation.h"
 #include "Controller/UltrasonicDistance.h"
@@ -63,6 +65,9 @@ bool FlightController::initObjects()
 
 int FlightController::run()
 {	
+    TCPServer *server = new TCPServer();
+    server->startUp();
+
 	bool worked = initObjects();
 	if (!worked) {
 		return (1);

@@ -228,7 +228,7 @@ void TCPServer::getTemp() {
     fclose(temperatureFile);
 
     std::stringstream ss;
-    ss << "1;" << T << "\n";
+    ss << "1;" << T << "*";
     Temp = (char*)(ss.str().c_str());
 
     this->sendMessage(new_socket, Temp);
