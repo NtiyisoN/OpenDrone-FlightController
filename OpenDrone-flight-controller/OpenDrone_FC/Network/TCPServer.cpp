@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) OpenDrone, 2018.  All rights reserved.
+ * The entire project (including this file) is licensed under the GNU GPL v3.0
+ * Purpose: TODO
+ *
+ * 	@author Tim Klecka
+ * 	@version 0.0.1 07.01.2019
+ */
+
 #include "TCPServer.h"
 #include "Modbus.h"
 #include <stdio.h>  
@@ -17,6 +26,7 @@
 #define TRUE   1  
 #define FALSE  0  
 #define PORT 2018  
+
 
 int opt = TRUE;
 int master_socket, addrlen, new_socket, client_socket[30],

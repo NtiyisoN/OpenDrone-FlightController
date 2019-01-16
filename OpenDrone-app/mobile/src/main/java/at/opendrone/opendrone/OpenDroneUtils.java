@@ -26,4 +26,13 @@ public class OpenDroneUtils {
     public static final int LF_DRONE = 1;
     public static final int LF_FP = 2;
     public static final int LF_FLY = 3;
+
+    public static final byte CODE_THROTTLE_UP= (byte) 1;
+    public static final byte CODE_THROTTLE_DOWN= (byte) 2;
+    public static final byte CODE_YAW_RIGHT= (byte) 3;
+    public static final byte CODE_YAW_LEFT= (byte) 4;
+    public static final byte CODE_PITCH_FORWARD= (byte) 5;
+    public static final byte CODE_PITCH_BACKWARD= (byte) 6;
+    public static final byte CODE_ROLL_LEFT= (byte) 7;
+    public static final byte CODE_ROLL_RIGHT= (byte) 8;
 }

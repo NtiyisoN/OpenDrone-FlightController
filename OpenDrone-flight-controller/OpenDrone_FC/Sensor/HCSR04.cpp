@@ -1,8 +1,11 @@
 /*
  * Copyright (c) OpenDrone, 2018.  All rights reserved.
  * The entire project (including this file) is licensed under the GNU GPL v3.0
+ * Purpose: TODO
+ *
+ * 	@author Tim Klecka
+ * 	@version 0.0.1 07.01.2019
  */
-
 #include "HCSR04.h"
 #include "../Filter/Filter.h"
 #include "./AbstractSensor/Ultrasonic.h"
@@ -13,16 +16,17 @@ HCSR04::HCSR04(int pin_trigger, int pin_echo, int id)
 	this->pin_trigger = pin_trigger;
 	this->pin_echo = pin_echo;
 	this->id = id;
-	//Initalize the 
+
+	//Initalize the filter
 	this->filter = new Filter(3.0,400.0,16.0);
+
 	//Defines the pins
 	pinMode(pin_trigger, OUTPUT);
 	pinMode(pin_echo, INPUT);
 	digitalWrite(pin_trigger, LOW);
-	delay(50); 
 } 
 
-double HCSR04::distance()
+void HCSR04::calcDistance()
 {
 	long ping = 0;
 	long pong = 0;
@@ -45,9 +49,13 @@ double HCSR04::distance()
 	// Convert ping duration to distance.
 	distance = ((pong - ping)/2000000.0)*341.29*100;
 
-	return this->filter->addValue(distance);
+	this->curDistance = this->filter->addValue(distance);
 }
 
+double HCSR04::getDistance() 
+{
+	return this->curDistance;
+}
 
 int HCSR04::getId() {
 	return this->id;

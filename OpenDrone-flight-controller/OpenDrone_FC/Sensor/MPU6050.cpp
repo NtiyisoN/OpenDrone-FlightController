@@ -1,8 +1,11 @@
 /*
  * Copyright (c) OpenDrone, 2018.  All rights reserved.
  * The entire project (including this file) is licensed under the GNU GPL v3.0
+ * Purpose: TODO
+ *
+ * 	@author Tim Klecka
+ * 	@version 0.0.1 07.01.2019
  */
-
 #include "MPU6050.h"
 #include "../Filter/Filter.h"
 #include <wiringPi.h>
@@ -55,7 +58,14 @@ short MPU6050::readRawData(int addr)
 	high_byte = wiringPiI2CReadReg8(fd, addr);
 	low_byte = wiringPiI2CReadReg8(fd, addr + 1);
 	value = (high_byte << 8) | low_byte;
-	return value;
+	if (value >= 0x8000)
+	{
+		return -((65535 - value) + 1);
+	}
+	else
+	{
+		return value;
+	}
 }
 
 double *MPU6050::getAccelerometerValues()

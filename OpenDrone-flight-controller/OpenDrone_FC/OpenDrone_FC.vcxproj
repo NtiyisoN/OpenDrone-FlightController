@@ -70,6 +70,9 @@
     </RemotePostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Controller\Calibration.cpp" />
+    <ClCompile Include="Controller\Orientation.cpp" />
+    <ClCompile Include="Controller\UltrasonicDistance.cpp" />
     <ClCompile Include="Filter\Filter.cpp" />
     <ClCompile Include="FlightController.cpp" />
     <ClCompile Include="main.cpp" />
@@ -78,6 +81,7 @@
     <ClCompile Include="Network\Modbus.cpp" />
     <ClCompile Include="Network\TCPServer.cpp" />
     <ClCompile Include="Sensor\BMF055.cpp" />
+    <ClCompile Include="Sensor\BMM150.cpp" />
     <ClCompile Include="Sensor\BMP180.cpp" />
     <ClCompile Include="Sensor\BMP388.cpp" />
     <ClCompile Include="Sensor\MPU6050.cpp" />
@@ -85,8 +89,11 @@
     <ClCompile Include="Sensor\HCSR04.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Network\Modbus.h" />
+    <ClInclude Include="Controller\Calibration.h" />
+    <ClInclude Include="Controller\Orientation.h" />
+    <ClInclude Include="Controller\UltrasonicDistance.h" />
     <ClInclude Include="Sensor\BMF055.h" />
+    <ClInclude Include="Sensor\BMM150.h" />
     <ClInclude Include="Sensor\BMP388.h" />
     <ClInclude Include="Filter\Filter.h" />
     <ClInclude Include="FlightController.h" />
@@ -105,6 +112,9 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="CONFIG.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="OpenDrone_FC.licenseheader" />
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>

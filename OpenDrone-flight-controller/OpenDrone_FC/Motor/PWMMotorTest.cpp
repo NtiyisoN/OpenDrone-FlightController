@@ -1,8 +1,11 @@
 /*
  * Copyright (c) OpenDrone, 2018.  All rights reserved.
  * The entire project (including this file) is licensed under the GNU GPL v3.0
+ * Purpose: TODO
+ *
+ * 	@author Tim Klecka
+ * 	@version 0.0.1 07.01.2019
  */
-
 #include "PWMMotorTest.h"
 #include <iostream>
 #include <wiringPi.h>
@@ -27,8 +30,8 @@ PWMMotorTest::PWMMotorTest()
 	PCA9685PWMReset(this->fd);
 }
 
-void PWMMotorTest::SetSpeed(int num) {
-	pwmWrite(PIN_BASE + 16, num);
+void PWMMotorTest::SetSpeed(short pin ,int speed) {
+	pwmWrite(PIN_BASE + pin, speed);
 }
 
 void PWMMotorTest::ArmMotor() {

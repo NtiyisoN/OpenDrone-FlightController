@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".FlyManualFlight">
 
     <io.github.controlwear.virtual.joystick.android.JoystickView xmlns:custom="http://schemas.android.com/apk/res-auto"
@@ -29,10 +29,10 @@
         android:layout_alignParentBottom="true"
         custom:JV_autoReCenterButton="true"
         custom:JV_backgroundColor="@color/secondaryColor"
+        custom:JV_backgroundSizeRatio="55%"
         custom:JV_buttonColor="@color/secondaryLightColor"
         custom:JV_buttonSizeRatio="40%"
         custom:JV_fixedCenter="false"
-        custom:JV_backgroundSizeRatio="55%"
         custom:layout_constraintBottom_toBottomOf="parent"
         custom:layout_constraintStart_toStartOf="parent" />
 
@@ -76,43 +76,24 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/txt_IP"
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/manual_flight_ip_txt"
-        android:textColor="#000000"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_MF_Position" />
-
-    <EditText
-        android:id="@+id/editTxt_IP"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_IP" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/homeFab"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
-        android:clickable="true"
-        android:src="@drawable/ic_home"
-        app:backgroundTint="@color/primaryColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/directionStick"
-        app:layout_constraintStart_toEndOf="@+id/throttleStick"
-        app:rippleColor="@color/secondaryDarkColor" />
+        app:layout_constraintStart_toEndOf="@+id/throttleStick">
+
+        <ImageButton
+            android:id="@+id/homeFab"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@drawable/round_primary_color"
+            android:padding="20dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_home" />
+    </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

@@ -54,4 +54,6 @@
     <string name="exception_no_location">Please enable the location in your phone\'s settings</string>
     <string name="manual_flight_change_speed">Adjust the speed</string>
     <string name="manual_flight_ip_txt">Enter an IP to connect to</string>
+    <string name="manual_flight_connection_failed">Ooops, the app could not connect to an OpenDrone :/</string>
+    <string name="manual_flight_connection_success">Connected</string>
 </resources>
