@@ -48,7 +48,7 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <IncludePath>E:\4.Jahrgang\OpenDrone\include;E:\4.Jahrgang\OpenDrone\include\arm-linux-gnueabihf;$(IncludePath)</IncludePath>
+    <IncludePath>D:\GIT\include\arm-linux-gnueabihf;D:\GIT\include;E:\4.Jahrgang\OpenDrone\include;E:\4.Jahrgang\OpenDrone\include\arm-linux-gnueabihf;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -78,6 +78,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Motor\PCA9685.cpp" />
     <ClCompile Include="Motor\PWMMotorTest.cpp" />
+    <ClCompile Include="Network\Modbus.cpp" />
     <ClCompile Include="Network\TCPServer.cpp" />
     <ClCompile Include="Sensor\BMF055.cpp" />
     <ClCompile Include="Sensor\BMM150.cpp" />
@@ -91,6 +92,7 @@
     <ClInclude Include="Controller\Calibration.h" />
     <ClInclude Include="Controller\Orientation.h" />
     <ClInclude Include="Controller\UltrasonicDistance.h" />
+    <ClInclude Include="Network\Modbus.h" />
     <ClInclude Include="Sensor\BMF055.h" />
     <ClInclude Include="Sensor\BMM150.h" />
     <ClInclude Include="Sensor\BMP388.h" />
