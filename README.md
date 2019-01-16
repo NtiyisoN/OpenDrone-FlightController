@@ -26,7 +26,7 @@ Used technologies:
 * Visual Studio  
 * Visual C++ for Linux Development  
 ### Android App  
-* Android Studio 3.1  
+* Android Studio 3.3  
 ---  
 ## Features  
 ### App
