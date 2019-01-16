@@ -10,6 +10,9 @@
 #include <sys/socket.h>  
 #include <netinet/in.h>  
 #include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros  
+#include <sstream>
+#include <typeinfo>
+#include <stdbool.h>
 
 #define TRUE   1  
 #define FALSE  0  
@@ -21,6 +24,8 @@ max_clients = 30, activity, i, valread, sd;
 int max_sd;
 struct sockaddr_in address;
 char buffer[1025];  //data buffer of 1K 
+
+char* Temp;
 
 //set of socket descriptors  
 fd_set readfds;
@@ -152,10 +157,11 @@ void TCPServer::acceptClients()
                 }
             }
         }
-        
+        this->getTemp();
         valread = read(new_socket, buffer, 1024);
         Modbus *mb = new Modbus();
         mb->Interpret(buffer);
+        //this->sendMessage(new_socket, Temp);
         //printf("VALUE:%s\n", buffer);
         
 
@@ -167,8 +173,8 @@ void TCPServer::acceptClients()
             {
                 
                 //Check if it was for closing , and also read the  
-                //incoming message  
-                
+                //incoming message
+
                 if ((valread = read(sd, buffer, 1024)) == 0)
                 {
                     //Somebody disconnected , get his details and print  
@@ -187,8 +193,9 @@ void TCPServer::acceptClients()
                 {
                     //set the string terminating NULL byte on the end  
                     //of the data read  
+
                     buffer[valread] = '\0';
-                    this->sendMessage(sd, buffer);
+                    //this->sendMessage(sd, buffer);
                 }
             }
         }
@@ -198,4 +205,21 @@ void TCPServer::acceptClients()
 
 int TCPServer::sendMessage(int sd, char* msg) {
     return send(sd, msg, strlen(msg), 0);
+}
+
+void TCPServer::getTemp() {
+    FILE *temperatureFile;
+    double T;
+    temperatureFile = fopen("/sys/class/thermal/thermal_zone0/temp", "r");
+    if (temperatureFile == NULL)
+        ; //print some message
+    fscanf(temperatureFile, "%lf", &T);
+    T /= 1000;
+    fclose(temperatureFile);
+
+    std::stringstream ss;
+    ss << "1;" << T << "\n";
+    Temp = (char*)(ss.str().c_str());
+
+    this->sendMessage(new_socket, Temp);
 }

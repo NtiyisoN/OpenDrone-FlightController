@@ -137,7 +137,7 @@
     </pin40>
   </pinConfiguration>
   <!-- accesspoint Configuration -->
-  <accesspointName></accesspointName>
+  <accesspointName>TheCoolerDrone</accesspointName>
   <accesspointPassword></accesspointPassword>
   <!-- Timestamp of the last  Calibration -->
   <lastCalibration></lastCalibration>

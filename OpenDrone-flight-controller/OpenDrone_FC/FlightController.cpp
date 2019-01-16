@@ -23,7 +23,7 @@
 #include <wiringPi.h>
 using namespace std;
 
-TCPServer tcp;
+TCPServer tcpReceive, tcpSend;
 PWMMotorTest* pw = new PWMMotorTest();
 
 FlightController::FlightController()
@@ -112,64 +112,15 @@ static void *runMagnetometer(void *interval)
 	}
 }
 
-static void *loop(void * m)
-{
-    Modbus *mb = new Modbus();
-	pthread_detach(pthread_self());
-	cout << "Starting TCP-Server";
-	cout.flush();
-	while (1)
-	{
-		srand(time(NULL));
-		string str = tcp.getMessage();
-        if (str != "") {
-            mb->Interpret(str);
-            tcp.clean();
-        }
-        
-		/*tcp.Send(str);
-		if (str != "")
-		{
-			int b = atoi(str.c_str());
-			if (b >= 180 || b <= 400)
-			{
-				//pw->SetSpeed(b);
-			}
-		}*/
-		usleep(100);
-	}
-}/*
-
-static void *sendTemp(void *m) {
-	FILE *temperatureFile;
-	int temp;
-
-	while (1) {
-		temperatureFile = fopen("/sys/class/thermal/thermal_zone0/temp", "r");
-		if (temperatureFile == NULL)
-			cout << "Error opening file!";
-		fscanf(temperatureFile, "%d", &temp);
-		fclose(temperatureFile);
-		temp /= 1000;
-		string s = to_string(temp);
-		if (conn) {
-			tcp.Send(s);
-			cout << "Sent";
-		}
-		cout << s;
-		cout.flush();
-		delay(1000);
-	}
-}*/
-
 int FlightController::run()
 {
 	//Creating the threads
 	int len = 1;
 	pthread_t threadIds[len];
+    pthread_t msgReceive, msgSend;
 	int threads[len];
 
-	//Starts the Thread with the threadId in arg[0], arg[2] is the method, which is called by the thread, arg[3] the arguments of the method
+	/*//Starts the Thread with the threadId in arg[0], arg[2] is the method, which is called by the thread, arg[3] the arguments of the method
 	threads[0] = pthread_create(&threadIds[0], NULL, runUltrasonic, (void *)500);
 	threads[1] = pthread_create(&threadIds[1], NULL, runGyroAccelerometer, (void *)500);
 	threads[2] = pthread_create(&threadIds[2], NULL, runBarometer, (void *)500);
@@ -184,14 +135,17 @@ int FlightController::run()
 			return (1);
 		}
 	}
-
+    */
+    TCPServer *server = new TCPServer();
+    server->startUp();
+    /*
 	//Waits until the threads are interrupted
 	pthread_join(threadIds[0], (void**)1);
 	pthread_join(threadIds[1], (void**)1);
 	pthread_join(threadIds[2], (void**)1);
-	pthread_join(threadIds[3], (void**)1);
+	pthread_join(threadIds[3], (void**)1);*/
 
-	pthread_t msg;
+	
 	int rc = wiringPiSetupGpio();
 	if (rc != 0)
 	{
@@ -202,13 +156,6 @@ int FlightController::run()
 	//pw->ArmMotor(); //Start Motors !!ONLY one time!!
 	//delay(5000);
 
-	tcp.setup(2018);
-	if (pthread_create(&msg, NULL, loop, (void *)0) == 0)
-	{
-		tcp.receive();
-	}
-	pthread_join(msg, (void**)1);
-	tcp.detach();
 	return (0);
 }
 
