@@ -56,7 +56,7 @@ static void runOrientation()
 
 static void runServer()
 {
-	server->startUp();
+	//server->startUp();
 }
 
 int FlightController::initObjects() 
