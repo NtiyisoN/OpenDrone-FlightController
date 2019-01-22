@@ -34,11 +34,6 @@ public class TCPHandler {
         this.serverPort = serverPort;
     }
 
-    public void sendData(int data1, byte code1, int data2, byte code2){
-        OpenDroneFrame f = new OpenDroneFrame((byte)1, code1, data1, code2, data2);
-        sendMessage(f.toString());
-    }
-
     /**
      * Sends the message entered by client to the server
      *
@@ -87,11 +82,10 @@ public class TCPHandler {
             //here you must put your computer's IP address.
             InetAddress serverAddr = InetAddress.getByName(serverIP);
 
-            Log.d("TCP Client", "C: Connecting...");
+            Log.i("TCPClient", "C: Connecting...");
 
             //create a socket to make the connection with the server
             Socket socket = new Socket(serverAddr, serverPort);
-
             try {
 
                 //sends the message to the server
@@ -100,12 +94,16 @@ public class TCPHandler {
                 //receives the message which the server sends back
                 mBufferIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-
                 //in this while the client listens for the messages sent by the server
                 while (mRun) {
+                    mServerMessage = "";
+                    int c;
+                    while((c = mBufferIn.read()) != '*'){
+                        mServerMessage += (char)c;
+                    }
 
-                    mServerMessage = mBufferIn.readLine();
-
+                    //mServerMessage = mBufferIn.readLine();
+                    Log.i("TCPClientMessage", mServerMessage);
                     if (mServerMessage != null && mMessageListener != null) {
                         //call the method messageReceived from MyActivity class
                         mMessageListener.messageReceived(mServerMessage);
@@ -113,10 +111,10 @@ public class TCPHandler {
 
                 }
 
-                Log.d("RESPONSE FROM SERVER", "S: Received Message: '" + mServerMessage + "'");
+                Log.i("RESPONSEFROMSERVER", "S: Received Message: '" + mServerMessage + "'");
 
             } catch (Exception e) {
-                Log.e("TCP", "S: Error", e);
+                Log.e("TCPERROR", "S: Error", e);
             } finally {
                 //the socket must be closed. It is not possible to reconnect to this socket
                 // after it is closed, which means a new socket instance has to be created.
@@ -124,7 +122,7 @@ public class TCPHandler {
             }
 
         } catch (Exception e) {
-            Log.e("TCP", "C: Error", e);
+            Log.e("TCPERROR", "C: Error", e);
         }
 
     }

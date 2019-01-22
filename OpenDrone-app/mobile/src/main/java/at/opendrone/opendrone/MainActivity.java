@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //initHomeFragment();
     }
 
-    private void findViews(){
+    private void findViews() {
         fragmentContainer = findViewById(R.id.frameLayout_FragmentContainer);
     }
 
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Restore UI state from the savedInstanceState.
         // This bundle has also been passed to onCreate.
         lastFragment = savedInstanceState.getInt("LastFragment");
-        switch(lastFragment){
+        switch (lastFragment) {
             case OpenDroneUtils.LF_HOME:
                 initHomeFragment();
                 break;
@@ -228,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initDronesFragment() {
-        lastFragment  = OpenDroneUtils.LF_DRONE;
+        lastFragment = OpenDroneUtils.LF_DRONE;
         Fragment defFragment = new DroneCardListRecyclerFragment();
         updateFragment(defFragment);
     }
@@ -241,22 +241,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-    private void initFlyStartFragment(){
+    private void initFlyStartFragment() {
         //FlyStart defFragment = new FlyStart();
-        lastFragment  = OpenDroneUtils.LF_FLY;
+        lastFragment = OpenDroneUtils.LF_FLY;
         FlyManualFlight defFragment = new FlyManualFlight();
         updateFragment(defFragment);
     }
 
     private void initFlightplaner() {
-        lastFragment  = OpenDroneUtils.LF_FP;
+        lastFragment = OpenDroneUtils.LF_FP;
         SharedPreferences sp = getApplication().getSharedPreferences("at.opendrone.opendrone", Context.MODE_PRIVATE);
         sp.edit().remove(OpenDroneUtils.SP_FLIGHTPLAN_HOLDER).apply();
         FlightPlanListFragment defFragment = new FlightPlanListFragment();
         updateFragment(defFragment);
     }
 
-    private void displayLibraries(){
+    private void displayLibraries() {
 // When the user selects an option to see the licenses:
         startActivity(new Intent(this, OssLicensesMenuActivity.class));
     }

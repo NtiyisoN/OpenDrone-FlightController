@@ -1,12 +1,21 @@
 package at.opendrone.opendrone;
 
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +23,27 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+
+import org.osmdroid.api.IMapController;
+import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.Overlay;
+import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.Polyline;
+
+import java.util.ArrayList;
 
 import at.opendrone.opendrone.network.OpenDroneFrame;
 import at.opendrone.opendrone.network.TCPHandler;
@@ -59,7 +85,19 @@ public class FlyManualFlight extends Fragment {
     private String statusTxt = "";
     private String velocityTxt = "";
 
+    private Location droneLocation;
+    private Location userLocation;
+
     private TCPHandler mTCPHandler;
+
+    private boolean mRequestingLocationUpdates = false;
+
+    private FusedLocationProviderClient mFusedLocationClient;
+    private LocationCallback mLocationCallback;
+    private LocationRequest mLocationRequest;
+
+    private byte[] codes;
+    private int[] data;
 
     public FlyManualFlight() {
         // Required empty public constructor
@@ -71,10 +109,13 @@ public class FlyManualFlight extends Fragment {
         ((MainActivity) getActivity()).closeDrawer();
         super.onResume();
 
-        if(mapView != null){
+        if (mapView != null) {
             mapView.onResume();
         }
 
+        if (mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
     }
 
     @Override
@@ -86,9 +127,16 @@ public class FlyManualFlight extends Fragment {
             new DisconnectTask().execute();
         }
 
-        if(mapView != null) {
+        if (mapView != null) {
             mapView.onPause();
         }
+
+        stopLocationUpdates();
+    }
+
+    private void loadConfig() {
+        Context ctx = getActivity().getApplicationContext();
+        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
     }
 
 
@@ -97,16 +145,58 @@ public class FlyManualFlight extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_fly_manual_flight, container, false);
+        loadConfig();
         initStrings();
         setRetainInstance(true);
         findViews();
         setValues();
         initJoysticks();
 
+        //Try to connect!
+        new ConnectTask().execute("");
+
         return view;
     }
 
-    private void initStrings(){
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        getActivity().runOnUiThread(this::requestPermissionAndSetLocation);
+
+        getActivity().runOnUiThread(this::startInitMapViewThread);
+    }
+
+    private void setDroneLocation(Location location) {
+        double lat = location.getLatitude();
+        double lng = location.getLongitude();
+        Log.i(TAG, lat + "/ " + lng);
+        IMapController mapController = mapView.getController();
+        mapController.setZoom(17);
+        GeoPoint startPoint = new GeoPoint(lat, lng);
+        mapController.setCenter(startPoint);
+        setUserAndDroneMarker(userLocation, location);
+    }
+
+    private void setDroneMarker(Location location) {
+        GeoPoint p = new GeoPoint(location);
+        Marker m = new Marker(mapView);
+        m.setPosition(p);
+        m.setIcon(getResources().getDrawable(R.drawable.drone_map_icon));
+        //Do nothing on click
+        m.setOnMarkerClickListener((marker, mapView) -> false);
+        mapView.getOverlayManager().add(m);
+    }
+
+    private void setUserAndDroneMarker(Location userLocation, Location droneLocation) {
+        mapView.getOverlayManager().clear();
+        setUserMarker(userLocation);
+        setDroneMarker(droneLocation);
+
+        Log.i(TAG, mapView.getOverlayManager().size()+"");
+    }
+
+    private void initStrings() {
         positionTxt = getString(R.string.manual_flight_TxtView_Position);
         heightTxt = getString(R.string.manual_flight_TxtView_Height);
         airTempTxt = getString(R.string.manual_flight_TxtView_AirTemp);
@@ -115,64 +205,99 @@ public class FlyManualFlight extends Fragment {
         velocityTxt = getString(R.string.manual_flight_TxtView_Velocity);
     }
 
-    private void printAR(int[][] ar) {
-        for (int i = 0; i < ar.length; i++) {
-            for (int j = 0; j < ar.length; j++) {
-                Log.i("Testy", "Index: " + i + "/" + j + ": " + ar[i][j]);
-            }
-        }
+    private void fillCodeArray(byte... codes){
+        this.codes = codes;
+    }
+
+    private void fillDataArray(int... data){
+        this.data = data;
     }
 
     private void initJoysticks() {
         throttle = view.findViewById(R.id.throttleStick);
         throttle.setOnMoveListener((angle, strength) -> {
             int[][] cmd = interpretThrottleStick(throttle, angle, strength);
-            sendData(cmd[0][1], (byte)cmd[0][0], cmd[1][1], (byte)cmd[1][0]);
+            fillCodeArray((byte) cmd[0][0], (byte) cmd[1][0]);
+            fillDataArray(cmd[0][1], cmd[1][1]);
+            sendData(data, codes);
         });
 
-        direction =view.findViewById(R.id.directionStick);
+        direction = view.findViewById(R.id.directionStick);
         direction.setOnMoveListener((angle, strength) -> {
             int[][] cmd = interpretDirectionStick(direction, angle, strength);
-            printAR(cmd);
-            sendData(cmd[0][1], (byte)cmd[0][0], cmd[1][1], (byte)cmd[1][0]);
+            fillCodeArray((byte) cmd[0][0], (byte) cmd[1][0]);
+            fillDataArray(cmd[0][1], cmd[1][1]);
+            sendData(data, codes);
         });
     }
 
-    private void sendData(int data1, byte code1, int data2, byte code2){
+    private void sendData(int[] data, byte[] codes){
         if (mTCPHandler != null) {
-            OpenDroneFrame f = new OpenDroneFrame((byte)1, code1, data1, code2, data2);
-            mTCPHandler.sendMessage(f.toString());
-        }else{
-            Log.i(TAG, "NULL");
+            try{
+                OpenDroneFrame f = new OpenDroneFrame((byte) 1, data, codes);
+                mTCPHandler.sendMessage(f.toString());
+            }catch(Exception ex){
+                Log.e(TAG_ERROR, "OpenDroneFrameError", ex);
+            }
+        } else {
+            Log.i(TAG, "mTCPHandler is null (that ah)");
         }
     }
 
-    public void extractData(String raw){
+    private static double round(double value, int precision) {
+        int scale = (int) Math.pow(10, precision);
+        return (double) Math.round(value * scale) / scale;
+    }
+
+    private String[] getValuesFromDataArray(String[] data, int fieldWithoutData) {
+        if (data == null || data.length <= 1) {
+            return new String[0];
+        }
+        ArrayList<String> ar = new ArrayList<>();
+
+        for (int i = 0; i < data.length; i++) {
+            if (i == fieldWithoutData) {
+                continue;
+            }
+            ar.add(data[i]);
+        }
+
+        return ar.toArray(new String[ar.size()]);
+    }
+
+    private void extractData(String raw) {
         String[] dataAr = raw.split(";");
-        String val = dataAr[0];
+        String[] values = null;
         int code = 0;
 
-        try{
+        try {
             code = Integer.parseInt(dataAr[0]);
-        }catch (Exception ex){
+            values = getValuesFromDataArray(dataAr, 0);
+        } catch (Exception ex) {
             Log.e(TAG_ERROR, "ERROR", ex);
             return;
         }
 
         TextView txtView = null;
         String format = "";
-        switch(code){
+        switch (code) {
             case OpenDroneUtils.CODE_CONTROLLER_TEMP:
                 txtView = controllerTempTxtView;
                 format = controllerTempTxt;
+                values[0] = round(parseDouble(values[0]), 1) + "";
                 break;
             case OpenDroneUtils.CODE_AIR_TEMP:
                 txtView = airTempTxtView;
                 format = airTempTxt;
+                values[0] = round(parseDouble(values[0]), 1) + "";
                 break;
             case OpenDroneUtils.CODE_POSITTION:
                 txtView = positionTxtView;
                 format = positionTxt;
+
+                double lat = parseDouble(values[0]);
+                double lng = parseDouble(values[1]);
+                updatePosition(lat, lng);
                 break;
             case OpenDroneUtils.CODE_HEIGHT:
                 txtView = heightTxtView;
@@ -185,16 +310,32 @@ public class FlyManualFlight extends Fragment {
             case OpenDroneUtils.CODE_VELOCITY:
                 txtView = velocityTxtView;
                 format = velocityTxt;
+                values[0] = round(parseDouble(values[0]), 1) + "";
                 break;
             default:
                 return;
         }
 
-        updateTextViews(txtView, format, val);
+        updateTextViews(txtView, format, values);
     }
 
-    public void updateTextViews(TextView txtView, String format, String value) {
-        txtView.setText(String.format(format, value));
+    private double parseDouble(String string) {
+        try {
+            return Double.parseDouble(string);
+        } catch (Exception ex) {
+            Log.e(TAG_ERROR, "ERROR", ex);
+            return -1d;
+        }
+    }
+
+    private void updateTextViews(TextView txtView, String format, String... values) {
+        txtView.setText(String.format(format, values));
+    }
+
+    private void updatePosition(double lat, double lng) {
+        droneLocation.setLatitude(lat);
+        droneLocation.setLongitude(lng);
+        setDroneLocation(droneLocation);
     }
 
     private void setValues() {
@@ -221,70 +362,85 @@ public class FlyManualFlight extends Fragment {
         cameraView = view.findViewById(R.id.cameraView);
 
 
-        initMapView();
         homeBtn.setOnClickListener(v -> displayHomeConfirmationDialog());
         stopRotorBtn.setOnClickListener(v -> displayStopRotorDialog());
-        changeViewBtn.setOnClickListener(v-> changeView());
+        changeViewBtn.setOnClickListener(v -> changeView());
     }
 
-    private void initMapView(){
+    private void startInitMapViewThread() {
+        getActivity().runOnUiThread(() -> initMapView());
+    }
+
+    private void initMapView() {
         mapView.setTileSource(TileSourceFactory.MAPNIK);
 
         mapView.setBuiltInZoomControls(false);
         mapView.setMultiTouchControls(true);
+
+        droneLocation = new Location("GPS");
+        droneLocation.setLatitude(OpenDroneUtils.DEFAULT_LAT);
+        droneLocation.setLongitude(OpenDroneUtils.DEFAULT_LNG);
+        setDroneLocation(droneLocation);
     }
 
-    private void changeView(){
-        if(mapViewShown){
+    private void changeView() {
+        if (mapViewShown) {
             hideMapView();
-        }else{
+        } else {
             showMapView();
         }
     }
 
-    private void setImageBtnImage(ImageButton btn, int drawableID){
+    private void setImageBtnImage(ImageButton btn, int drawableID) {
         btn.setImageDrawable(getResources().getDrawable(drawableID));
     }
 
-    private void showMapView(){
+    private void showMapView() {
         mapView.setVisibility(View.VISIBLE);
         setImageBtnImage(changeViewBtn, R.drawable.ic_view_live_feed);
         mapViewShown = true;
     }
 
-    private void hideMapView(){
+    private void hideMapView() {
         mapView.setVisibility(View.GONE);
         setImageBtnImage(changeViewBtn, R.drawable.ic_view_map);
         mapViewShown = false;
     }
 
-    private void displayStopRotorDialog(){
+    private void displayStopRotorDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(getString(R.string.stop_rotor_alarm_message))
-                .setPositiveButton(getString(R.string.stop_rotor_alarm_pos), (dialog, id) -> new ConnectTask().execute(""))
-                .setNegativeButton(getString(R.string.stop_rotor_alarm_neg), (dialog, id) -> {
-                    if (mTCPHandler == null) {
-                        return;
-                    }
-
-                    new DisconnectTask().execute();
-                });
+                .setPositiveButton(getString(R.string.stop_rotor_alarm_pos), (dialog, id) -> sendAbortMessage())
+                .setNegativeButton(getString(R.string.stop_rotor_alarm_neg), (dialog, which) -> dialog.dismiss());
         builder.create().show();
     }
 
     private void displayHomeConfirmationDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(getString(R.string.go_home_alarm_message))
-                .setPositiveButton(getString(R.string.go_home_alarm_pos), (dialog, id) -> new ConnectTask().execute(""))
+                .setPositiveButton(getString(R.string.go_home_alarm_pos), (dialog, id) -> sendGoHomeMessage())
                 .setNegativeButton(getString(R.string.go_home_alarm_neg), (dialog, id) -> {
                     if (mTCPHandler == null) {
+                        Log.i(TAG, "NULL");
                         return;
                     }
-
+                    Log.i(TAG, "Disconnect");
                     new DisconnectTask().execute();
                 });
         builder.create().show();
         // Create the AlertDialog object and return it
+    }
+
+    private void sendGoHomeMessage(){
+        fillDataArray(1);
+        fillCodeArray(OpenDroneUtils.CODE_GO_HOME);
+        sendData(data, codes);
+    }
+
+    private void sendAbortMessage() {
+        fillDataArray(1);
+        fillCodeArray(OpenDroneUtils.CODE_ABORT);
+        sendData(data, codes);
     }
 
     private int[][] interpretThrottleStick(JoystickView stick, int angle, int strength) {
@@ -352,6 +508,145 @@ public class FlyManualFlight extends Fragment {
         return values;
     }
 
+    // ====================================== STUFF FOR LOCATION ======================================
+
+    /**
+     * Only call this method when you have GPS permissions
+     * starts the location updates with a callback and a locationrequest
+     */
+    @SuppressLint("MissingPermission")
+    private void startLocationUpdates() {
+        mFusedLocationClient.requestLocationUpdates(mLocationRequest,
+                mLocationCallback,
+                null /* Looper */);
+    }
+
+    private void stopLocationUpdates() {
+        try {
+            mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+        } catch (Exception ex) {
+            Log.e("flightplany", "error", ex);
+        }
+    }
+
+    private boolean checkGPSPermission() {
+        return ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED;
+    }
+
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(10000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    private void initLocationThings() {
+        initLocationManager();
+        createLocationRequest();
+        initLocationCallback();
+        mRequestingLocationUpdates = true;
+        setLastKnownLocation();
+    }
+
+    private void setUserMarker(Location location) {
+        if (location == null) {
+            Log.i(TAG, "BS");
+            return;
+        }
+        Log.i(TAG, "not BS");
+        GeoPoint p = new GeoPoint(location);
+        Marker m = new Marker(mapView);
+        m.setIcon(getResources().getDrawable(R.drawable.ic_home_primary_color));
+        m.setPosition(p);
+        m.setOnMarkerClickListener((marker, mapView) -> {
+            displayHomeConfirmationDialog();
+            return false;
+        });
+        mapView.getOverlayManager().add(m);
+    }
+
+    public void setUserLocation(Location location) {
+        userLocation = location;
+        setUserAndDroneMarker(location, droneLocation);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case OpenDroneUtils.RQ_GPS: {
+                if (grantResults.length <= 1) {
+                    return;
+                }
+                if (grantResults.length > 1
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED || grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    initLocationThings();
+                }
+                return;
+            }
+            default: {
+                Toast.makeText(getContext(), "Didn't grant all Permissions", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private void requestPermissionAndSetLocation() {
+        if (!checkGPSPermission()) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    OpenDroneUtils.RQ_GPS);
+        } else {
+            initLocationThings();
+        }
+    }
+
+    /**
+     * Only call this method when you have GPS permissions
+     * Sets the last known position.
+     */
+    @SuppressLint("MissingPermission")
+    private void setLastKnownLocation() {
+        mFusedLocationClient.getLastLocation()
+                .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if (location != null) {
+                            Log.i(TAG, location.getLatitude() + "/ " + location.getLongitude());
+                            setUserLocation(location);
+                        } else {
+                            Log.i(TAG, "No Location.");
+                        }
+                    }
+                }).addOnFailureListener(getActivity(), new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getActivity(), getResources().getString(R.string.exception_sorry), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void initLocationManager() {
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+    }
+
+    private void initLocationCallback() {
+        mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                Location bestLocation = null;
+                for (Location location : locationResult.getLocations()) {
+                    if (bestLocation == null || location.getAccuracy() < bestLocation.getAccuracy()) {
+                        bestLocation = location;
+                    }
+                }
+                setUserLocation(bestLocation);
+            }
+        };
+    }
+
     /**
      * Disconnects using a background task to avoid doing long/network operations on the UI thread
      */
@@ -364,6 +659,8 @@ public class FlyManualFlight extends Fragment {
             // disconnect
             mTCPHandler.stopClient();
             mTCPHandler = null;
+
+            Log.i(TAG, (mTCPHandler == null) + "");
 
             return null;
         }
@@ -397,7 +694,7 @@ public class FlyManualFlight extends Fragment {
         @Override
         protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
-            Log.i(TAG, "RECEIVE: "+values[0]);
+            Log.i(TAG, "RECEIVE: " + values[0]);
             extractData(values[0]);
         }
     }

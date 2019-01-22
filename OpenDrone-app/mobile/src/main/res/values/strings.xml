@@ -23,6 +23,7 @@
     <string name="navItem_Drones">Drones</string>
     <string name="navItem_Fly">Fly</string>
     <string name="navItem_Home">Home</string>
+    <string name="navItem_Settings">Settings</string>
     <string name="navItem_Libs">Used Libraries</string>
     <string name="txt_Drone_description">Drone Description</string>
     <string name="btn_saveChanges">Save</string>

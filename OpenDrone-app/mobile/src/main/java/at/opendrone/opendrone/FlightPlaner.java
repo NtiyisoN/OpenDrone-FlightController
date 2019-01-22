@@ -9,26 +9,15 @@ package at.opendrone.opendrone;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -37,18 +26,15 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amulyakhare.textdrawable.TextDrawable;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.gson.Gson;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -59,23 +45,20 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Polyline;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static android.content.Context.LOCATION_SERVICE;
-
 public class FlightPlaner extends Fragment {
+
+    private static final String TAG = "FlightPlany";
 
     private MapView mMapView;
 
-    private LinkedHashMap<Double, GeoPoint> points = new LinkedHashMap<>();
+    private LinkedHashMap<Double, GeoPoint> points;
 
     private SharedPreferences sp;
     private FloatingActionButton saveFAB;
@@ -164,7 +147,7 @@ public class FlightPlaner extends Fragment {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case OpenDroneUtils.RQ_GPS: {
                 if (grantResults.length > 1
@@ -198,7 +181,6 @@ public class FlightPlaner extends Fragment {
         initLocationCallback();
         mRequestingLocationUpdates = true;
         setLastKnownLocation();
-
     }
 
     /**
@@ -208,17 +190,14 @@ public class FlightPlaner extends Fragment {
     @SuppressLint("MissingPermission")
     private void setLastKnownLocation() {
         mFusedLocationClient.getLastLocation()
-                .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        if (location != null) {
-                            Log.i("flightplany", location.getLatitude() + "/ " + location.getLongitude());
-                            setCoordinates(location);
-                            hasAlreadyCentered = true;
-                        } else {
-                            setCenter(OpenDroneUtils.DEFAULT_LAT, OpenDroneUtils.DEFAULT_LNG);
-                            Toast.makeText(getActivity(), getResources().getString(R.string.exception_no_location), Toast.LENGTH_SHORT).show();
-                        }
+                .addOnSuccessListener(getActivity(), location -> {
+                    if (location != null) {
+                        Log.i(TAG, location.getLatitude() + "/ " + location.getLongitude());
+                        setCoordinates(location);
+                        hasAlreadyCentered = true;
+                    } else {
+                        setCenter(OpenDroneUtils.DEFAULT_LAT, OpenDroneUtils.DEFAULT_LNG);
+                        Toast.makeText(getActivity(), getResources().getString(R.string.exception_no_location), Toast.LENGTH_SHORT).show();
                     }
                 }).addOnFailureListener(getActivity(), new OnFailureListener() {
             @Override
@@ -229,7 +208,7 @@ public class FlightPlaner extends Fragment {
     }
 
     private void initMapView() {
-        Log.i("flightplany", "test");
+        Log.i(TAG, "test");
         mMapView.setTileSource(TileSourceFactory.MAPNIK);
         line = new Polyline(mMapView);
 
@@ -250,7 +229,7 @@ public class FlightPlaner extends Fragment {
     }
 
     private void setCenter(double lat, double lng) {
-        Log.i("flightplany", lat + "/ " + lng);
+        Log.i(TAG, lat + "/ " + lng);
         IMapController mapController = mMapView.getController();
         mapController.setZoom(17);
         GeoPoint startPoint = new GeoPoint(lat, lng);
@@ -262,6 +241,7 @@ public class FlightPlaner extends Fragment {
         setCenter(location.getLatitude(), location.getLongitude());
     }
 
+    @SuppressLint("RestrictedApi")
     private void showFAB() {
         saveFAB.setVisibility(View.VISIBLE);
     }
@@ -288,7 +268,9 @@ public class FlightPlaner extends Fragment {
 
     private void drawLine() {
         List<GeoPoint> pointList = new LinkedList<GeoPoint>((points.values()));
-        line.setPoints(new ArrayList<GeoPoint>(pointList));
+        line.setPoints(new ArrayList<>(pointList));
+        //Do nothing on click
+        line.setOnClickListener((polyline, mapView, eventPos) -> false);
         mMapView.getOverlayManager().remove(line);
         mMapView.getOverlayManager().add(line);
         mMapView.invalidate();
@@ -352,12 +334,7 @@ public class FlightPlaner extends Fragment {
     }
 
     private void addListeners() {
-        saveFAB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                savePointsAndAddInfo();
-            }
-        });
+        saveFAB.setOnClickListener(view -> savePointsAndAddInfo());
 
     }
 
@@ -402,7 +379,7 @@ public class FlightPlaner extends Fragment {
     }
 
     private void addListenersToMarker(Marker marker) {
-        Log.i("flightplany", "setMarker");
+        Log.i(TAG, "setMarker");
         marker.setDraggable(true);
         marker.setOnMarkerDragListener(new Marker.OnMarkerDragListener() {
             @Override
@@ -411,6 +388,7 @@ public class FlightPlaner extends Fragment {
                 drawLine();
             }
 
+            @SuppressLint("RestrictedApi")
             @Override
             public void onMarkerDragEnd(Marker marker) {
                 if (lastEvent != null && isViewInBounds(removeFAB, (int) lastEvent.getX(), (int) lastEvent.getY() + (int) (marker.getIcon().getIntrinsicHeight() * 1.5))) {
@@ -423,11 +401,12 @@ public class FlightPlaner extends Fragment {
                 drawLine();
             }
 
+            @SuppressLint("RestrictedApi")
             @Override
             public void onMarkerDragStart(Marker marker) {
                 //poiMarkers.invalidate();
                 //mapView.invalidate();
-                Log.i("flightplany", "dragstart");
+                Log.i(TAG, "dragstart");
                 LinkedList<GeoPoint> pointList = new LinkedList<>(points.values());
                 draggedPosition = pointList.lastIndexOf(marker.getPosition());
                 removeFAB.setVisibility(View.VISIBLE);
@@ -435,29 +414,23 @@ public class FlightPlaner extends Fragment {
 
             }
         });
-        marker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker, MapView mapView) {
-                //savePointsAndAddInfo();
-                if(!canAddMarker){
-                    return true;
-                }
-                LinkedList<GeoPoint> pointList = new LinkedList<>(points.values());
-                int index = pointList.lastIndexOf(marker.getPosition());
-                double key = getKeyAtIndex(index);
-                addToLine(key + 0.1d, marker.getPosition());
-                markers.add(marker);
-                canAddMarker = false;
+        marker.setOnMarkerClickListener((marker1, mapView) -> {
+            //savePointsAndAddInfo();
+            if(!canAddMarker){
                 return true;
             }
+            LinkedList<GeoPoint> pointList = new LinkedList<>(points.values());
+            int index = pointList.lastIndexOf(marker1.getPosition());
+            double key = getKeyAtIndex(index);
+            addToLine(key + 0.1d, marker1.getPosition());
+            markers.add(marker1);
+            canAddMarker = false;
+            return true;
         });
 
-        mMapView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                lastEvent = motionEvent;
-                return false;
-            }
+        mMapView.setOnTouchListener((view, motionEvent) -> {
+            lastEvent = motionEvent;
+            return false;
         });
     }
 
@@ -482,27 +455,27 @@ public class FlightPlaner extends Fragment {
         Toast.makeText(getContext(), "DELETE", Toast.LENGTH_SHORT).show();
         int lastIndex = points.size() - 1;
         Double originalPosition = Math.floor(getKeyAtIndex(lastIndex));
-        Log.i("Flightplany", "0"+canAddMarker);
+        Log.i(TAG, "0"+canAddMarker);
         if(!canAddMarker){
-            Log.i("Flightplany", "1");
+            Log.i(TAG, "1");
             if(draggedPosition == originalPosition || draggedPosition == lastIndex){
                 double lastKey = getKeyAtIndex(lastIndex);
                 removeFromMarkers(lastIndex);
                 removeFromMarkers(originalPosition.intValue());
                 removeFromPoints(lastKey);
                 removeFromPoints(originalPosition);
-                Log.i("Flightplany", "2");
-                Log.i("Flightplany", points.size()+" / "+markers.size());
+                Log.i(TAG, "2");
+                Log.i(TAG, points.size()+" / "+markers.size());
                 updateKeys(originalPosition);
                 canAddMarker = true;
             }else{
-                Log.i("Flightplany", "3");
+                Log.i(TAG, "3");
                 removeFromMarkers(draggedPosition);
                 removeFromPoints(draggedPosition+0d);
                 updateKeys(draggedPosition+0d);
             }
         }else{
-            Log.i("Flightplany", "4");
+            Log.i(TAG, "4");
             removeFromMarkers(draggedPosition);
             removeFromPoints(draggedPosition+0d);
             updateKeys(draggedPosition+0d);
@@ -546,7 +519,7 @@ public class FlightPlaner extends Fragment {
         view.getDrawingRect(outRect);
         view.getLocationOnScreen(locationAr);
         outRect.offset(locationAr[0], locationAr[1]);
-        Log.i("flightplany", outRect.left + " / " + outRect.bottom + " / " + outRect.top + " / " + outRect.right);
+        Log.i(TAG, outRect.left + " / " + outRect.bottom + " / " + outRect.top + " / " + outRect.right);
         return outRect.contains(x, y);
     }
 
@@ -556,6 +529,14 @@ public class FlightPlaner extends Fragment {
             Marker startMarker = new Marker(mMapView);
             startMarker.setPosition(pointList.get(i));
             startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+            int index = i+1;
+            if(i < pointList.size()-1){
+                index = 1;
+            }
+            TextDrawable drawable = TextDrawable.builder()
+                    .buildRound(index+"", getResources().getColor(R.color.primaryColor, getActivity().getTheme()));
+            startMarker.setIcon(drawable);
+            Log.i(TAG, "test "+ index);
             addListenersToMarker(startMarker);
             mMapView.getOverlays().add(startMarker);
         }
