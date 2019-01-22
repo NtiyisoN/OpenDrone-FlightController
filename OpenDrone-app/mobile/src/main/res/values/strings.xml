@@ -69,4 +69,10 @@
     <string name="go_home_alarm_message">Do you rly want go home fam?</string>
     <string name="go_home_alarm_pos">Hell yeah</string>
     <string name="go_home_alarm_neg">What am i doing here?!</string>
+    <string name="flight_plan_save_add_coord">Add Coordinate</string>
+    <string name="flight_plan_save_invalid_coord">"Please enter a correct format in the fields!"</string>
+    <string name="flight_plan_save_add_coord_pos">Save</string>
+    <string name="flight_plan_save_add_coord_neg">Cancel</string>
+    <string name="flight_plan_save_error_read_fp">Could not read flightplans</string>
+    <string name="flight_plan_save_error_name_empty">This field is required</string>
 </resources>

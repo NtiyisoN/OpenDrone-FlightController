@@ -6,14 +6,11 @@
 
 package at.opendrone.opendrone;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.AttributeSet;
-import android.view.View;
 
 public abstract class DroneCardListSingleFragment extends AppCompatActivity {
     protected abstract Fragment createFragment();
@@ -21,7 +18,7 @@ public abstract class DroneCardListSingleFragment extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_drone__card_list);
+        setContentView(R.layout.fragment_drone_card_list);
 
         FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = fm.findFragmentById(R.id.fragment_container);

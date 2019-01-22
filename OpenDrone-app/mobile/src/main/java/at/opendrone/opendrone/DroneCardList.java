@@ -8,22 +8,10 @@ package at.opendrone.opendrone;
 
 
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import org.xmlpull.v1.XmlSerializer;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOError;
-import java.io.IOException;
-import java.io.Serializable;
 
 
 /**
@@ -39,7 +27,7 @@ public class DroneCardList extends DroneCardListSingleFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_drone__card_list, container, false);
+        return inflater.inflate(R.layout.fragment_drone_card_list, container, false);
     }
 
     protected Fragment createFragment() {

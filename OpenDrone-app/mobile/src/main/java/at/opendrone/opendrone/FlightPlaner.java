@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -252,16 +253,12 @@ public class FlightPlaner extends Fragment {
         startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         startMarker.setEnableTextLabelsWhenNoImage(true);
 
-        //BitmapDrawable drawable =writeOnDrawable(R.drawable.marker_background, markers.size()+"");
-        //startMarker.setIcon(drawable);
 
+        startMarker.setIcon(getIconDrawable(markers.size()+1));
 
         addListenersToMarker(startMarker);
-
-
         mMapView.getOverlays().add(startMarker);
         markers.add(startMarker);
-
         addToLine(points.size(), startMarker.getPosition());
         showFAB();
     }
@@ -272,7 +269,7 @@ public class FlightPlaner extends Fragment {
         //Do nothing on click
         line.setOnClickListener((polyline, mapView, eventPos) -> false);
         mMapView.getOverlayManager().remove(line);
-        mMapView.getOverlayManager().add(line);
+        mMapView.getOverlayManager().add(0,line);
         mMapView.invalidate();
     }
 
@@ -391,7 +388,7 @@ public class FlightPlaner extends Fragment {
             @SuppressLint("RestrictedApi")
             @Override
             public void onMarkerDragEnd(Marker marker) {
-                if (lastEvent != null && isViewInBounds(removeFAB, (int) lastEvent.getX(), (int) lastEvent.getY() + (int) (marker.getIcon().getIntrinsicHeight() * 1.5))) {
+                if (lastEvent != null && isViewInBounds(removeFAB, (int) lastEvent.getX(), (int) lastEvent.getY() + (int) (marker.getIcon().getIntrinsicHeight() * 2))) {
                     removeMarker(marker);
                 } else {
                     moveMarker(marker);
@@ -480,15 +477,6 @@ public class FlightPlaner extends Fragment {
             removeFromPoints(draggedPosition+0d);
             updateKeys(draggedPosition+0d);
         }
-        /*if ((draggedPosition == originalPosition || draggedPosition == lastIndex) && !canAddMarker) {
-
-        } else {
-            removeFromMarkers(draggedPosition);
-            removeFromPoints(draggedPosition+0d);
-            updateKeys(draggedPosition+0d);
-            //points.remove(draggedPosition);
-            //mMapView.getOverlayManager().remove(marker);
-        }*/
         drawLine();
     }
 
@@ -530,17 +518,24 @@ public class FlightPlaner extends Fragment {
             startMarker.setPosition(pointList.get(i));
             startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
             int index = i+1;
-            if(i < pointList.size()-1){
+            if(i == pointList.size()-1){
                 index = 1;
             }
-            TextDrawable drawable = TextDrawable.builder()
-                    .buildRound(index+"", getResources().getColor(R.color.primaryColor, getActivity().getTheme()));
-            startMarker.setIcon(drawable);
-            Log.i(TAG, "test "+ index);
+            startMarker.setIcon(getIconDrawable(index));
             addListenersToMarker(startMarker);
             mMapView.getOverlays().add(startMarker);
         }
         drawLine();
         showFAB();
+    }
+
+    private Drawable getIconDrawable(int number){
+        TextDrawable drawable = TextDrawable.builder()
+                .beginConfig()
+                .width(100)
+                .height(100)
+                .endConfig()
+                .buildRound(number+ "", getResources().getColor(R.color.primaryColor, getActivity().getTheme()));
+        return drawable;
     }
 }

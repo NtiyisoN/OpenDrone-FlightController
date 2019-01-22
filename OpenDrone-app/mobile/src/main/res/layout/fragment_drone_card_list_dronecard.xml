@@ -1,19 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Last modified: 09.09.18 17:21
   ~ Copyright (c) OpenDrone, 2018.  All rights reserved.
   ~ The entire project (including this file) is licensed under the GNU GPL v3.0
   -->
 
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/card_container"
     android:layout_marginLeft="15dp"
-    android:layout_marginRight="15dp"
     android:layout_marginTop="10dp"
+    android:layout_marginRight="15dp"
     android:layout_marginBottom="10dp"
     app:cardCornerRadius="2dp"
     app:cardElevation="4dp">
@@ -22,20 +21,18 @@
         android:id="@+id/constraintLayout_Item"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="match_parent"
             android:layout_height="150dp"
 
+            android:contentDescription="@string/imageView_DronePicture_Description"
             android:scaleType="centerCrop"
+            android:transitionName="robot"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:contentDescription="@string/imageView_DronePicture_Description"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/opendrone_bg"
-            android:transitionName="robot"/>
+            app:srcCompat="@drawable/opendrone_bg" />
 
         <TextView
             android:id="@+id/text_DroneName"
@@ -66,27 +63,27 @@
             android:id="@+id/droneCardDivider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/primaryTextColor"
-            app:layout_constraintBottom_toTopOf="@+id/btn_Settings"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"/>
+            android:layout_marginEnd="8dp"
+            android:background="@color/primaryTextColor"
+            app:layout_constraintBottom_toTopOf="@+id/btn_Settings" />
 
         <Button
             android:id="@+id/btn_Settings"
-            android:textColor="@color/primaryColor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="92dp"
             android:layout_marginEnd="21dp"
             android:layout_marginBottom="8dp"
+            android:background="#00ffffff"
             android:text="@string/btn_Settings"
+            android:textColor="@color/primaryColor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.571"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView_FlightPlan"
-            android:background="#00ffffff"/>
+            app:layout_constraintTop_toBottomOf="@+id/textView_FlightPlan" />
 
         <ImageButton
             android:id="@+id/imgBtn_Delete"
