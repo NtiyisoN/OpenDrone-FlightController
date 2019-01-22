@@ -1,52 +1,52 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="FlightController.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Filter\Filter.cpp" />
-    <ClCompile Include="Motor\PCA9685.cpp" />
-    <ClCompile Include="Motor\PWMMotorTest.cpp" />
-    <ClCompile Include="Network\TCPServer.cpp" />
-    <ClCompile Include="Sensor\MPU6050.cpp" />
-    <ClCompile Include="Sensor\HMC5883L.cpp" />
-    <ClCompile Include="Sensor\BMP180.cpp" />
-    <ClCompile Include="Sensor\HCSR04.cpp" />
-    <ClCompile Include="Sensor\BMP388.cpp" />
-    <ClCompile Include="Sensor\BMF055.cpp" />
     <ClCompile Include="Controller\Calibration.cpp" />
-    <ClCompile Include="Sensor\BMM150.cpp" />
     <ClCompile Include="Controller\Orientation.cpp" />
     <ClCompile Include="Controller\UltrasonicDistance.cpp" />
+    <ClCompile Include="Filter\Filter.cpp" />
+    <ClCompile Include="FlightController.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Motor\PCA9685.cpp" />
+    <ClCompile Include="Motor\PWMMotorTest.cpp" />
     <ClCompile Include="Network\Modbus.cpp" />
+    <ClCompile Include="Network\TCPServer.cpp" />
+    <ClCompile Include="Sensor\BMF055.cpp" />
+    <ClCompile Include="Sensor\BMM150.cpp" />
+    <ClCompile Include="Sensor\BMP180.cpp" />
+    <ClCompile Include="Sensor\BMP388.cpp" />
+    <ClCompile Include="Sensor\MPU6050.cpp" />
+    <ClCompile Include="Sensor\HMC5883L.cpp" />
+    <ClCompile Include="Sensor\HCSR04.cpp" />
     <ClCompile Include="Sensor\BMP280.cpp" />
     <ClCompile Include="Sensor\BNO080.cpp" />
     <ClCompile Include="XML\XMLParser.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FlightController.h" />
+    <ClInclude Include="Controller\Calibration.h" />
+    <ClInclude Include="Controller\Orientation.h" />
+    <ClInclude Include="Controller\UltrasonicDistance.h" />
+    <ClInclude Include="Sensor\BMF055.h" />
+    <ClInclude Include="Sensor\BMM150.h" />
+    <ClInclude Include="Sensor\BMP388.h" />
     <ClInclude Include="Filter\Filter.h" />
+    <ClInclude Include="FlightController.h" />
     <ClInclude Include="Motor\PCA9685.h" />
     <ClInclude Include="Motor\PWMMotorTest.h" />
     <ClInclude Include="Network\TCPServer.h" />
+    <ClInclude Include="Sensor\AbstractSensor\Accelerometer.h" />
+    <ClInclude Include="Sensor\AbstractSensor\Barometer.h" />
+    <ClInclude Include="Sensor\AbstractSensor\Gyroscope.h" />
+    <ClInclude Include="Sensor\AbstractSensor\Magnetometer.h" />
+    <ClInclude Include="Sensor\BMP180.h" />
     <ClInclude Include="Sensor\MPU6050.h" />
     <ClInclude Include="Sensor\HMC5883L.h" />
-    <ClInclude Include="Sensor\BMP180.h" />
     <ClInclude Include="Sensor\HCSR04.h" />
     <ClInclude Include="Sensor\AbstractSensor\Ultrasonic.h" />
-    <ClInclude Include="Sensor\AbstractSensor\Accelerometer.h" />
-    <ClInclude Include="Sensor\AbstractSensor\Gyroscope.h" />
-    <ClInclude Include="Sensor\AbstractSensor\Barometer.h" />
-    <ClInclude Include="Sensor\AbstractSensor\Magnetometer.h" />
-    <ClInclude Include="Sensor\BMP388.h" />
-    <ClInclude Include="Sensor\BMF055.h" />
-    <ClInclude Include="Controller\Calibration.h" />
-    <ClInclude Include="Sensor\BMM150.h" />
-    <ClInclude Include="Controller\Orientation.h" />
-    <ClInclude Include="Controller\UltrasonicDistance.h" />
-    <ClInclude Include="Network\Modbus.h" />
     <ClInclude Include="Sensor\BMP280.h" />
     <ClInclude Include="Sensor\BNO080.h" />
     <ClInclude Include="XML\XMLParser.h" />
+    <ClInclude Include="Network\Modbus.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="CONFIG.xml" />

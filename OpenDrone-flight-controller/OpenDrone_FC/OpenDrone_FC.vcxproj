@@ -48,7 +48,7 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <IncludePath>E:\4.Jahrgang\OpenDrone\include;E:\4.Jahrgang\OpenDrone\include\arm-linux-gnueabihf;$(IncludePath)</IncludePath>
+    <IncludePath>D:\GIT\include\arm-linux-gnueabihf;D:\GIT\include;E:\4.Jahrgang\OpenDrone\include;E:\4.Jahrgang\OpenDrone\include\arm-linux-gnueabihf;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">

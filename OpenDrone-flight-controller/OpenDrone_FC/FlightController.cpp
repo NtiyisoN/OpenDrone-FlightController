@@ -14,6 +14,8 @@
 #include "Sensor/BMP180.h"
 #include "Sensor/BNO080.h"
 
+#include "Network/TCPServer.h"
+
 #include "Controller/Calibration.h"
 #include "Controller/Orientation.h"
 #include "Controller/UltrasonicDistance.h"
@@ -54,7 +56,7 @@ static void runOrientation()
 
 static void runServer()
 {
-	//server->startUp();
+	server->startUp();
 }
 
 int FlightController::initObjects() 
@@ -80,7 +82,7 @@ int FlightController::run()
 	int code = initObjects();
 	if (code != 0x00) {
 		return (code);
-	}
+  }
 
 	delay(250);
 
