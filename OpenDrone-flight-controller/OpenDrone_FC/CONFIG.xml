@@ -5,7 +5,7 @@
 -->
 <opendrone>
   <!-- Name of the Drone -->
-  <droneName></droneName>
+  <droneName>OpenDrone</droneName>
   <!-- Motorconfiguration of the Drone -->
   <droneConfiguration></droneConfiguration>
   <droneCalibration>

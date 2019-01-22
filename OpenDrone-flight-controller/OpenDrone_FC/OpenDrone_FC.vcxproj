@@ -53,7 +53,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>
-      <LibraryDependencies>wiringPi;pthread</LibraryDependencies>
+      <LibraryDependencies>wiringPi;pthread;tinyxml2</LibraryDependencies>
     </Link>
     <RemotePostBuildEvent>
       <Command>gpio export 17 out</Command>
@@ -83,10 +83,13 @@
     <ClCompile Include="Sensor\BMF055.cpp" />
     <ClCompile Include="Sensor\BMM150.cpp" />
     <ClCompile Include="Sensor\BMP180.cpp" />
+    <ClCompile Include="Sensor\BMP280.cpp" />
     <ClCompile Include="Sensor\BMP388.cpp" />
+    <ClCompile Include="Sensor\BNO080.cpp" />
     <ClCompile Include="Sensor\MPU6050.cpp" />
     <ClCompile Include="Sensor\HMC5883L.cpp" />
     <ClCompile Include="Sensor\HCSR04.cpp" />
+    <ClCompile Include="XML\XMLParser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controller\Calibration.h" />
@@ -95,6 +98,7 @@
     <ClInclude Include="Network\Modbus.h" />
     <ClInclude Include="Sensor\BMF055.h" />
     <ClInclude Include="Sensor\BMM150.h" />
+    <ClInclude Include="Sensor\BMP280.h" />
     <ClInclude Include="Sensor\BMP388.h" />
     <ClInclude Include="Filter\Filter.h" />
     <ClInclude Include="FlightController.h" />
@@ -106,13 +110,17 @@
     <ClInclude Include="Sensor\AbstractSensor\Gyroscope.h" />
     <ClInclude Include="Sensor\AbstractSensor\Magnetometer.h" />
     <ClInclude Include="Sensor\BMP180.h" />
+    <ClInclude Include="Sensor\BNO080.h" />
     <ClInclude Include="Sensor\MPU6050.h" />
     <ClInclude Include="Sensor\HMC5883L.h" />
     <ClInclude Include="Sensor\HCSR04.h" />
     <ClInclude Include="Sensor\AbstractSensor\Ultrasonic.h" />
+    <ClInclude Include="XML\XMLParser.h" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="CONFIG.xml" />
+    <Xml Include="CONFIG.xml">
+      <SubType>Designer</SubType>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenDrone_FC.licenseheader" />

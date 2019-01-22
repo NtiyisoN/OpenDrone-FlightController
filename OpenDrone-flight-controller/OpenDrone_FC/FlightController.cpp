@@ -12,12 +12,17 @@
 #include "Sensor/AbstractSensor/Ultrasonic.h"
 #include "Sensor/BMP388.h"
 #include "Sensor/BMP180.h"
+#include "Sensor/BNO080.h"
 
 #include "Network/TCPServer.h"
 
 #include "Controller/Calibration.h"
 #include "Controller/Orientation.h"
 #include "Controller/UltrasonicDistance.h"
+
+#include "Network/TCPServer.h"
+
+#include "XML/XMLParser.h"
 
 #include <wiringPi.h>
 #include <iostream>
@@ -27,6 +32,8 @@ using namespace std;
 Orientation *orientation;
 Barometer *barometer;
 UltrasonicDistance *ultrasonic;
+XMLParser *parser;
+//TCPServer *server;
 
 FlightController::FlightController()
 {
@@ -47,34 +54,39 @@ static void runOrientation()
 	orientation->runOrientation();
 }
 
-bool FlightController::initObjects() 
+static void runServer()
+{
+	server->startUp();
+}
+
+int FlightController::initObjects() 
 {
 	int rc = wiringPiSetupGpio();
 	if (rc != 0)
 	{
-		cout << "Failed to wiringPiSetupGpio()\n";
-		return false;
+		//The GPIO-Setup did not work
+		return 0x01;
 	}
   
 	orientation = new Orientation();
 	barometer = new BMP180();
 	ultrasonic = new UltrasonicDistance();
+	parser = new XMLParser();
+	//server = new TCPServer();
 
-	return true;
+	return 0x00;
 }
 
 int FlightController::run()
-{	
-    TCPServer *server = new TCPServer();
-    server->startUp();
-
-	bool worked = initObjects();
-	if (!worked) {
-		return (1);
-	}
+{
+	int code = initObjects();
+	if (code != 0x00) {
+		return (code);
+  }
 
 	delay(250);
 
+	//thread server(runServer);
 	thread pitchRollThread(runOrientation);
 	thread barometerThread(runBarometer);
 	//thread ultrasonicThread(runUltrasonic);
@@ -87,7 +99,7 @@ int FlightController::run()
 	delay(250);
 
 	int i = 0;
-	while (i < 20) {
+	while (i < 15) {
 		double *valuesPitchRoll = orientation->getPitchRoll();
 		double *valuesBarometer = barometer->getBarometerValues();
 		list<double> valuesUltrasonic = ultrasonic->getDistance();
@@ -95,11 +107,13 @@ int FlightController::run()
 		cout << i << " Pitch: " << valuesPitchRoll[0] << " Roll: " << valuesPitchRoll[1] <<
 			" Temperature: " << valuesBarometer[0] << " Pressure: " << valuesBarometer[1] << "\n";
 		i++;
+		delay(10);
 	}
 
 	orientation->interruptOrientation();
 	barometer->interruptBaromter();
 
+	//server.join();
 	pitchRollThread.join();
 	barometerThread.join();
 	//ultrasonicThread.join();

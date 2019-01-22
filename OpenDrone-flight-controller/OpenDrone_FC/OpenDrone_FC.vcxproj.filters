@@ -18,6 +18,9 @@
     <ClCompile Include="Sensor\MPU6050.cpp" />
     <ClCompile Include="Sensor\HMC5883L.cpp" />
     <ClCompile Include="Sensor\HCSR04.cpp" />
+    <ClCompile Include="Sensor\BMP280.cpp" />
+    <ClCompile Include="Sensor\BNO080.cpp" />
+    <ClCompile Include="XML\XMLParser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controller\Calibration.h" />
@@ -40,6 +43,9 @@
     <ClInclude Include="Sensor\HMC5883L.h" />
     <ClInclude Include="Sensor\HCSR04.h" />
     <ClInclude Include="Sensor\AbstractSensor\Ultrasonic.h" />
+    <ClInclude Include="Sensor\BMP280.h" />
+    <ClInclude Include="Sensor\BNO080.h" />
+    <ClInclude Include="XML\XMLParser.h" />
     <ClInclude Include="Network\Modbus.h" />
   </ItemGroup>
   <ItemGroup>
