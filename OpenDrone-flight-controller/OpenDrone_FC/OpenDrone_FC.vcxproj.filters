@@ -17,6 +17,10 @@
     <ClCompile Include="Sensor\BMM150.cpp" />
     <ClCompile Include="Controller\Orientation.cpp" />
     <ClCompile Include="Controller\UltrasonicDistance.cpp" />
+    <ClCompile Include="Network\Modbus.cpp" />
+    <ClCompile Include="Sensor\BMP280.cpp" />
+    <ClCompile Include="Sensor\BNO080.cpp" />
+    <ClCompile Include="XML\XMLParser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FlightController.h" />
@@ -39,6 +43,10 @@
     <ClInclude Include="Sensor\BMM150.h" />
     <ClInclude Include="Controller\Orientation.h" />
     <ClInclude Include="Controller\UltrasonicDistance.h" />
+    <ClInclude Include="Network\Modbus.h" />
+    <ClInclude Include="Sensor\BMP280.h" />
+    <ClInclude Include="Sensor\BNO080.h" />
+    <ClInclude Include="XML\XMLParser.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="CONFIG.xml" />

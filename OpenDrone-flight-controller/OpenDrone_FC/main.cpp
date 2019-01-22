@@ -21,14 +21,14 @@ int main(void)
 
 	cout << "Starting the Flight Controller\n";
 	int status = fc->run();
-	if (status == 0)
+	if (status == 0x00)
 	{
 		cout << "Stopping Flight Controller!\n";
 		return (0);
 	}
 	else
 	{
-		cout << "Stopping Flight Controller!\n";
-		return (status);
+		cout << "Stopping Flight Controller!\nError-Code: " << status << "\n";
+		return (0);
 	}
 }
