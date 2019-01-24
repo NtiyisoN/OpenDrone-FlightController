@@ -1,6 +1,9 @@
 ---
 name: Bug report - APP
 about: Create a report to help us improve
+title: BUG Short description
+labels: bug
+assignees: ''
 
 ---
 
