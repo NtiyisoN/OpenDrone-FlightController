@@ -1,4 +1,4 @@
-[![CodeFactor](https://www.codefactor.io/repository/github/opendroneat/opendrone-flightcontroller/badge/develop)](https://www.codefactor.io/repository/github/opendroneat/opendrone/overview/develop)
+[![CodeFactor](https://www.codefactor.io/Content/badges/A.svg)](https://www.codefactor.io/repository/github/opendroneat/opendrone-flightcontroller/overview/develop)
 [![Gitter chat](https://badges.gitter.im/USER/REPO.png)](https://gitter.im/OpenDroneAT/Lobby "Gitter chat")
   
 # !! Work in Progress !!  
