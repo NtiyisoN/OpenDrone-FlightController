@@ -16,9 +16,7 @@ def loadJSON():
                 if os.path.isfile('/etc/accesspoint/accesspoint.json') is False:
                     subprocess.call('sudo touch /etc/accesspoint/accesspoint.json', shell=True)
 
-                json_data = open('/etc/accesspoint/accesspoint.json').read()
-
-                j = json.loads(json_data)
+                j = json.loads(open('/etc/accesspoint/accesspoint.json').read())
                 name = ''
                 enterCode = ''
                 if 'accesspointName' in doc['opendrone']:
@@ -42,7 +40,7 @@ def loadJSON():
 
     
 
-subprocess.call('sudo pyaccesspoint stop')
+subprocess.call('sudo pyaccesspoint stop', shell=True)
 if os.path.isfile('/etc/accesspoint/accesspoint.json'):
     loadJSON()
     subprocess.call("sudo pyaccesspoint --config start", shell=True)
