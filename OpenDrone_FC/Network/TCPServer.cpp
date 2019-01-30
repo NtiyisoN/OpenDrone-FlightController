@@ -135,6 +135,7 @@ void TCPServer::acceptClients()
                 exit(EXIT_FAILURE);
             }
             this->addClient(new_socket);
+			this->connected = true;
         }
         valread = read(new_socket, buffer, 1024);
         mb->Interpret(buffer);
@@ -162,10 +163,10 @@ void TCPServer::getTemp() {
     fclose(temperatureFile);
 
     std::stringstream ss;
-    ss << "1;" << T << "*";
+    ss << "1;" << T;
     Temp = (char*)(ss.str().c_str());
 
-    this->sendMessage(new_socket, Temp);
+    this->sendMessage(Temp);
 }
 
 void TCPServer::stopServer() 
