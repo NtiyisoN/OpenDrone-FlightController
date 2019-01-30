@@ -61,13 +61,13 @@ static void runServer()
 
 void FlightController::initObjects() 
 {
-	server = TCPServer::getInstance();
 	error = Exit::getInstance();
 
 	int rc = wiringPiSetupGpio();
 	if (rc != 0)
 	{
 		//The GPIO-Setup did not work
+		error->sendError(0x01, false);
 		return;
 	}
   
@@ -79,10 +79,14 @@ void FlightController::initObjects()
 
 int FlightController::run()
 {
+	server = TCPServer::getInstance();
+	thread serverThread(runServer);
+	while (!server->connected) { delay(50); };
+	
 	initObjects();
 
 	delay(250);
-	thread server(runServer);
+
 	thread pitchRollThread(runOrientation);
 	thread barometerThread(runBarometer);
 	//thread ultrasonicThread(runUltrasonic);
@@ -109,7 +113,7 @@ int FlightController::run()
 	orientation->interruptOrientation();
 	barometer->interruptBaromter();
 
-	server.join();
+	serverThread.join();
 	pitchRollThread.join();
 	barometerThread.join();
 	//ultrasonicThread.join();

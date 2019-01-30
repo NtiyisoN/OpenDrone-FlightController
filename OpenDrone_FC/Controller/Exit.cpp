@@ -1,4 +1,8 @@
 #include "Exit.h"
+#include <string.h>
+#include <sstream>
+
+using namespace std;
 
 Exit* Exit::instance = 0;
 
@@ -19,9 +23,11 @@ Exit* Exit::getInstance()
 }
 
 void Exit::sendError(int errorcode, bool stopFC) {
-	char *m = "Error: ";
-	char *msg = m + errorcode;
-	server->sendMessage(1, msg);
+	stringstream ss;
+	ss << "255;Error: " << errorcode;
+	char *str = (char*)(ss.str().c_str());
+
+	server->sendMessage(str);
 }
 
 Exit::~Exit()

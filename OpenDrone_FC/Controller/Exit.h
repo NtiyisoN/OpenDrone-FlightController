@@ -11,6 +11,7 @@ public:
 private:
 	Exit();
 	~Exit();
+
 	TCPServer *server;
 };
 
