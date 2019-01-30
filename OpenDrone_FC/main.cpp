@@ -20,15 +20,8 @@ int main(void)
 	FlightController *fc = new FlightController();
 
 	cout << "Starting the Flight Controller\n";
-	int status = fc->run();
-	if (status == 0x00)
-	{
-		cout << "Stopping Flight Controller!\n";
-		return (0);
-	}
-	else
-	{
-		cout << "Stopping Flight Controller!\nError-Code: " << status << "\n";
-		return (0);
-	}
+	fc->run();
+	
+	cout << "Stopping Flight Controller!\n";
+	return (0);
 }

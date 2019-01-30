@@ -17,6 +17,7 @@ private:
     int master_socket, addrlen, new_socket, activity, i, valread, sd;
     int max_sd;
     
+    TCPServer();
     char buffer[1025];  //data buffer of 1K 
     bool isRunning = false;
     char* Temp;
@@ -24,7 +25,9 @@ private:
     void addClient(int new_sock);
     void checkIOOperation(fd_set readfds);
 public:
-    TCPServer();
+    bool connected = false;
+    static TCPServer *getInstance();
+    static TCPServer *instance
     ~TCPServer();
     void startUp();
     void acceptClients();

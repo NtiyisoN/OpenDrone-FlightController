@@ -28,10 +28,19 @@
 #define PORT 2018  
 
 
-TCPServer::TCPServer()
-{
-}
+TCPServer* TCPServer::instance = 0;
 
+TCPServer::TCPServer() {}
+
+TCPServer * TCPServer::getInstance()
+{
+	if (instance == 0)
+	{
+		instance = new TCPServer();
+	}
+
+	return instance;
+}
 
 TCPServer::~TCPServer()
 {
@@ -135,8 +144,11 @@ void TCPServer::acceptClients()
 }
 
 
-int TCPServer::sendMessage(int sd, char* msg) {
-    return send(sd, msg, strlen(msg), 0);
+int TCPServer::sendMessage(char* msg) {
+	std::stringstream ss;
+	ss << msg << "*";
+	char *str = (char*)(ss.str().c_str());
+	return send(new_socket, str, strlen(str), 0);
 }
 
 void TCPServer::getTemp() {

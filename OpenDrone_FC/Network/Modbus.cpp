@@ -38,6 +38,10 @@ void Modbus::Interpret(string str)
         result.push_back(substr);
     }
 
+	if (result.size() <= 2) {
+		return;
+	}
+
     //if(result.size)
     //cout << "--------------------------------Packets:" << result.size();
     int i;

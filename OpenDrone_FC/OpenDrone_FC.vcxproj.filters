@@ -21,6 +21,7 @@
     <ClCompile Include="Sensor\BMP280.cpp" />
     <ClCompile Include="Sensor\BNO080.cpp" />
     <ClCompile Include="XML\XMLParser.cpp" />
+    <ClCompile Include="Controller\Exit.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controller\Calibration.h" />
@@ -47,6 +48,7 @@
     <ClInclude Include="Sensor\BNO080.h" />
     <ClInclude Include="XML\XMLParser.h" />
     <ClInclude Include="Network\Modbus.h" />
+    <ClInclude Include="Controller\Exit.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="CONFIG.xml" />
