@@ -27,11 +27,11 @@ private:
 public:
     bool connected = false;
     static TCPServer *getInstance();
-    static TCPServer *instance
+	static TCPServer *instance;
     ~TCPServer();
     void startUp();
     void acceptClients();
-    int sendMessage(int sd, char* msg);
+    int sendMessage(char* msg);
     void getTemp();
     void stopServer();
     void startSendingValues();
