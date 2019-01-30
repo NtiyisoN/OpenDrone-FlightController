@@ -71,6 +71,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Controller\Calibration.cpp" />
+    <ClCompile Include="Controller\Exit.cpp" />
     <ClCompile Include="Controller\Orientation.cpp" />
     <ClCompile Include="Controller\UltrasonicDistance.cpp" />
     <ClCompile Include="Filter\Filter.cpp" />
@@ -93,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controller\Calibration.h" />
+    <ClInclude Include="Controller\Exit.h" />
     <ClInclude Include="Controller\Orientation.h" />
     <ClInclude Include="Controller\UltrasonicDistance.h" />
     <ClInclude Include="Network\Modbus.h" />

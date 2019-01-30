@@ -19,8 +19,7 @@
 #include "Controller/Calibration.h"
 #include "Controller/Orientation.h"
 #include "Controller/UltrasonicDistance.h"
-
-#include "Network/TCPServer.h"
+#include "Controller/Exit.h"
 
 #include "XML/XMLParser.h"
 
@@ -33,7 +32,8 @@ Orientation *orientation;
 Barometer *barometer;
 UltrasonicDistance *ultrasonic;
 XMLParser *parser;
-//TCPServer *server;
+TCPServer *server;
+Exit *error;
 
 FlightController::FlightController()
 {
@@ -56,37 +56,33 @@ static void runOrientation()
 
 static void runServer()
 {
-	//server->startUp();
+	server->startUp();
 }
 
-int FlightController::initObjects() 
+void FlightController::initObjects() 
 {
+	server = TCPServer::getInstance();
+	error = Exit::getInstance();
+
 	int rc = wiringPiSetupGpio();
 	if (rc != 0)
 	{
 		//The GPIO-Setup did not work
-		return 0x01;
+		return;
 	}
   
 	orientation = new Orientation();
 	barometer = new BMP180();
 	ultrasonic = new UltrasonicDistance();
 	parser = new XMLParser();
-	//server = new TCPServer();
-
-	return 0x00;
 }
 
 int FlightController::run()
 {
-	int code = initObjects();
-	if (code != 0x00) {
-		return (code);
-  }
+	initObjects();
 
 	delay(250);
-
-	//thread server(runServer);
+	thread server(runServer);
 	thread pitchRollThread(runOrientation);
 	thread barometerThread(runBarometer);
 	//thread ultrasonicThread(runUltrasonic);
@@ -113,7 +109,7 @@ int FlightController::run()
 	orientation->interruptOrientation();
 	barometer->interruptBaromter();
 
-	//server.join();
+	server.join();
 	pitchRollThread.join();
 	barometerThread.join();
 	//ultrasonicThread.join();

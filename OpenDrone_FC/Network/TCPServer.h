@@ -11,11 +11,15 @@
 class TCPServer
 {
 public:
-    TCPServer();
-    ~TCPServer();
-    void startUp();
+	static TCPServer *getInstance();
+	static TCPServer *instance;
+
+	void startUp();
+	int sendMessage(int sd, char* msg);
+
+private:
+	TCPServer();
     void acceptClients();
-    int sendMessage(int sd, char* msg);
     void getTemp();
 };
 

@@ -15,6 +15,6 @@ public:
 	int run();
 
 private:
-	int initObjects();
+	void initObjects();
 };
 

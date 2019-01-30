@@ -41,14 +41,18 @@ char* Temp;
 fd_set readfds;
 
 char *message = "Hello Client...";
+TCPServer* TCPServer::instance = 0;
 
-TCPServer::TCPServer()
+TCPServer::TCPServer() {}
+
+TCPServer * TCPServer::getInstance()
 {
-}
+	if (instance == 0)
+	{
+		instance = new TCPServer();
+	}
 
-
-TCPServer::~TCPServer()
-{
+	return instance;
 }
 
 void TCPServer::startUp() {
