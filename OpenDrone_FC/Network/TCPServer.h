@@ -13,29 +13,28 @@
 class TCPServer
 {
 private:
-	int opt = 1;
-	int master_socket, addrlen, new_socket, activity, i, valread, sd;
-	int max_sd;
-
-	TCPServer();
-	char buffer[1025];  //data buffer of 1K 
-	bool isRunning = false;
-	char* Temp;
-	char *message = "Hello Client...";
-	void addClient(int new_sock);
-	void checkIOOperation(fd_set readfds);
+    int opt = 1;
+    int master_socket, addrlen, new_socket, activity, i, valread, sd;
+    int max_sd;
+    
+    TCPServer();
+    char buffer[1025];  //data buffer of 1K 
+    bool isRunning = false;
+    char* Temp;
+    char *message = "Hello Client...";
+    void addClient(int new_sock);
+    void checkIOOperation(fd_set readfds);
 public:
-	bool connected = false;
-	static TCPServer *getInstance();
-	static TCPServer *instance;
-	~TCPServer();
-	void startUp();
-	void acceptClients();
-	int sendMessage(char* msg);
-	void getTemp();
-	void stopServer();
-	void startSendingValues();
+    bool connected = false;
+    static TCPServer *getInstance();
+    static TCPServer *instance
+    ~TCPServer();
+    void startUp();
+    void acceptClients();
+    int sendMessage(int sd, char* msg);
+    void getTemp();
+    void stopServer();
+    void startSendingValues();
 
-	int client_socket[30], max_clients = 30;
+    int client_socket[30], max_clients = 30;
 };
-
