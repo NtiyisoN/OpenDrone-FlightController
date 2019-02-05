@@ -22,6 +22,33 @@
     <roll></roll>
     <yaw></yaw>
   </droneCalibration>
+  <usedSensors>
+    <accelerometer sensor="BNO080">
+      <possible>BNO080</possible>
+      <possible>BNO085</possible>
+      <possible>-MPU6080</possible>
+      <possible>-BMI088</possible>
+      <possible>-BMF055</possible>
+    </accelerometer>
+    <gyroscope sensor="BNO080">
+      <possible>BNO080</possible>
+      <possible>BNO085</possible>
+      <possible>-MPU6080</possible>
+      <possible>-BMI088</possible>
+      <possible>-BMF055</possible>
+    </gyroscope>
+    <barometer sensor="BMP280">
+      <possible>BMP388</possible>
+      <possible>BMP180</possible>
+      <possible>BMP280</possible>
+    </barometer>
+    <magnetometer sensor="BNO080">
+      <possible>BNO080</possible>
+      <possible>BNO085</possible>
+      <possible>BMM150</possible>
+      <possible>HMC5883L</possible>
+    </magnetometer>
+  </usedSensors>
   <!-- Pinconfiguration of the Drone
         <possible></possible> -> do whatever you want
         <possible>3.3V</possible> -> if there is only one you should not change anything
