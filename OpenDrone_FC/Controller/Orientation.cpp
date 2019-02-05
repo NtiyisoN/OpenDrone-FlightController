@@ -6,11 +6,12 @@ using namespace std;
 
 Orientation::Orientation()
 {
-	this->gyro = new MPU6050();
-	this->acc = new MPU6050();
+	//this->gyro = new MPU6050();
+	//this->acc = new MPU6050();
+	this->bno = new BNO080();
 }
 
-void Orientation::calcPitchRoll()
+/*void Orientation::calcPitchRoll()
 {
 	double K = 0.98;
 	double K1 = 1 - K;
@@ -46,15 +47,12 @@ double Orientation::getXRotation(double accX, double accY, double accZ)
 double Orientation::getYRotation(double accX, double accY, double accZ)
 {
 	return (atan2(accY, sqrt((accX * accX) + (accZ * accZ))))*(180 / M_PI);
-}
+}*/
 
 void Orientation::runOrientation()
 {
 	this->run = true;
-	while (this->run)
-	{
-		this->calcPitchRoll();
-	}
+	this->bno->runBNO();
 }
 
 void Orientation::interruptOrientation()
@@ -64,16 +62,18 @@ void Orientation::interruptOrientation()
 
 double *Orientation::getPitchRoll()
 {
-	static double ar[2];
+	static double ar[3];
 	if (this->run)
 	{
-		ar[0] = this->pitch;
-		ar[1] = this->roll;
+		ar[0] = this->bno->gyroIntegratedRotationVectorData.lastPitch;
+		ar[1] = this->bno->gyroIntegratedRotationVectorData.lastRoll;
+		ar[2] = this->bno->gyroIntegratedRotationVectorData.lastYaw;
 	}
 	else
 	{
 		ar[0] = NULL;
 		ar[1] = NULL;
+		ar[2] = NULL;
 	}
 
 	return ar;

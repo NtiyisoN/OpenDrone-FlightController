@@ -26,6 +26,7 @@
 #include <wiringPi.h>
 #include <iostream>
 #include <thread>
+#include <fstream>
 using namespace std;
 
 Orientation *orientation;
@@ -73,50 +74,50 @@ void FlightController::initObjects()
   
 	orientation = new Orientation();
 	barometer = new BMP180();
-	ultrasonic = new UltrasonicDistance();
-	parser = new XMLParser();
+	//ultrasonic = new UltrasonicDistance();
+	//parser = new XMLParser();
 }
 
 int FlightController::run()
 {
+
 	server = TCPServer::getInstance();
 	thread serverThread(runServer);
-	while (!server->connected) { delay(50); };
+	//while (!server->connected) { delay(50); };
 	
 	initObjects();
 
 	delay(250);
 
-	thread pitchRollThread(runOrientation);
+	thread pitchRollYawThread(runOrientation);
 	thread barometerThread(runBarometer);
 	//thread ultrasonicThread(runUltrasonic);
 
 	delay(1000);
 
-	Calibration *calibration = new Calibration(orientation);
-	calibration->calibrate();
+	//Calibration *calibration = new Calibration(orientation);
+	//calibration->calibrate();
 
-	delay(250);
+	//delay(250);
 
 	int i = 0;
-	while (i < 15) {
-		double *valuesPitchRoll = orientation->getPitchRoll();
+	while (i < 100000) {
+		double *valuesPitchRollYaw = orientation->getPitchRoll();
 		double *valuesBarometer = barometer->getBarometerValues();
-		list<double> valuesUltrasonic = ultrasonic->getDistance();
-
-		cout << i << " Pitch: " << valuesPitchRoll[0] << " Roll: " << valuesPitchRoll[1] <<
+		//list<double> valuesUltrasonic = ultrasonic->getDistance();
+		cout << i << " Pitch: " << valuesPitchRollYaw[0] << " Roll: " << valuesPitchRollYaw[1] << " Yaw: " << valuesPitchRollYaw[2] <<
 			" Temperature: " << valuesBarometer[0] << " Pressure: " << valuesBarometer[1] << "\n";
 		i++;
-		delay(10);
+		delay(5);
 	}
 
-	orientation->interruptOrientation();
-	barometer->interruptBaromter();
+	//orientation->interruptOrientation();
+	//barometer->interruptBaromter();
 
 	serverThread.join();
-	pitchRollThread.join();
+	pitchRollYawThread.join();
 	barometerThread.join();
-	//ultrasonicThread.join();
+	//ultrasonicThread.join();*/
   
 	return (0);
 }

@@ -2,6 +2,7 @@
 #include "../Sensor/AbstractSensor/Gyroscope.h"
 #include "../Sensor/AbstractSensor/Accelerometer.h"
 #include "../Sensor/MPU6050.h"
+#include "../Sensor/BNO080.h"
 
 class Orientation
 {
@@ -13,13 +14,14 @@ public:
 	void interruptOrientation();
 
 private:
-	Gyroscope *gyro;
-	Accelerometer *acc;
-	double pitch = 0.0, roll = 0.0;
+	//Gyroscope *gyro; 
+	//Accelerometer *acc;
+	BNO080 *bno;
+	//double pitch = 0.0, roll = 0.0;
 	bool run = false;
 
-	void calcPitchRoll();
-	double getXRotation(double accX, double accY, double accZ);
-	double getYRotation(double accX, double accY, double accZ);
+	//void calcPitchRoll();
+	//double getXRotation(double accX, double accY, double accZ);
+	//double getYRotation(double accX, double accY, double accZ);
 };
 

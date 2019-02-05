@@ -28,7 +28,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <signal.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
@@ -39,7 +38,8 @@
 #include <linux/spi/spidev.h>
 #include <dirent.h>
 #include "BNO080.h"
-#include <bcm2835.h>
+#include "wiringPi.h"
+#include "bcm2835.h"
 
 #ifndef NULL
 #define NULL 0
@@ -60,7 +60,7 @@ uint32_t FRS_READ_BUFFER[64];
 uint32_t FRS_WRITE_BUFFER[64];
 
 uint8_t SEQUENCENUMBER[7];
-unsigned int LOOPSLEEP = 2000;  // in microseconds, change to suit the operational data rate
+unsigned int LOOPSLEEP = 2;  // in microseconds, change to suit the operational data rate
 
 struct {
 	uint32_t buffer[MAX_PACKET_SIZE];
@@ -82,17 +82,6 @@ struct {
 	unsigned int requestedInterval;
 	unsigned int reportInterval;
 } gyroData;
-
-struct {
-	float lastYaw;
-	float lastPitch;
-	float lastRoll;
-	unsigned int requestedInterval;
-	unsigned int reportInterval;
-	float lastXRate;
-	float lastYRate;
-	float lastZRate;
-} gyroIntegratedRotationVectorData;
 
 struct {
 	unsigned int status;
@@ -132,22 +121,17 @@ struct {
 } stabilityData;
 
 
-volatile sig_atomic_t sig_exit = 0;
-void sig_handler(int signum) {
-	if (signum == SIGINT) fprintf(stderr, "received SIGINT\n");
-	if (signum == SIGTERM) fprintf(stderr, "received SIGTERM\n");
-	sig_exit = 1;
+BNO080::BNO080()
+{
 }
 
-int main(int argc, char const *argv[]) {
+BNO080::~BNO080()
+{
+}
 
+void BNO080::runBNO()
+{
 	for (uint32_t i = 0; i < sizeof(SEQUENCENUMBER); i++) SEQUENCENUMBER[i] = 0;
-
-	struct sigaction sig_action;
-	memset(&sig_action, 0, sizeof(struct sigaction));
-	sig_action.sa_handler = sig_handler;
-	sigaction(SIGTERM, &sig_action, NULL);
-	sigaction(SIGINT, &sig_action, NULL);
 
 	setup();
 	// Argument to start function controls the rate of reports
@@ -155,22 +139,21 @@ int main(int argc, char const *argv[]) {
 	// This example has one report per second (which may be too slow) (not tested)
 	start(1);
 
-	while (!sig_exit) {
-		usleep(LOOPSLEEP);
+	while (1) {
+		delay(LOOPSLEEP);
 		while (bcm2835_gpio_lev(INTGPIO) == 0) handleEvent();
 	}
 	start(0);
 	bcm2835_spi_end();
 	bcm2835_close();
-	return 0;
 }
 
-void handleEvent(void) {
+void BNO080::handleEvent(void) {
 	if (!collectPacket()) return;
 	if (spiRead.dataLength != 0) parseEvent();
 }
 
-void parseEvent(void) {
+void BNO080::parseEvent(void) {
 	if (spiRead.channel == CHANNEL_REPORTS) {
 		switch (spiRead.buffer[5]) {
 		case SENSOR_REPORTID_GAME_ROTATION_VECTOR:                  parseGameRotationVector(); break;
@@ -199,7 +182,7 @@ void parseEvent(void) {
 	if (spiRead.channel == CHANNEL_GYRO) parseGyroIntegratedRotationVector();
 }
 
-void reportFeatureResponse(void) {
+void BNO080::reportFeatureResponse(void) {
 	unsigned int reportInterval = (spiRead.buffer[8] << 24) + (spiRead.buffer[7] << 16) + (spiRead.buffer[6] << 8) + spiRead.buffer[5];
 	unsigned int batchInterval = (spiRead.buffer[12] << 24) + (spiRead.buffer[11] << 16) + (spiRead.buffer[10] << 8) + spiRead.buffer[9];
 	switch (spiRead.buffer[1]) {
@@ -231,7 +214,7 @@ void reportFeatureResponse(void) {
 	}
 }
 
-void reportCommandResponse(void) {
+void BNO080::reportCommandResponse(void) {
 	switch (spiRead.buffer[2]) {
 	case 0x84: printf("Error: device has reinitialised!\n"); break;  // bit 7 set indicates autonomous response 0x04 = Initialisation.  Sometimes caused by too much data being pushed.
 	case 0x06: printf("Save DCD.  Success: %d\n", spiRead.buffer[5]); break;
@@ -241,7 +224,7 @@ void reportCommandResponse(void) {
 	}
 }
 
-void parseGyroIntegratedRotationVector(void) {
+void BNO080::parseGyroIntegratedRotationVector(void) {
 	float Qx = (spiRead.buffer[1] << 8) + spiRead.buffer[0];
 	float Qy = (spiRead.buffer[3] << 8) + spiRead.buffer[2];
 	float Qz = (spiRead.buffer[5] << 8) + spiRead.buffer[4];
@@ -280,10 +263,10 @@ void parseGyroIntegratedRotationVector(void) {
 	gyroIntegratedRotationVectorData.lastYRate = Gy;
 	gyroIntegratedRotationVectorData.lastZRate = Gz;
 
-	printf("Gyro Integrated Rotation Vector. R:%+07.1f, P:%+07.1f, Y:%+07.1f, GX:%+07.1f, GY:%+07.1f, GZ:%+07.1f\n", roll, pitch, yaw, Gx, Gy, Gz);
+	//printf("Gyro Integrated Rotation Vector. R:%+07.1f, P:%+07.1f, Y:%+07.1f, GX:%+07.1f, GY:%+07.1f, GZ:%+07.1f\n", roll, pitch, yaw, Gx, Gy, Gz);
 }
 
-void parseGameRotationVector(void) {
+void BNO080::parseGameRotationVector(void) {
 	uint8_t newSequence = spiRead.buffer[5 + 1];
 	if (newSequence == gameRotationVectorData.lastSequence) return; // sometimes HINT is not brought low quickly, this checks to see if we are reading a report we have already seen.
 	gameRotationVectorData.lastSequence = newSequence;
@@ -353,7 +336,7 @@ void parseGameRotationVector(void) {
 	printf("Game Rotation Vector.  S: %d R:%+07.1f, P:%+07.1f, Y:%+07.1f\n", status, roll, pitch, yaw);
 }
 
-void parseLinearAccelerometer(void) {
+void BNO080::parseLinearAccelerometer(void) {
 	uint8_t newSequence = spiRead.buffer[5 + 1];
 	if (newSequence == linearAccelerometerData.lastSequence) return;
 	linearAccelerometerData.lastSequence = newSequence;
@@ -380,7 +363,7 @@ void parseLinearAccelerometer(void) {
 	printf("Lin. Accel.  S: %d X:%+07.3f, Y:%+07.3f, Z:%+07.3f\n", status, Ax, Ay, Az);
 }
 
-void parseAccelerometer(void) {
+void BNO080::parseAccelerometer(void) {
 	uint8_t newSequence = spiRead.buffer[5 + 1];
 	if (newSequence == accelerometerData.lastSequence) return;
 	accelerometerData.lastSequence = newSequence;
@@ -407,7 +390,7 @@ void parseAccelerometer(void) {
 	printf("Accel. S: %d X:%+07.3f, Y:%+07.3f, Z:%+07.3f\n", status, Ax, Ay, Az);
 }
 
-void parseCalibratedGyroscope(void) {
+void BNO080::parseCalibratedGyroscope(void) {
 	uint8_t newSequence = spiRead.buffer[5 + 1];
 	if (newSequence == gyroData.lastSequence) return;
 	gyroData.lastSequence = newSequence;
@@ -434,7 +417,7 @@ void parseCalibratedGyroscope(void) {
 	printf("Cal.Gyro. S: %d GX:%+07.1f, GY:%+07.1f, GZ:%+07.1f\n", status, Gx, Gy, Gz);
 }
 
-void parseStability(void) {
+void BNO080::parseStability(void) {
 	uint8_t newSequence = spiRead.buffer[5 + 1];
 	if (newSequence == stabilityData.lastSequence) return;
 	stabilityData.lastSequence = newSequence;
@@ -444,21 +427,21 @@ void parseStability(void) {
 	printf("Stability. S: %d \n", stabilityData.status);
 }
 
-void parseStabilisedRotationVector(void) {
+void BNO080::parseStabilisedRotationVector(void) {
 	printf("Not yet\n");
 }
 
-void parseStabilisedGameRotationVector(void) {
+void BNO080::parseStabilisedGameRotationVector(void) {
 	printf("Not yet\n");
 }
 
-void clearPersistentTare(void) {
+void BNO080::clearPersistentTare(void) {
 	reorient(0, 0, 0, 0);
 	eraseFrsRecord(SYSTEM_ORIENTATION);
 
 }
 
-void tare(void) {
+void BNO080::tare(void) {
 	spiWrite.buffer[0] = SHTP_REPORT_COMMAND_REQUEST; // set feature
 	spiWrite.buffer[1] = SEQUENCENUMBER[6]++;
 	spiWrite.buffer[2] = 0x03; // Tare command
@@ -487,7 +470,7 @@ void tare(void) {
 	sendPacket(CHANNEL_CONTROL, 12);
 }
 
-void calibrationSetup(char accel, char gyro, char mag) {
+void BNO080::calibrationSetup(char accel, char gyro, char mag) {
 	spiWrite.buffer[0] = SHTP_REPORT_COMMAND_REQUEST; // set feature
 	spiWrite.buffer[1] = SEQUENCENUMBER[6]++; // sequence number
 	spiWrite.buffer[2] = COMMAND_ME_CALIBRATE; // ME calibration
@@ -503,7 +486,7 @@ void calibrationSetup(char accel, char gyro, char mag) {
 	sendPacket(CHANNEL_CONTROL, 12);
 }
 
-void saveCalibration(void) {
+void BNO080::saveCalibration(void) {
 	spiWrite.buffer[0] = SHTP_REPORT_COMMAND_REQUEST; // set feature
 	spiWrite.buffer[1] = SEQUENCENUMBER[6]++;
 	spiWrite.buffer[2] = 0x06; // Save DCD
@@ -522,7 +505,7 @@ void saveCalibration(void) {
 	int counter = 0;
 	while (timeout < 1000) {
 		timeout += 1;
-		usleep(50);
+		delayMicroseconds(50);
 		while (bcm2835_gpio_lev(INTGPIO) == 0) {
 			collectPacket();
 			if (spiRead.buffer[2] != 0x06) { parseEvent(); break; }
@@ -533,7 +516,7 @@ void saveCalibration(void) {
 	printf("Calibration save timeout\n");
 }
 
-int reorient(float w, float x, float y, float z) {
+int BNO080::reorient(float w, float x, float y, float z) {
 	uint16_t W = (int16_t)(w / QP(14));
 	uint16_t X = (int16_t)(x / QP(14));
 	uint16_t Y = (int16_t)(y / QP(14));
@@ -554,7 +537,7 @@ int reorient(float w, float x, float y, float z) {
 	return(sendPacket(CHANNEL_CONTROL, 12));
 }
 
-int configureFeatureReport(uint8_t report, uint32_t reportPeriod) {
+int BNO080::configureFeatureReport(uint8_t report, uint32_t reportPeriod) {
 	spiWrite.buffer[0] = SHTP_REPORT_SET_FEATURE_COMMAND; // set feature
 	spiWrite.buffer[1] = report;
 	spiWrite.buffer[2] = 0x00; // feature flags
@@ -568,14 +551,14 @@ int configureFeatureReport(uint8_t report, uint32_t reportPeriod) {
 	spiWrite.buffer[10] = 0x00;
 	spiWrite.buffer[11] = 0x00;
 	spiWrite.buffer[12] = 0x00;  // batch interval (MSB)
-	spiWrite.buffer[13] = 0x00;  // sensor specific config word (LSB)
+	spiWrite.buffer[13] = 0x00;  // sensor specific config word (LSB)	//0x0204
 	spiWrite.buffer[14] = 0x00;
 	spiWrite.buffer[15] = 0x00;
 	spiWrite.buffer[16] = 0x00;  // sensor specific config word (MSB)
 	return(sendPacket(CHANNEL_CONTROL, 17));
 }
 
-int readFrsRecord(uint16_t recordType) {
+int BNO080::readFrsRecord(uint16_t recordType) {
 	spiWrite.buffer[0] = SHTP_REPORT_FRS_READ_REQUEST;
 	spiWrite.buffer[1] = 0x00;
 	spiWrite.buffer[2] = 0x00;
@@ -590,7 +573,7 @@ int readFrsRecord(uint16_t recordType) {
 	int counter = 0;
 	while (timeout < 1000) {
 		timeout += 1;
-		usleep(50);
+		delayMicroseconds(50);
 		while (bcm2835_gpio_lev(INTGPIO) == 0) {
 			collectPacket();
 			if (spiRead.buffer[0] != SHTP_REPORT_FRS_READ_RESPONSE) { parseEvent(); break; }
@@ -609,7 +592,7 @@ int readFrsRecord(uint16_t recordType) {
 	return(0);
 }
 
-int eraseFrsRecord(uint16_t recordType) {
+int BNO080::eraseFrsRecord(uint16_t recordType) {
 	spiWrite.buffer[0] = SHTP_REPORT_FRS_WRITE_REQUEST;
 	spiWrite.buffer[1] = 0x00;
 	spiWrite.buffer[2] = 0x00;//length lsb 
@@ -620,7 +603,7 @@ int eraseFrsRecord(uint16_t recordType) {
 	return(1);
 }
 
-int writeFrsWord(uint16_t recordType, uint32_t offset, uint32_t data) {
+int BNO080::writeFrsWord(uint16_t recordType, uint32_t offset, uint32_t data) {
 	spiWrite.buffer[0] = SHTP_REPORT_FRS_WRITE_REQUEST;
 	spiWrite.buffer[1] = 0x00;
 	spiWrite.buffer[2] = 0x01;//length lsb 
@@ -632,7 +615,7 @@ int writeFrsWord(uint16_t recordType, uint32_t offset, uint32_t data) {
 	writeFrsRecordWords(offset, data, 0);
 
 	for (int i = 0; i < 2000; i++) {
-		usleep(100);
+		delayMicroseconds(100);
 		while (bcm2835_gpio_lev(INTGPIO) == 0) {
 			collectPacket();
 			if (spiRead.buffer[0] != SHTP_REPORT_FRS_WRITE_RESPONSE) { parseEvent(); continue; }
@@ -649,7 +632,7 @@ int writeFrsWord(uint16_t recordType, uint32_t offset, uint32_t data) {
 	return(0);
 }
 
-int writeFrsRecord(uint16_t recordType, uint32_t length) {
+int BNO080::writeFrsRecord(uint16_t recordType, uint32_t length) {
 	spiWrite.buffer[0] = SHTP_REPORT_FRS_WRITE_REQUEST;
 	spiWrite.buffer[1] = 0x00;
 	spiWrite.buffer[2] = length & 0x00FF;//length lsb 
@@ -663,7 +646,7 @@ int writeFrsRecord(uint16_t recordType, uint32_t length) {
 	}
 
 	for (int i = 0; i < 2000; i++) {
-		usleep(100);
+		delayMicroseconds(100);
 		while (bcm2835_gpio_lev(INTGPIO) == 0) {
 			collectPacket();
 			if (spiRead.buffer[0] != SHTP_REPORT_FRS_WRITE_RESPONSE) { parseEvent(); continue; }
@@ -679,7 +662,7 @@ int writeFrsRecord(uint16_t recordType, uint32_t length) {
 	return(0);
 }
 
-int writeFrsRecordWords(uint32_t offset, uint32_t data0, uint32_t data1) {
+int BNO080::writeFrsRecordWords(uint32_t offset, uint32_t data0, uint32_t data1) {
 	spiWrite.buffer[0] = SHTP_REPORT_FRS_WRITE_DATA_REQUEST;
 	spiWrite.buffer[1] = 0x00;
 	spiWrite.buffer[2] = offset & 0x00FF;  //offset lsb
@@ -696,7 +679,7 @@ int writeFrsRecordWords(uint32_t offset, uint32_t data0, uint32_t data1) {
 	return(1);
 }
 
-int readFrsWord(uint16_t recordType, uint32_t offset, uint32_t* result) {
+int BNO080::readFrsWord(uint16_t recordType, uint32_t offset, uint32_t* result) {
 	spiWrite.buffer[0] = SHTP_REPORT_FRS_READ_REQUEST;
 	spiWrite.buffer[1] = 0x00;
 	spiWrite.buffer[2] = offset & 0x00FF;
@@ -710,7 +693,7 @@ int readFrsWord(uint16_t recordType, uint32_t offset, uint32_t* result) {
 	int timeout = 0;
 	while (timeout < 2000) {
 		timeout += 1;
-		usleep(50);
+		delayMicroseconds(50);
 		while (bcm2835_gpio_lev(INTGPIO) == 0) {
 			collectPacket();
 			if (spiRead.buffer[0] != SHTP_REPORT_FRS_READ_RESPONSE) { parseEvent(); continue; }
@@ -729,9 +712,9 @@ int readFrsWord(uint16_t recordType, uint32_t offset, uint32_t* result) {
 	return(0);
 }
 
-void start(uint32_t dataRate) { // set datarate to zero to stop sensors
+void BNO080::start(uint32_t dataRate) { // set datarate to zero to stop sensors
 	uint32_t odrPeriodMicrosecs = 0;
-	if (dataRate != 0) odrPeriodMicrosecs = 1000000 / dataRate;
+	if (dataRate != 0) odrPeriodMicrosecs = 10000/ dataRate;
 
 	// There is some interaction between the operational rates selected for the reports.
 	// You will have to look at the feature responses to see if a particular report
@@ -751,13 +734,13 @@ void start(uint32_t dataRate) { // set datarate to zero to stop sensors
 	// Read the datasheet for more details.
 
 	
-	configureFeatureReport(SENSOR_REPORTID_ROTATION_VECTOR, odrPeriodMicrosecs); // this is the interval between reports, expressed in microseconds
-	gameRotationVectorData.requestedInterval = odrPeriodMicrosecs;
+	/*configureFeatureReport(SENSOR_REPORTID_ROTATION_VECTOR, odrPeriodMicrosecs); // this is the interval between reports, expressed in microseconds
+	gyroIntegratedRotationVectorData.requestedInterval = odrPeriodMicrosecs;*/
 
 	configureFeatureReport(SENSOR_REPORTID_GYRO_INTEGRATED_ROTATION_VECTOR, odrPeriodMicrosecs); // this is the interval between reports, expressed in microseconds
-	gameRotationVectorData.requestedInterval = odrPeriodMicrosecs;
-	/*
-	configureFeatureReport(SENSOR_REPORTID_GAME_ROTATION_VECTOR, odrPeriodMicrosecs); // this is the interval between reports, expressed in microseconds
+	gyroIntegratedRotationVectorData.requestedInterval = odrPeriodMicrosecs;
+	
+	/*configureFeatureReport(SENSOR_REPORTID_GAME_ROTATION_VECTOR, odrPeriodMicrosecs); // this is the interval between reports, expressed in microseconds
 	gameRotationVectorData.requestedInterval = odrPeriodMicrosecs;
 
 	configureFeatureReport(SENSOR_REPORTID_GYROSCOPE_CALIBRATED, odrPeriodMicrosecs);
@@ -776,7 +759,7 @@ void start(uint32_t dataRate) { // set datarate to zero to stop sensors
 	stabilityData.requestedInterval = 500000;*/
 }
 
-void setupStabilityClassifierFrs(float threshold) {
+void BNO080::setupStabilityClassifierFrs(float threshold) {
 	threshold /= QP(24);
 	uint32_t result;
 	readFrsWord(STABILITY_DETECTOR_CONFIG, 0, &result);
@@ -787,7 +770,7 @@ void setupStabilityClassifierFrs(float threshold) {
 	//    if (duration != result) writeFrsWord(STABILITY_DETECTOR_CONFIG,1,duration);
 }
 
-void setup(void) {
+void BNO080::setup(void) {
 	if (!bcm2835_init()) {
 		printf("Unable to inititalise bcm2835\n");
 		exit(1);
@@ -812,11 +795,11 @@ void setup(void) {
 
 	//    reset device
 	bcm2835_gpio_clr(RESETGPIO);
-	usleep(20000);
+	delayMicroseconds(20000);
 	bcm2835_gpio_set(RESETGPIO);
 	int waitCount = 0;
 	while ((bcm2835_gpio_lev(INTGPIO) == 1) && (waitCount < 1000)) {
-		usleep(500);
+		delayMicroseconds(500);
 		waitCount += 1;
 	}
 	if (waitCount == 1000) { printf("Device did not wake on reset\n"); exit(1); }
@@ -824,7 +807,7 @@ void setup(void) {
 
 	waitCount = 0;
 	while ((bcm2835_gpio_lev(INTGPIO) == 1) && (waitCount < 100)) {
-		usleep(1000);
+		delayMicroseconds(1000);
 		waitCount += 1;
 	}
 	if (waitCount == 100 || !collectPacket()) { printf("EIMU:Unsolicited packet not received\n"); exit(1); }
@@ -849,7 +832,7 @@ void setup(void) {
 
 }
 
-int32_t collectPacket(void) {
+int32_t BNO080::collectPacket(void) {
 	int waitCount = 0;
 	volatile uint32_t* paddr = bcm2835_spi0 + BCM2835_SPI0_CS / 4;
 	volatile uint32_t* fifo = bcm2835_spi0 + BCM2835_SPI0_FIFO / 4;
@@ -860,7 +843,7 @@ int32_t collectPacket(void) {
 	spiRead.channel = 9;
 
 	while ((bcm2835_gpio_lev(INTGPIO) == 1) && (waitCount < 100)) { // should only be called when int is low so not really needed
-		usleep(500);
+		delayMicroseconds(500);
 		waitCount += 1;
 	}
 	if (waitCount == 100) return(0);  // timeout
@@ -901,7 +884,7 @@ int32_t collectPacket(void) {
 	return(1);
 }
 
-int32_t sendPacket(uint32_t channelNumber, uint32_t dataLength) {
+int32_t BNO080::sendPacket(uint32_t channelNumber, uint32_t dataLength) {
 	unsigned int header[4];
 	int waitCount = 0;
 	volatile uint32_t* paddr = bcm2835_spi0 + BCM2835_SPI0_CS / 4;
@@ -918,10 +901,10 @@ int32_t sendPacket(uint32_t channelNumber, uint32_t dataLength) {
 	header[1] = dataLength >> 8;
 	header[2] = channelNumber;
 	header[3] = SEQUENCENUMBER[channelNumber]++;
-	usleep(2000);  // makes things much more reliable - thankfully we are only sending commands infrequently
+	delayMicroseconds(2000);  // makes things much more reliable - thankfully we are only sending commands infrequently
 
 	while ((bcm2835_gpio_lev(INTGPIO) == 1) && (waitCount < 200)) {
-		usleep(500);
+		delayMicroseconds(500);
 		waitCount += 1;
 	}
 
