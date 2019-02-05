@@ -15,6 +15,9 @@ USED LIBs
 	TCPServer.h
 	kashimAstro - SimpleNetworks
 	--------------------
+	BNO080
+	Peter Budd
+	--------------------
 
 VERSIONS
 v0.0.1-alpha
