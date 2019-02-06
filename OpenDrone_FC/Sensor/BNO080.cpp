@@ -441,33 +441,38 @@ void BNO080::clearPersistentTare(void) {
 
 }
 
-void BNO080::tare(void) {
-	spiWrite.buffer[0] = SHTP_REPORT_COMMAND_REQUEST; // set feature
-	spiWrite.buffer[1] = SEQUENCENUMBER[6]++;
-	spiWrite.buffer[2] = 0x03; // Tare command
-	spiWrite.buffer[3] = 0x00; // perform Tare now
-	spiWrite.buffer[4] = 0x07; // all axes
-	spiWrite.buffer[5] = 0x01; // use gaming rotation vector
-	spiWrite.buffer[6] = 0x00; // reserved
-	spiWrite.buffer[7] = 0x00;
-	spiWrite.buffer[8] = 0x00;
-	spiWrite.buffer[9] = 0x00;
-	spiWrite.buffer[10] = 0x00;
-	spiWrite.buffer[11] = 0x00;
-	sendPacket(CHANNEL_CONTROL, 12);
-	spiWrite.buffer[0] = SHTP_REPORT_COMMAND_REQUEST; // set feature
-	spiWrite.buffer[1] = SEQUENCENUMBER[6]++;
-	spiWrite.buffer[2] = 0x03; // Tare command
-	spiWrite.buffer[3] = 0x01; // persist tare
-	spiWrite.buffer[4] = 0x00;
-	spiWrite.buffer[5] = 0x00;
-	spiWrite.buffer[6] = 0x00;
-	spiWrite.buffer[7] = 0x00;
-	spiWrite.buffer[8] = 0x00;
-	spiWrite.buffer[9] = 0x00;
-	spiWrite.buffer[10] = 0x00;
-	spiWrite.buffer[11] = 0x00;
-	sendPacket(CHANNEL_CONTROL, 12);
+void BNO080::tare(bool persis) {
+	if (!persis) {
+		spiWrite.buffer[0] = SHTP_REPORT_COMMAND_REQUEST; // set feature
+		spiWrite.buffer[1] = 0;
+		spiWrite.buffer[2] = 0x03; // Tare command
+		spiWrite.buffer[3] = 0x00; // perform Tare now
+		spiWrite.buffer[4] = 0x07; // all axes
+		spiWrite.buffer[5] = 0x03; // use gyro-integrated rv
+		spiWrite.buffer[6] = 0x00; // reserved
+		spiWrite.buffer[7] = 0x00;
+		spiWrite.buffer[8] = 0x00;
+		spiWrite.buffer[9] = 0x00;
+		spiWrite.buffer[10] = 0x00;
+		spiWrite.buffer[11] = 0x00;
+		sendPacket(CHANNEL_CONTROL, 12);
+	}
+	else 
+	{
+		spiWrite.buffer[0] = SHTP_REPORT_COMMAND_REQUEST; // set feature
+		spiWrite.buffer[1] = 0;
+		spiWrite.buffer[2] = 0x03; // Tare command
+		spiWrite.buffer[3] = 0x01; // persist tare
+		spiWrite.buffer[4] = 0x00;
+		spiWrite.buffer[5] = 0x00;
+		spiWrite.buffer[6] = 0x00;
+		spiWrite.buffer[7] = 0x00;
+		spiWrite.buffer[8] = 0x00;
+		spiWrite.buffer[9] = 0x00;
+		spiWrite.buffer[10] = 0x00;
+		spiWrite.buffer[11] = 0x00;
+		sendPacket(CHANNEL_CONTROL, 12);
+	}
 }
 
 void BNO080::calibrationSetup(char accel, char gyro, char mag) {

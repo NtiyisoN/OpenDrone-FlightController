@@ -54,7 +54,7 @@ class BNO080 {
 		int runtimeReorient(float w, float x, float y, float z);
 		void parseEvent(void);
 		void setCalibration(char accel, char gyro, char mag);
-		void tare(void);
+		void tare(bool persis);
 		void tareZ(void);
 		int readFrsRecord(uint16_t recordType);
 		int writeFrsWord(uint16_t recordType, uint32_t offset, uint32_t data);
