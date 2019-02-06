@@ -53,9 +53,6 @@ void Modbus::Interpret(string str)
 
 	if (packages == 1) {
 		int functionCode = stoi(result.at(3));
-		if (functionCode == 20) {
-
-		}
 	}
 
     for (i = 0; i < packages; i++) {
