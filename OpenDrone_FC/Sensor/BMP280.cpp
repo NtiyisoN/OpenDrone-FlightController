@@ -7,14 +7,17 @@
  * 	@version 0.0.1 07.01.2019
  */
 #include "BMP280.h"
+#include "../Controller/Exit.h"
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include <iostream>
 using namespace std;
 
 #define DEVICE_ADDRESS 0x76
-#define REG_TEMPERATURE 0xFA
-#define REG_PRESSURE 0xF7
+#define REG_TEMPERATURE 0xFC
+#define REG_PRESSURE 0xF9
+#define CTR_MEAS 0xF4
+#define RESET 0xE0
 
 BMP280::BMP280()
 {
@@ -23,6 +26,21 @@ BMP280::BMP280()
 		cout << "wiringPiI2CSetup(addressBarometer)\n";
 		exit(1);
 	}
+	wiringPiI2CWriteReg8(fd, RESET, 0xB6);
+
+	delay(2000);
+
+	wiringPiI2CWriteReg8(fd, CTR_MEAS, 0xFF);
+	
+	delay(2000);
+	//wiringPiI2CWriteReg8(fd, CTR_MEAS, 0x5F);
+
+	int id = wiringPiI2CReadReg8(fd, 0xD0);
+	cout  << "Id: " << id << "\n";
+	/*if (id != 88) {
+		Exit *exit = Exit::getInstance();
+		exit->sendError(0x101, true);
+	}*/
 }
 
 int BMP280::readRawData(int addr)
@@ -30,17 +48,21 @@ int BMP280::readRawData(int addr)
 	int high_byte, middle_byte, low_byte, value;
 
 	low_byte = wiringPiI2CReadReg8(fd, addr);
-	middle_byte = wiringPiI2CReadReg8(fd, addr + 1);
-	value = (middle_byte << 8) | low_byte;
-	high_byte = wiringPiI2CReadReg8(fd, addr + 2);
-	value = (high_byte << 16) | value;
-	value = value << 4;
+	cout << low_byte << "\t";
+	low_byte = low_byte >> 4;
+	middle_byte = wiringPiI2CReadReg8(fd, addr - 1);
+	cout << middle_byte << "\t";
+	value = (middle_byte << 4) | low_byte;
+	high_byte = wiringPiI2CReadReg8(fd, addr - 2);
+	cout << high_byte << "\n";
+
+	value = (high_byte << 12) | value;
 	return value;
 }
 
 void BMP280::calcBaromter()
 {
-	this->temperature = readRawData(REG_TEMPERATURE);	//Temperature
+	//this->temperature = readRawData(REG_TEMPERATURE);	//Temperature
 	this->pressure = readRawData(REG_PRESSURE);		//Pressure
 }
 

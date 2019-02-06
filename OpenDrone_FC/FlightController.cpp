@@ -11,6 +11,7 @@
 #include "Sensor/AbstractSensor/Barometer.h"
 #include "Sensor/AbstractSensor/Ultrasonic.h"
 #include "Sensor/BMP388.h"
+#include "Sensor/BMP280.h"
 #include "Sensor/BMP180.h"
 #include "Sensor/BNO080.h"
 
@@ -68,7 +69,7 @@ void FlightController::initObjects()
 	if (rc != 0)
 	{
 		//The GPIO-Setup did not work
-		error->sendError(0x01, false);
+		error->sendError(0x01, true);
 		return;
 	}
   
@@ -80,7 +81,6 @@ void FlightController::initObjects()
 
 int FlightController::run()
 {
-
 	server = TCPServer::getInstance();
 	thread serverThread(runServer);
 	//while (!server->connected) { delay(50); };
@@ -91,24 +91,17 @@ int FlightController::run()
 
 	thread pitchRollYawThread(runOrientation);
 	thread barometerThread(runBarometer);
-	//thread ultrasonicThread(runUltrasonic);
 
 	delay(1000);
-
-	//Calibration *calibration = new Calibration(orientation);
-	//calibration->calibrate();
-
-	//delay(250);
 
 	int i = 0;
 	while (i < 100000) {
 		double *valuesPitchRollYaw = orientation->getPitchRoll();
 		double *valuesBarometer = barometer->getBarometerValues();
-		//list<double> valuesUltrasonic = ultrasonic->getDistance();
 		cout << i << " Pitch: " << valuesPitchRollYaw[0] << " Roll: " << valuesPitchRollYaw[1] << " Yaw: " << valuesPitchRollYaw[2] <<
 			" Temperature: " << valuesBarometer[0] << " Pressure: " << valuesBarometer[1] << "\n";
 		i++;
-		delay(5);
+		delay(100);
 	}
 
 	//orientation->interruptOrientation();
@@ -117,7 +110,6 @@ int FlightController::run()
 	serverThread.join();
 	pitchRollYawThread.join();
 	barometerThread.join();
-	//ultrasonicThread.join();*/
   
 	return (0);
 }

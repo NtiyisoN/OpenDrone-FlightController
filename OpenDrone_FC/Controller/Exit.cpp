@@ -28,6 +28,9 @@ void Exit::sendError(int errorcode, bool stopFC) {
 	char *str = (char*)(ss.str().c_str());
 
 	server->sendMessage(str);
+	if (stopFC) {
+		exit(1);
+	}
 }
 
 Exit::~Exit()

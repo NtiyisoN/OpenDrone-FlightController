@@ -8,12 +8,17 @@
  */
 #include "BMP180.h"
 #include <bmp180.h>
+#include "../Controller/Exit.h"
 #include <wiringPi.h>
 #include <iostream>
 
 BMP180::BMP180()
 {
-	bmp180Setup(200);
+	int i = bmp180Setup(200);
+	if (i != 0) {
+		//Exit *exit = Exit::getInstance();
+		//exit->sendError(0x100, true);
+	}
 }
 
 void BMP180::calcBaromter()

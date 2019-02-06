@@ -51,6 +51,10 @@ void Modbus::Interpret(string str)
     //Amount of commands
     int packages = stoi(result.at(2));
 
+	if (packages == 1) {
+		int functionCode = stoi(result.at(3));
+	}
+
     for (i = 0; i < packages; i++) {
         int functionCode = stoi(result.at(3+(i*3)));
         string data = result.at(4+(i*3));
