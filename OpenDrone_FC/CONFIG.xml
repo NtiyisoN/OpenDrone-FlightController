@@ -37,7 +37,7 @@
       <possible>-BMI088</possible>
       <possible>-BMF055</possible>
     </gyroscope>
-    <barometer sensor="BMP280">
+    <barometer sensor="BMP180">
       <possible>BMP388</possible>
       <possible>BMP180</possible>
       <possible>BMP280</possible>

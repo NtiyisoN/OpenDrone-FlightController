@@ -34,12 +34,32 @@ void PWMMotorTest::SetSpeed(short pin ,int speed) {
 	pwmWrite(PIN_BASE + pin, speed);
 }
 
+void PWMMotorTest::ExitMotor() {
+	pwmWrite(PIN_BASE + 16, 0);
+}
+
 void PWMMotorTest::ArmMotor() {
 	pwmWrite(PIN_BASE + 16, 0);
 	delay(2000);
 	cout << "MIN\n";
 	pwmWrite(PIN_BASE + 16, MIN_PWM);
 	delay(5000);
+}
+
+void PWMMotorTest::CalMotor() {
+	cout << "MAX\n";
+	pwmWrite(PIN_BASE + 16, MAX_PWM);
+	getchar();
+	cout << "MIN\n";
+	pwmWrite(PIN_BASE + 16, MIN_PWM);
+	delay(5000);
+	cout << "0\n";
+	pwmWrite(PIN_BASE + 16, 0);
+	delay(5000);
+	cout << "MIN\n";
+	pwmWrite(PIN_BASE + 16, MIN_PWM);
+	delay(5000);
+	getchar();
 }
 
 void PWMMotorTest::Test()

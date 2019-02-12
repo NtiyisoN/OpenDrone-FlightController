@@ -12,7 +12,9 @@ class PWMMotorTest
 public:
 	PWMMotorTest();
 	void SetSpeed(short pin, int speed);
+	void ExitMotor();
 	void ArmMotor();
+	void CalMotor();
 	void Test();
 	void Setup();
 	~PWMMotorTest();
