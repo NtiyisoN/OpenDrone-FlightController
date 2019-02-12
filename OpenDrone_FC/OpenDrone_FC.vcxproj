@@ -73,6 +73,7 @@
     <ClCompile Include="Controller\Calibration.cpp" />
     <ClCompile Include="Controller\Exit.cpp" />
     <ClCompile Include="Controller\Orientation.cpp" />
+    <ClCompile Include="Controller\PID.cpp" />
     <ClCompile Include="Controller\UltrasonicDistance.cpp" />
     <ClCompile Include="Filter\Filter.cpp" />
     <ClCompile Include="FlightController.cpp" />
@@ -96,6 +97,7 @@
     <ClInclude Include="Controller\Calibration.h" />
     <ClInclude Include="Controller\Exit.h" />
     <ClInclude Include="Controller\Orientation.h" />
+    <ClInclude Include="Controller\PID.h" />
     <ClInclude Include="Controller\UltrasonicDistance.h" />
     <ClInclude Include="Network\Modbus.h" />
     <ClInclude Include="Sensor\BMF055.h" />

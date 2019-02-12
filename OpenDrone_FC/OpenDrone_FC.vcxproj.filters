@@ -22,6 +22,7 @@
     <ClCompile Include="Sensor\BNO080.cpp" />
     <ClCompile Include="XML\XMLParser.cpp" />
     <ClCompile Include="Controller\Exit.cpp" />
+    <ClCompile Include="Controller\PID.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controller\Calibration.h" />
@@ -49,6 +50,7 @@
     <ClInclude Include="XML\XMLParser.h" />
     <ClInclude Include="Network\Modbus.h" />
     <ClInclude Include="Controller\Exit.h" />
+    <ClInclude Include="Controller\PID.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="CONFIG.xml" />

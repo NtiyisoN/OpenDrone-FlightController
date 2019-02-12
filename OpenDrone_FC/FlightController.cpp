@@ -21,6 +21,9 @@
 #include "Controller/Orientation.h"
 #include "Controller/UltrasonicDistance.h"
 #include "Controller/Exit.h"
+#include "Controller/PID.h"
+
+#include "Motor/PWMMotorTest.h"
 
 #include "XML/XMLParser.h"
 
@@ -36,6 +39,8 @@ UltrasonicDistance *ultrasonic;
 XMLParser *parser;
 TCPServer *server;
 Exit *error;
+PID *pid;
+PWMMotorTest *pwm;
 
 FlightController::FlightController()
 {
@@ -59,6 +64,12 @@ static void runOrientation()
 static void runServer()
 {
 	server->startUp();
+}
+
+static void runPid(Orientation *curOrientation, PWMMotorTest *curPWM) {
+	cout << "Test";
+	pid = new PID(curOrientation, curPWM);
+	pid->calcValues();
 }
 
 void FlightController::initObjects() 
@@ -92,9 +103,49 @@ int FlightController::run()
 	thread pitchRollYawThread(runOrientation);
 	thread barometerThread(runBarometer);
 
-	delay(1000);
+	delay(500);
 
-	int i = 0;
+	pwm = new PWMMotorTest();
+	pwm->ArmMotor();
+	/*cout << "Hallo";
+	getchar();
+	pwm->CalMotor();
+	cout << "Tim";
+	getchar();*/
+
+	/*cout << "Motor 0:";
+	cout.flush();
+	pwm->SetSpeed(0, 300);
+	delay(2000);
+	pwm->SetSpeed(0, 0);
+
+	delay(2000);
+	cout << "Motor 1:";
+	cout.flush();
+	pwm->SetSpeed(1, 300);
+	delay(2000);
+	pwm->SetSpeed(1, 0);
+
+	delay(2000);
+	cout << "Motor 2:";
+	cout.flush();
+	pwm->SetSpeed(2, 300);
+	delay(2000);
+	pwm->SetSpeed(2, 0);
+
+	delay(2000);
+	cout << "Motor 3:";
+	cout.flush();
+	pwm->SetSpeed(3, 300);
+	delay(2000);
+	pwm->SetSpeed(3, 0);*/
+
+	thread pidController(runPid, orientation, pwm);
+
+	delay(500);
+
+
+	/*int i = 0;
 	while (i < 100000) {
 		double *valuesPitchRollYaw = orientation->getPitchRoll();
 		double *valuesBarometer = barometer->getBarometerValues();
@@ -104,8 +155,8 @@ int FlightController::run()
 		delay(100);
 	}
 
-	//orientation->interruptOrientation();
-	//barometer->interruptBaromter();
+	orientation->interruptOrientation();
+	barometer->interruptBaromter();*/
 
 	serverThread.join();
 	pitchRollYawThread.join();
