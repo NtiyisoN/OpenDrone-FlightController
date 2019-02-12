@@ -15,9 +15,9 @@
 using namespace std;
 
 #define PIN_BASE 300
-#define MAX_PWM 400
-#define MIN_PWM 200
-#define HERTZ 45
+#define MAX_PWM 2000
+#define MIN_PWM 1000
+#define HERTZ 250
 
 PWMMotorTest::PWMMotorTest()
 {
@@ -59,7 +59,7 @@ void PWMMotorTest::CalMotor() {
 	cout << "MIN\n";
 	pwmWrite(PIN_BASE + 16, MIN_PWM);
 	delay(5000);
-	getchar();
+	//getchar();
 }
 
 void PWMMotorTest::Test()

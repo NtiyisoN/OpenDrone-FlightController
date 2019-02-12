@@ -24,11 +24,15 @@
 
 #include "XML/XMLParser.h"
 
+#include "Motor/PWMMotorTest.h"
+
 #include <wiringPi.h>
 #include <iostream>
 #include <thread>
 #include <fstream>
 using namespace std;
+
+PWMMotorTest *pw = new PWMMotorTest();
 
 Orientation *orientation;
 Barometer *barometer;
