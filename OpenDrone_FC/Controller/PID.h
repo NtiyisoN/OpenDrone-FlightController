@@ -19,20 +19,20 @@ private:
 	int esc_1, esc_2, esc_3, esc_4;
 	int throttle;
 
-	float pid_p_gain_roll = 0.65;               //Gain setting for the roll P-controller 1.3
-	float pid_i_gain_roll = 0.2;              //Gain setting for the roll I-controller 0.4
-	float pid_d_gain_roll = 9.0;              //Gain setting for the roll D-controller 18.0
-	int pid_max_roll = 1000;                    //Maximum output of the PID-controller (+/-)
+	float pid_p_gain_roll = 0.69;               //Gain setting for the roll P-controller 0.8
+	float pid_i_gain_roll = 0.021;              //Gain setting for the roll I-controller 0.0175
+	float pid_d_gain_roll = 17.0;              //Gain setting for the roll D-controller 10.0
+	int pid_max_roll = 1500;                    //Maximum output of the PID-controller (+/-)
 
 	float pid_p_gain_pitch = pid_p_gain_roll;  //Gain setting for the pitch P-controller.
 	float pid_i_gain_pitch = pid_i_gain_roll;  //Gain setting for the pitch I-controller.
 	float pid_d_gain_pitch = pid_d_gain_roll;  //Gain setting for the pitch D-controller.
 	int pid_max_pitch = pid_max_roll;          //Maximum output of the PID-controller (+/-)
 
-	float pid_p_gain_yaw = 2.0;                //Gain setting for the pitch P-controller. //4.0
-	float pid_i_gain_yaw = 0.01;               //Gain setting for the pitch I-controller. //0.02
+	float pid_p_gain_yaw = 4.0;                //Gain setting for the pitch P-controller. //4.0
+	float pid_i_gain_yaw = 0.02;               //Gain setting for the pitch I-controller. //0.02
 	float pid_d_gain_yaw = 0.00;                //Gain setting for the pitch D-controller. 0.00
-	int pid_max_yaw = 1000;                     //Maximum output of the PID-controller (+/-)
+	int pid_max_yaw = 1500;                     //Maximum output of the PID-controller (+/-)
 
 	bool auto_level = true;                 //Auto level on (true) or off (false)
 

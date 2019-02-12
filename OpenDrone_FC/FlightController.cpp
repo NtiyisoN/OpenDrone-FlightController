@@ -35,8 +35,6 @@
 #include <fstream>
 using namespace std;
 
-PWMMotorTest *pw = new PWMMotorTest();
-
 Orientation *orientation;
 Barometer *barometer;
 UltrasonicDistance *ultrasonic;
@@ -110,6 +108,8 @@ int FlightController::run()
 	delay(500);
 
 	pwm = new PWMMotorTest();
+	pwm->ExitMotor();
+	getchar();
 	pwm->ArmMotor();
 	/*cout << "Hallo";
 	getchar();
@@ -162,7 +162,7 @@ int FlightController::run()
 	orientation->interruptOrientation();
 	barometer->interruptBaromter();*/
 
-	serverThread.join();
+	//serverThread.join();
 	pitchRollYawThread.join();
 	barometerThread.join();
   

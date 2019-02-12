@@ -9,6 +9,8 @@ PID::PID(Orientation *o, PWMMotorTest *p)
 
 void PID::calcPid() {
 	double *ar = orientation->getPitchRoll();
+	ar[1] = 0;
+	ar[2] = 0;
 	/*double ar[3];
 	ar[0] = 50;
 	ar[1] = 0;
@@ -49,13 +51,8 @@ void PID::calcPid() {
 	else if (pid_output_yaw < pid_max_yaw * -1)pid_output_yaw = pid_max_yaw * -1;
 
 	pid_last_yaw_d_error = pid_error_temp;
-
-	if (pid_output_pitch < 0) pid_output_pitch *= -1;
-	if (pid_output_roll < 0) pid_output_roll *= -1;
-	if (pid_output_yaw < 0) pid_output_yaw *= -1;
-
-	std::cout << pid_output_pitch << " " << pid_output_roll << " " << pid_output_yaw << "\n";
-	std::cout.flush();
+	//std::cout << pid_output_pitch << " " << pid_output_roll << " " << pid_output_yaw << "\n";
+	//std::cout.flush();
 }
 
 void PID::calcValues()
@@ -102,28 +99,29 @@ void PID::calcValues()
 		esc_3 = throttle + pid_output_pitch - pid_output_roll - pid_output_yaw; //Calculate the pulse for esc 3 (rear-left - CCW)
 		esc_4 = throttle - pid_output_pitch - pid_output_roll + pid_output_yaw; //Calculate the pulse for esc 4 (front-left - CW)
 
-		if (esc_1 < 210) esc_1 = 210;                                         //Keep the motors running.
-		if (esc_2 < 210) esc_2 = 210;                                         //Keep the motors running.
-		if (esc_3 < 210) esc_3 = 210;                                         //Keep the motors running.
-		if (esc_4 < 210) esc_4 = 210;                                         //Keep the motors running.
+		if (esc_1 < 1200) esc_1 = 1200;                                         //Keep the motors running.
+		if (esc_2 < 1200) esc_2 = 1200;                                         //Keep the motors running.
+		if (esc_3 < 1200) esc_3 = 1200;                                         //Keep the motors running.
+		if (esc_4 < 1200) esc_4 = 1200;                                         //Keep the motors running.
 
-		if (esc_1 > 400) esc_1 = 400;                                           //Limit the esc-1 pulse to 400.
-		if (esc_2 > 400) esc_2 = 400;                                           //Limit the esc-2 pulse to 400.
-		if (esc_3 > 400) esc_3 = 400;                                           //Limit the esc-3 pulse to 400.
-		if (esc_4 > 400) esc_4 = 400;                                           //Limit the esc-4 pulse to 400.  
+		if (esc_1 > 2000) esc_1 = 2000;                                           //Limit the esc-1 pulse to 400.
+		if (esc_2 > 2000) esc_2 = 2000;                                           //Limit the esc-2 pulse to 400.
+		if (esc_3 > 2000) esc_3 = 2000;                                           //Limit the esc-3 pulse to 400.
+		if (esc_4 > 2000) esc_4 = 2000;                                           //Limit the esc-4 pulse to 400.  
 		
 																			   
 		/*pwm->SetSpeed(0, esc_1);
-		pwm->SetSpeed(1, esc_2);*/
-		//pwm->SetSpeed(2, esc_1);
-		//pwm->SetSpeed(3, esc_4);
+		pwm->SetSpeed(1, esc_2);
+		pwm->SetSpeed(2, esc_1);
+		pwm->SetSpeed(3, esc_4);*/
+		pwm->SetSpeed(3, esc_1);
+		pwm->SetSpeed(2, esc_2);
 
-		std::cout << esc_1 << " " << esc_2 << " " << esc_3 << " " << esc_4 << "\n";
-		delay(10);
+		//std::cout << esc_1 << " " << esc_2 << " " << esc_3 << " " << esc_4 << "\n";
 	}
 	std::cout << "Stop";
 	std::cout.flush();
-	//pwm->SetSpeed(16, 0);
+	pwm->SetSpeed(16, 0);
 }
 
 
