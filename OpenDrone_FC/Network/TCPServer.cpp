@@ -22,6 +22,7 @@
 #include <sstream>
 #include <typeinfo>
 #include <stdbool.h>
+#include "../Controller/PID.h"
 
 #define TRUE   1  
 #define FALSE  0  
@@ -215,8 +216,8 @@ void TCPServer::checkIOOperation(fd_set readfds) {
                 //Close the socket and mark as 0 in list for reuse  
                 close(sd);
                 client_socket[i] = 0;
-				//TODO: Drone should land -- now -> exit the FC
-				exit(1);
+				PID *pid = PID::getInstance(NULL, NULL);
+				pid->setRun(false);
             }
         }
     }

@@ -15,16 +15,20 @@ public:
 	void setP(float curP);
 	void setI(float curI);
 	void setD(float curD);
+	void setThrottle(float curThrottle);
+	void setRun(bool curRun);
+	void armMotor();
 	Orientation *getOrientation();
 
 private:
 	PID(Orientation *o, PWMMotorTest *p);
-	PWMMotorTest *pwm;
-	Orientation *orientation;
+	PWMMotorTest *pwm = NULL;
+	Orientation *orientation = NULL;
 
 	long time;
 	int esc_1, esc_2, esc_3, esc_4;
-	int throttle;
+	int throttle = 1500;
+	bool run = false;
 
 	bool auto_level = true;                 //Auto level on (true) or off (false)
 

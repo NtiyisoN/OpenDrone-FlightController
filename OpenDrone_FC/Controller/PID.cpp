@@ -35,6 +35,7 @@ PID::PID(Orientation *o, PWMMotorTest *p)
 }
 
 void PID::calcPid() {
+	//std::cout << pid_p_gain_roll << " " << pid_i_gain_roll << " " << pid_d_gain_roll << "\n";
 	double *ar = orientation->getPitchRoll();
 	ar[1] = 0;
 	ar[2] = 0;
@@ -85,8 +86,10 @@ void PID::calcPid() {
 void PID::calcValues()
 {
 	std::cout << "Start";
-	time = millis();
-	while ((millis() - time) < 30000) {
+	while (!run) {
+		delay(50);
+	}
+	while (run) {
 		//The PID set point in degr1ees per second is determined by the roll receiver input.
 		//In the case of deviding by 3 the max roll rate is aprox 164 degrees per second ( (500-8)/3 = 164d/s ).
 		pid_roll_setpoint = 0;
@@ -119,14 +122,12 @@ void PID::calcValues()
 
 		calcPid();
 
-		throttle = 1500;                                      //We need the throttle signal as a base signal.
-
 		esc_1 = throttle - pid_output_pitch + pid_output_roll - pid_output_yaw; //Calculate the pulse for esc 1 (front-right - CCW)
 		esc_2 = throttle + pid_output_pitch + pid_output_roll + pid_output_yaw; //Calculate the pulse for esc 2 (rear-right - CW)
 		esc_3 = throttle + pid_output_pitch - pid_output_roll - pid_output_yaw; //Calculate the pulse for esc 3 (rear-left - CCW)
 		esc_4 = throttle - pid_output_pitch - pid_output_roll + pid_output_yaw; //Calculate the pulse for esc 4 (front-left - CW)
 
-		int speedMin = 1250;
+		int speedMin = 1200;
 		if (esc_1 < speedMin) esc_1 = speedMin;                                         //Keep the motors running.
 		if (esc_2 < speedMin) esc_2 = speedMin;                                         //Keep the motors running.
 		if (esc_3 < speedMin) esc_3 = speedMin;                                         //Keep the motors running.
@@ -153,21 +154,50 @@ void PID::calcValues()
 	std::cout << "Stop";
 	std::cout.flush();
 	pwm->SetSpeed(16, 0);
+
+	//TODO: Change this
+	exit(1);
 }
 
 void PID::setP(float curP) {
-	pid_p_gain_roll = curP;
-	pid_p_gain_pitch = curP;
+	if (curP != 0) {
+		pid_p_gain_roll = curP;
+		pid_p_gain_pitch = curP;
+	}
 }
 
 void PID::setI(float curI) {
-	pid_i_gain_roll = curI;
-	pid_i_gain_pitch = curI;
+	if (curI != 0) {
+		pid_i_gain_roll = curI;
+		pid_i_gain_pitch = curI;
+	}
 }
 
 void PID::setD(float curD) {
-	pid_d_gain_roll = curD;
-	pid_d_gain_pitch = curD;
+	if (curD != 0) {
+		pid_d_gain_roll = curD;
+		pid_d_gain_pitch = curD;
+	}
+}
+
+void PID::setRun(bool curRun) {
+	run = curRun;
+}
+
+void PID::armMotor() {
+	pwm->ExitMotor();
+	pwm->ArmMotor();
+}
+
+void PID::setThrottle(float curThrottle) {
+	if (curThrottle >= 0 && curThrottle <= 100) 
+	{
+		throttle = 1500 + (curThrottle * 5);		//1500 - 2000
+	}
+	else if (curThrottle < 0 && curThrottle >= -100) 
+	{
+		throttle = 1500 + (curThrottle * 2.5);		//1250 - 1500
+	}
 }
 
 Orientation *PID::getOrientation() {

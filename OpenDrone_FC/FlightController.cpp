@@ -71,6 +71,7 @@ static void runServer()
 static void runPid(Orientation *curOrientation, PWMMotorTest *curPWM) {
 	cout << "Test";
 	pid = PID::getInstance(curOrientation, curPWM);
+	//cout << pid << "\n";
 	pid->calcValues();
 }
 
@@ -97,7 +98,9 @@ int FlightController::run()
 	server = TCPServer::getInstance();
 	thread serverThread(runServer);
 	while (!server->connected) { delay(50); };
-	
+	cout << "Connected: ";
+	cout.flush();
+
 	initObjects();
 
 	delay(250);
@@ -108,41 +111,11 @@ int FlightController::run()
 	delay(500);
 
 	pwm = new PWMMotorTest();
-	pwm->ExitMotor();
-	getchar();
-	pwm->ArmMotor();
 	/*cout << "Hallo";
 	getchar();
 	pwm->CalMotor();
 	cout << "Tim";
 	getchar();*/
-
-	/*cout << "Motor 0:";
-	cout.flush();
-	pwm->SetSpeed(0, 300);
-	delay(2000);
-	pwm->SetSpeed(0, 0);
-
-	delay(2000);
-	cout << "Motor 1:";
-	cout.flush();
-	pwm->SetSpeed(1, 300);
-	delay(2000);
-	pwm->SetSpeed(1, 0);
-
-	delay(2000);
-	cout << "Motor 2:";
-	cout.flush();
-	pwm->SetSpeed(2, 300);
-	delay(2000);
-	pwm->SetSpeed(2, 0);
-
-	delay(2000);
-	cout << "Motor 3:";
-	cout.flush();
-	pwm->SetSpeed(3, 300);
-	delay(2000);
-	pwm->SetSpeed(3, 0);*/
 
 	thread pidController(runPid, orientation, pwm);
 
@@ -162,7 +135,7 @@ int FlightController::run()
 	orientation->interruptOrientation();
 	barometer->interruptBaromter();*/
 
-	//serverThread.join();
+	serverThread.join();
 	pitchRollYawThread.join();
 	barometerThread.join();
   
