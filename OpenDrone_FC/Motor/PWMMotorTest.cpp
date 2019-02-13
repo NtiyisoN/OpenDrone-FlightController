@@ -17,7 +17,7 @@ using namespace std;
 #define PIN_BASE 300
 #define MAX_PWM 2000
 #define MIN_PWM 1000
-#define HERTZ 250
+#define HERTZ 50
 
 PWMMotorTest::PWMMotorTest()
 {
@@ -31,7 +31,7 @@ PWMMotorTest::PWMMotorTest()
 }
 
 void PWMMotorTest::SetSpeed(short pin ,int speed) {
-	pwmWrite(PIN_BASE + pin, speed);
+	pwmWrite(PIN_BASE + pin, speed*0.208);
 }
 
 void PWMMotorTest::ExitMotor() {

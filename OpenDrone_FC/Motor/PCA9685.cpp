@@ -102,7 +102,8 @@ void PCA9685PWMFreq(int fd, float freq)
 	// To set pwm frequency we have to set the prescale register. The formula is:
 	// prescale = round(osc_clock / (4096 * frequency))) - 1 where osc_clock = 25 MHz
 	// Further info here: http://www.nxp.com/documents/data_sheet/PCA9685.pdf Page 24
-	int prescale = (int)(25000000.0f / (4096 * freq) - 0.5f);
+	//int prescale = (int)(25000000.0f / (2000 * freq) - 0.5f);
+	int prescale = (int)(25000000.0f / 1 * freq)-2.0f;
 
 	// Get settings and calc bytes for the different states.
 	int settings = wiringPiI2CReadReg8(fd, PCA9685_MODE1) & 0x7F;	// Set restart bit to 0
@@ -225,12 +226,7 @@ static void myPwmWrite(struct wiringPiNodeStruct *node, int pin, int value)
 	int fd = node->fd;
 	int ipin = pin - node->pinBase;
 
-	if (value >= 4096)
-		PCA9685FullOn(fd, ipin, 1);
-	else if (value > 0)
-		PCA9685PWMWrite(fd, ipin, 0, value);	// (Deactivates full-on and off by itself)
-	else
-		PCA9685FullOff(fd, ipin, 1);
+	PCA9685PWMWrite(fd, ipin, 0, value);	// (Deactivates full-on and off by itself)
 }
 
 /**

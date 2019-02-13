@@ -111,13 +111,15 @@ int FlightController::run()
 	delay(500);
 
 	pwm = new PWMMotorTest();
+	pwm->ExitMotor();
+	
 	/*cout << "Hallo";
 	getchar();
 	pwm->CalMotor();
 	cout << "Tim";
 	getchar();*/
 
-	thread pidController(runPid, orientation, pwm);
+	//thread pidController(runPid, orientation, pwm);
 
 	delay(500);
 
