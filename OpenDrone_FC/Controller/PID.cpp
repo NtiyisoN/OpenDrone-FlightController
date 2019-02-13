@@ -1,6 +1,19 @@
 #include "PID.h"
 
 
+PID* PID::instance = 0;
+
+PID * PID::getInstance(Orientation *o, PWMMotorTest *p)
+{
+	if (instance == 0)
+	{
+		instance = new PID(o, p);
+	}
+
+	return instance;
+}
+
+
 PID::PID(Orientation *o, PWMMotorTest *p)
 {
 	orientation = o;
@@ -122,6 +135,25 @@ void PID::calcValues()
 	std::cout << "Stop";
 	std::cout.flush();
 	pwm->SetSpeed(16, 0);
+}
+
+void PID::setP(float curP) {
+	pid_p_gain_roll = curP;
+	pid_p_gain_pitch = curP;
+}
+
+void PID::setI(float curI) {
+	pid_i_gain_roll = curI;
+	pid_i_gain_pitch = curI;
+}
+
+void PID::setD(float curD) {
+	pid_d_gain_roll = curD;
+	pid_d_gain_pitch = curD;
+}
+
+Orientation *PID::getOrientation() {
+	return orientation;
 }
 
 

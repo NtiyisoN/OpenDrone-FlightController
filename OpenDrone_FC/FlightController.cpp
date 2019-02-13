@@ -70,7 +70,7 @@ static void runServer()
 
 static void runPid(Orientation *curOrientation, PWMMotorTest *curPWM) {
 	cout << "Test";
-	pid = new PID(curOrientation, curPWM);
+	pid = PID::getInstance(curOrientation, curPWM);
 	pid->calcValues();
 }
 
@@ -96,7 +96,7 @@ int FlightController::run()
 {
 	server = TCPServer::getInstance();
 	thread serverThread(runServer);
-	//while (!server->connected) { delay(50); };
+	while (!server->connected) { delay(50); };
 	
 	initObjects();
 

@@ -7,11 +7,18 @@
 class PID
 {
 public:
-	PID(Orientation *o, PWMMotorTest *p);
 	~PID();
-
+	static PID *getInstance(Orientation *o, PWMMotorTest *p);
+	static PID *instance;
 	void calcValues();
+
+	void setP(float curP);
+	void setI(float curI);
+	void setD(float curD);
+	Orientation *getOrientation();
+
 private:
+	PID(Orientation *o, PWMMotorTest *p);
 	PWMMotorTest *pwm;
 	Orientation *orientation;
 
@@ -43,5 +50,6 @@ private:
 	float pid_i_mem_yaw = 0, pid_yaw_setpoint, pid_output_yaw, pid_last_yaw_d_error = 0;
 	
 	void calcPid();
+
 };
 

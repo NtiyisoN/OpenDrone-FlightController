@@ -14,6 +14,7 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 #include <sstream>
+#include "../Controller/PID.h"
 
 using namespace std;
 
@@ -58,6 +59,16 @@ void Modbus::Interpret(string str)
     for (i = 0; i < packages; i++) {
         int functionCode = stoi(result.at(3+(i*3)));
         string data = result.at(4+(i*3));
+
+		if (functionCode == 333 || functionCode == 334 || functionCode == 335) {
+			PID *pid = PID::getInstance(NULL, NULL);
+			if (pid->getOrientation != NULL) {
+				if (functionCode == 333) { pid->setP(stof(data)); }
+				if (functionCode == 334) { pid->setI(stof(data)); }
+				if (functionCode == 335) { pid->setD(stof(data)); }
+			}
+		}
+
         string parity = result.at(5+(i*3));
         string am = "Packages: "+ to_string(packages) + "SlaveID: " + to_string(slaveID) + "(1)" + ", FC: " + to_string(functionCode) + "("  +to_string(3+(i*3)) +")" + ", Data: " + data + "(" + to_string(4 + (i * 3)) + ")" + ", parity: " + parity + "(" + to_string(5 + (i * 3)) + ")";
         cout << am << " / ";
