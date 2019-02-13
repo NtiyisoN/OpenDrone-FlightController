@@ -1,5 +1,19 @@
 #include "PID.h"
 
+float pid_p_gain_roll = 1.25;               //Gain setting for the roll P-controller 0.8
+float pid_i_gain_roll = 0.05;              //Gain setting for the roll I-controller 0.0175
+float pid_d_gain_roll = 90;              //Gain setting for the roll D-controller 10.0
+int pid_max_roll = 300;                    //Maximum output of the PID-controller (+/-)
+
+float pid_p_gain_pitch = pid_p_gain_roll;  //Gain setting for the pitch P-controller.
+float pid_i_gain_pitch = pid_i_gain_roll;  //Gain setting for the pitch I-controller.
+float pid_d_gain_pitch = pid_d_gain_roll;  //Gain setting for the pitch D-controller.
+int pid_max_pitch = pid_max_roll;          //Maximum output of the PID-controller (+/-)
+
+float pid_p_gain_yaw = 4.0;                //Gain setting for the pitch P-controller. //4.0
+float pid_i_gain_yaw = 0.02;               //Gain setting for the pitch I-controller. //0.02
+float pid_d_gain_yaw = 0.00;                //Gain setting for the pitch D-controller. 0.00
+int pid_max_yaw = 300;                     //Maximum output of the PID-controller (+/-)
 
 PID::PID(Orientation *o, PWMMotorTest *p)
 {
@@ -59,7 +73,7 @@ void PID::calcValues()
 {
 	std::cout << "Start";
 	time = millis();
-	while ((millis() - time) < 60000) {
+	while ((millis() - time) < 30000) {
 		//The PID set point in degr1ees per second is determined by the roll receiver input.
 		//In the case of deviding by 3 the max roll rate is aprox 164 degrees per second ( (500-8)/3 = 164d/s ).
 		pid_roll_setpoint = 0;
@@ -92,22 +106,24 @@ void PID::calcValues()
 
 		calcPid();
 
-		throttle = 300;                                      //We need the throttle signal as a base signal.
+		throttle = 1500;                                      //We need the throttle signal as a base signal.
 
 		esc_1 = throttle - pid_output_pitch + pid_output_roll - pid_output_yaw; //Calculate the pulse for esc 1 (front-right - CCW)
 		esc_2 = throttle + pid_output_pitch + pid_output_roll + pid_output_yaw; //Calculate the pulse for esc 2 (rear-right - CW)
 		esc_3 = throttle + pid_output_pitch - pid_output_roll - pid_output_yaw; //Calculate the pulse for esc 3 (rear-left - CCW)
 		esc_4 = throttle - pid_output_pitch - pid_output_roll + pid_output_yaw; //Calculate the pulse for esc 4 (front-left - CW)
 
-		if (esc_1 < 1200) esc_1 = 1200;                                         //Keep the motors running.
-		if (esc_2 < 1200) esc_2 = 1200;                                         //Keep the motors running.
-		if (esc_3 < 1200) esc_3 = 1200;                                         //Keep the motors running.
-		if (esc_4 < 1200) esc_4 = 1200;                                         //Keep the motors running.
+		int speedMin = 1250;
+		if (esc_1 < speedMin) esc_1 = speedMin;                                         //Keep the motors running.
+		if (esc_2 < speedMin) esc_2 = speedMin;                                         //Keep the motors running.
+		if (esc_3 < speedMin) esc_3 = speedMin;                                         //Keep the motors running.
+		if (esc_4 < speedMin) esc_4 = speedMin;                                         //Keep the motors running.
 
-		if (esc_1 > 2000) esc_1 = 2000;                                           //Limit the esc-1 pulse to 400.
-		if (esc_2 > 2000) esc_2 = 2000;                                           //Limit the esc-2 pulse to 400.
-		if (esc_3 > 2000) esc_3 = 2000;                                           //Limit the esc-3 pulse to 400.
-		if (esc_4 > 2000) esc_4 = 2000;                                           //Limit the esc-4 pulse to 400.  
+		int speedMax = 2500;
+		if (esc_1 > speedMax) esc_1 = speedMax;                                           //Limit the esc-1 pulse to 400.
+		if (esc_2 > speedMax) esc_2 = speedMax;                                           //Limit the esc-2 pulse to 400.
+		if (esc_3 > speedMax) esc_3 = speedMax;                                           //Limit the esc-3 pulse to 400.
+		if (esc_4 > speedMax) esc_4 = speedMax;                                           //Limit the esc-4 pulse to 400.  
 		
 																			   
 		/*pwm->SetSpeed(0, esc_1);
@@ -115,7 +131,9 @@ void PID::calcValues()
 		pwm->SetSpeed(2, esc_1);
 		pwm->SetSpeed(3, esc_4);*/
 		pwm->SetSpeed(3, esc_1);
+		pwm->SetSpeed(3+4, esc_1);
 		pwm->SetSpeed(2, esc_2);
+		pwm->SetSpeed(2 + 4, esc_2);
 
 		//std::cout << esc_1 << " " << esc_2 << " " << esc_3 << " " << esc_4 << "\n";
 	}
