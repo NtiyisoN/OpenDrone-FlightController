@@ -29,6 +29,7 @@ public:
 	void setRun(bool curRun);
 	void armMotor();
 	bool isInit();
+	void interruptPid();
 
 	void calcValues();
 
@@ -59,7 +60,7 @@ private:
 
 	int esc_1, esc_2, esc_3, esc_4;
 	int throttle = 1500;
-	bool run = false;
+	bool run = false, stop = false;
 
 	void calcPid();
 };

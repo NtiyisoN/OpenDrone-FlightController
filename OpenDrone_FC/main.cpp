@@ -4,7 +4,7 @@
  * Purpose: TODO
  *
  * 	@author Tim Klecka, Thomas Brych
- * 	@version 0.0.1 07.01.2019
+ * 	@version 0.0.1 14.02.2019
  */
 #include <iostream>
 #include "FlightController.h"

@@ -27,11 +27,10 @@ PID::PID(Orientation *o, PWMMotorTest *p)
 
 void PID::calcValues()
 {
-	std::cout << "Start";
-
 	while (!run) {
 		delay(50);
 	}
+
 	while (run) {
 		calcPid();
 
@@ -51,8 +50,7 @@ void PID::calcValues()
 		if (esc_2 > speedMax) esc_2 = speedMax;           //Limit the esc-2 pulse to 2500.
 		if (esc_3 > speedMax) esc_3 = speedMax;           //Limit the esc-3 pulse to 2500.
 		if (esc_4 > speedMax) esc_4 = speedMax;           //Limit the esc-4 pulse to 2500.  
-		
-																			   
+																   
 		/*pwm->SetSpeed(0, esc_1);
 		pwm->SetSpeed(1, esc_2);
 		pwm->SetSpeed(2, esc_1);
@@ -65,13 +63,12 @@ void PID::calcValues()
 
 		//std::cout << esc_1 << " " << esc_2 << " " << esc_3 << " " << esc_4 << "\n";
 	}
+	delay(100);
+	if (!stop) {
+		calcValues();
+	}
 
-	std::cout << "Stop";
-	std::cout.flush();
 	pwm->SetSpeed(16, 0);
-
-	//Change this
-	exit(1);
 }
 
 void PID::calcPid() {
@@ -213,6 +210,11 @@ void PID::setYawSetpoint(int curYawSetpoint) {
 void PID::armMotor() {
 	pwm->ExitMotor();
 	pwm->ArmMotor();
+}
+
+void PID::interruptPid() {
+	run = false;
+	stop = true;
 }
 
 bool PID::isInit() {

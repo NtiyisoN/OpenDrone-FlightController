@@ -4,7 +4,7 @@
  * Purpose: TODO
  *
  * 	@author Thomas Brych, Tim Klecka
- * 	@version 0.0.1 07.01.2019
+ * 	@version 0.0.1 14.02.2019
  */
 #include "Sensor/AbstractSensor/Barometer.h"
 #include "Sensor/AbstractSensor/Ultrasonic.h"
