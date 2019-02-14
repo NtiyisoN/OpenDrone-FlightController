@@ -3,36 +3,10 @@
  * The entire project (including this file) is licensed under the GNU GPL v3.0
  * Purpose: TODO
  *
- * 	@author Tim Klecka
+ * 	@author Thomas Brych, Tim Klecka
  * 	@version 0.0.1 07.01.2019
  */
 #include "FlightController.h"
-
-#include "Sensor/AbstractSensor/Barometer.h"
-#include "Sensor/AbstractSensor/Ultrasonic.h"
-#include "Sensor/BMP388.h"
-#include "Sensor/BMP280.h"
-#include "Sensor/BMP180.h"
-#include "Sensor/BNO080.h"
-
-#include "Network/TCPServer.h"
-
-#include "Controller/Calibration.h"
-#include "Controller/Orientation.h"
-#include "Controller/UltrasonicDistance.h"
-#include "Controller/Exit.h"
-#include "Controller/PID.h"
-
-#include "Motor/PWMMotorTest.h"
-
-#include "XML/XMLParser.h"
-
-#include "Motor/PWMMotorTest.h"
-
-#include <wiringPi.h>
-#include <iostream>
-#include <thread>
-#include <fstream>
 using namespace std;
 
 Orientation *orientation;
@@ -68,10 +42,8 @@ static void runServer()
 	server->startUp();
 }
 
-static void runPid(Orientation *curOrientation, PWMMotorTest *curPWM) {
-	cout << "Test";
-	pid = PID::getInstance(curOrientation, curPWM);
-	//cout << pid << "\n";
+static void runPid() {
+	pid = PID::getInstance(orientation, pwm);
 	pid->calcValues();
 }
 
@@ -89,6 +61,14 @@ void FlightController::initObjects()
   
 	orientation = new Orientation();
 	barometer = new BMP180();
+	pwm = new PWMMotorTest();
+
+	/*cout << "Hallo";
+	getchar();
+	pwm->CalMotor();
+	cout << "Tim";
+	getchar();*/
+
 	//ultrasonic = new UltrasonicDistance();
 	//parser = new XMLParser();
 }
@@ -98,8 +78,7 @@ int FlightController::run()
 	server = TCPServer::getInstance();
 	thread serverThread(runServer);
 	while (!server->connected) { delay(50); };
-	cout << "Connected: ";
-	cout.flush();
+	cout << "Client connected!\n";
 
 	initObjects();
 
@@ -107,40 +86,19 @@ int FlightController::run()
 
 	thread pitchRollYawThread(runOrientation);
 	thread barometerThread(runBarometer);
+	thread pidController(runPid);
+	cout << "Threads are running!\n";
 
-	delay(500);
-
-	pwm = new PWMMotorTest();
-	pwm->ExitMotor();
-	
-	/*cout << "Hallo";
-	getchar();
-	pwm->CalMotor();
-	cout << "Tim";
-	getchar();*/
-
-	//thread pidController(runPid, orientation, pwm);
-
-	delay(500);
-
-
-	/*int i = 0;
-	while (i < 100000) {
-		double *valuesPitchRollYaw = orientation->getPitchRoll();
-		double *valuesBarometer = barometer->getBarometerValues();
-		cout << i << " Pitch: " << valuesPitchRollYaw[0] << " Roll: " << valuesPitchRollYaw[1] << " Yaw: " << valuesPitchRollYaw[2] <<
-			" Temperature: " << valuesBarometer[0] << " Pressure: " << valuesBarometer[1] << "\n";
-		i++;
-		delay(100);
-	}
-
-	orientation->interruptOrientation();
-	barometer->interruptBaromter();*/
+	//orientation->interruptOrientation();
+	//barometer->interruptBaromter();
+	//cout << "Interrupting Threads! \n";
 
 	serverThread.join();
 	pitchRollYawThread.join();
 	barometerThread.join();
-  
+	pidController.join();
+	cout << "Stopped Threads!\n";
+
 	return (0);
 }
 
