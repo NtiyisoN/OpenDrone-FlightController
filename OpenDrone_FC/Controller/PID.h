@@ -31,6 +31,8 @@ public:
 	bool isInit();
 	void interruptPid();
 
+	Orientation *getOrientatin();
+
 	void calcValues();
 
 private:

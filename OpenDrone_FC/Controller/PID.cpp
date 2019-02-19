@@ -223,6 +223,10 @@ bool PID::isInit() {
 	}
 }
 
+Orientation *PID::getOrientatin() {
+	return orientation;
+}
+
 PID::~PID()
 {
 }
