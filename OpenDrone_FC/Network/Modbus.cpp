@@ -67,11 +67,10 @@ void Modbus::Interpret(string str)
 			if (functionCode == 5) { pid->setPitchSetpoint(stoi(data)); }
 			//Roll
 			if (functionCode == 7) { pid->setRollSetpoint(stoi(data)); }
+			//Interrupt PID/Motors
+			if (functionCode == 10) { pid->interruptPid(); }
 			//Arm Motor
-			if (functionCode == 30) {
-				pid->armMotor();
-				pid->setRun(true);
-			}
+			if (functionCode == 30) { pid->armMotor(); pid->setRun(true); }
 		}
 
         string parity = result.at(5+(i*3));

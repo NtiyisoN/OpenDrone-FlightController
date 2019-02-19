@@ -84,6 +84,28 @@ int FlightController::run()
 
 	delay(250);
 
+	/*pwm->ExitMotor();
+	getchar();
+	pwm->ArmMotor();
+	pwm->SetSpeed(16, 1200);
+	getchar();
+	pwm->SetSpeed(16, 1500);
+	getchar();
+	pwm->ExitMotor();*/
+	/*cout << "Hallo";
+	getchar();
+	pwm->ExitMotor();
+	pwm->ArmMotor();
+	getchar();
+	pwm->ExitMotor();*/
+	/*cout << "Hallo";
+	getchar();
+	pwm->ExitMotor();
+	pwm->CalMotor();
+	cout << "Tim";
+	getchar();
+	pwm->ExitMotor();*/
+
 	thread pitchRollYawThread(runOrientation);
 	thread barometerThread(runBarometer);
 	thread pidController(runPid);

@@ -51,10 +51,10 @@ void PID::calcValues()
 		if (esc_3 > speedMax) esc_3 = speedMax;           //Limit the esc-3 pulse to 2500.
 		if (esc_4 > speedMax) esc_4 = speedMax;           //Limit the esc-4 pulse to 2500.  
 																   
-		/*pwm->SetSpeed(0, esc_1);
-		pwm->SetSpeed(1, esc_2);
-		pwm->SetSpeed(2, esc_1);
-		pwm->SetSpeed(3, esc_4);*/
+		pwm->SetSpeed(0, esc_1);
+		pwm->SetSpeed(1, esc_3);
+		pwm->SetSpeed(2, esc_4);
+		pwm->SetSpeed(3, esc_2);
 
 		/*pwm->SetSpeed(3, esc_1);
 		pwm->SetSpeed(3+4, esc_1);
@@ -74,8 +74,8 @@ void PID::calcValues()
 void PID::calcPid() {
 	//std::cout << pid_p_gain_roll << " " << pid_i_gain_roll << " " << pid_d_gain_roll << "\n";
 	double *ar = orientation->getPitchRoll();
-	ar[1] = 0;
-	ar[2] = 0;
+	/*ar[1] = 0;
+	ar[2] = 0;*/
 	/*double ar[3];
 	ar[0] = 50;
 	ar[1] = 0;
@@ -146,22 +146,17 @@ void PID::setRun(bool curRun) {
 }
 
 void PID::setThrottle(float curThrottle) {
-	if (curThrottle >= 0 && curThrottle <= 100) 
-	{
-		throttle = 1500 + (curThrottle * 5);		//1500 - 2000
-	}
-	else if (curThrottle < 0 && curThrottle >= -100) 
-	{
-		throttle = 1500 + (curThrottle * 5);		//1000 - 1500
+	if (curThrottle >= 1000 && curThrottle <= 2000) {
+		throttle = curThrottle;
 	}
 
-	pwm->SetSpeed(0, throttle);
-	pwm->SetSpeed(8, throttle);
+	//pwm->SetSpeed(0, throttle);
+	//pwm->SetSpeed(8, throttle);
 }
 
 void PID::setPitchSetpoint(int curPitchSetpoint) {
-	pwm->SetSpeed(1, curPitchSetpoint);
-	pwm->SetSpeed(9, curPitchSetpoint);
+	//pwm->SetSpeed(1, curPitchSetpoint);
+	//pwm->SetSpeed(9, curPitchSetpoint);
 
 
 	//The PID set point in degrees per second is determined by the pitch receiver input.
@@ -176,8 +171,8 @@ void PID::setPitchSetpoint(int curPitchSetpoint) {
 }
 
 void PID::setRollSetpoint(int curRollSetpoint) {
-	pwm->SetSpeed(2, curRollSetpoint);
-	pwm->SetSpeed(10, curRollSetpoint);
+	//pwm->SetSpeed(2, curRollSetpoint);
+	//pwm->SetSpeed(10, curRollSetpoint);
 
 
 	//The PID set point in degr1ees per second is determined by the roll receiver input.
@@ -193,8 +188,8 @@ void PID::setRollSetpoint(int curRollSetpoint) {
 }
 
 void PID::setYawSetpoint(int curYawSetpoint) {
-	pwm->SetSpeed(3, curYawSetpoint);
-	pwm->SetSpeed(11, curYawSetpoint);
+	//pwm->SetSpeed(3, curYawSetpoint);
+	//pwm->SetSpeed(11, curYawSetpoint);
 
 	//The PID set point in degrees per second is determined by the yaw receiver input.
 	//In the case of deviding by 3 the max yaw rate is aprox 164 degrees per second ( (500-8)/3 = 164d/s ).

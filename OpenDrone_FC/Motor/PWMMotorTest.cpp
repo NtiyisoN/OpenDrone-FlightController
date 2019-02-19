@@ -35,29 +35,29 @@ void PWMMotorTest::SetSpeed(short pin ,int speed) {
 }
 
 void PWMMotorTest::ExitMotor() {
-	pwmWrite(PIN_BASE + 16, 0);
+	pwmWrite(PIN_BASE + 16, 0 * 0.208);
 }
 
 void PWMMotorTest::ArmMotor() {
-	pwmWrite(PIN_BASE + 16, 0);
+	pwmWrite(PIN_BASE + 16, 0 * 0.208);
 	delay(2000);
 	cout << "MIN\n";
-	pwmWrite(PIN_BASE + 16, MIN_PWM);
+	pwmWrite(PIN_BASE + 16, MIN_PWM*0.208);
 	delay(5000);
 }
 
 void PWMMotorTest::CalMotor() {
 	cout << "MAX\n";
-	pwmWrite(PIN_BASE + 16, MAX_PWM);
+	pwmWrite(PIN_BASE + 16, MAX_PWM*0.208);
 	getchar();
 	cout << "MIN\n";
-	pwmWrite(PIN_BASE + 16, MIN_PWM);
+	pwmWrite(PIN_BASE + 16, MIN_PWM*0.208);
 	delay(5000);
 	cout << "0\n";
-	pwmWrite(PIN_BASE + 16, 0);
+	pwmWrite(PIN_BASE + 16, 0 * 0.208);
 	delay(5000);
 	cout << "MIN\n";
-	pwmWrite(PIN_BASE + 16, MIN_PWM);
+	pwmWrite(PIN_BASE + 16, MIN_PWM*0.208);
 	delay(5000);
 	//getchar();
 }
@@ -65,16 +65,16 @@ void PWMMotorTest::CalMotor() {
 void PWMMotorTest::Test()
 {
 	cout << "MAX\n";
-	pwmWrite(PIN_BASE + 16, MAX_PWM);
+	pwmWrite(PIN_BASE + 16, MAX_PWM*0.208);
 	delay(2000);
 	cout << "MIN\n";
-	pwmWrite(PIN_BASE + 16, MIN_PWM);
+	pwmWrite(PIN_BASE + 16, MIN_PWM*0.208);
 	delay(5000);
 
 	while (true) {
 		for (size_t i = MIN_PWM; i < MAX_PWM; i++)
 		{
-			pwmWrite(PIN_BASE + 16, i);
+			pwmWrite(PIN_BASE + 16, i*0.208);
 			cout << i << "\n";
 			cout.flush();
 			delay(10);
@@ -82,7 +82,7 @@ void PWMMotorTest::Test()
 
 		for (size_t i = MAX_PWM; i > MIN_PWM; i--)
 		{
-			pwmWrite(PIN_BASE + 16, i);
+			pwmWrite(PIN_BASE + 16, i*0.208);
 			cout << i << "\n";
 			cout.flush();
 			delay(10);
@@ -91,13 +91,13 @@ void PWMMotorTest::Test()
 }
 
 void PWMMotorTest::Setup() {
-	pwmWrite(PIN_BASE + 16, 0);
+	pwmWrite(PIN_BASE + 16, 0 * 0.208);
 	getchar();
-	pwmWrite(PIN_BASE + 16, MAX_PWM);
+	pwmWrite(PIN_BASE + 16, MAX_PWM*0.208);
 	getchar();
-	pwmWrite(PIN_BASE + 16, MIN_PWM);
+	pwmWrite(PIN_BASE + 16, MIN_PWM*0.208);
 	getchar();
-	pwmWrite(PIN_BASE + 16, 0);
+	pwmWrite(PIN_BASE + 16, 0 * 0.208);
 	getchar();
 }
 
