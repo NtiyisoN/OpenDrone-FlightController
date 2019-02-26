@@ -53,12 +53,6 @@ void Modbus::Interpret(string str)
 		PID *pid = PID::getInstance(NULL, NULL);
 
 		if (pid->isInit()) {
-			//PID - P
-			if (functionCode == 333) { pid->setP(stof(data)); }
-			//PID - I
-			if (functionCode == 334) { pid->setI(stof(data)); }
-			//PID - D
-			if (functionCode == 335) { pid->setD(stof(data)); }
 			//Throttle
 			if (functionCode == 1) { pid->setThrottle(stoi(data)); }
 			//Yaw
@@ -73,6 +67,12 @@ void Modbus::Interpret(string str)
 			if (functionCode == 20) { Calibration *c = new Calibration(pid->getOrientatin()); c->calibrate(); }
 			//Arm Motor
 			if (functionCode == 30) { pid->armMotor(); pid->setRun(true); }
+			//PID - P
+			if (functionCode == 333) { pid->setP(stof(data)); }
+			//PID - I
+			if (functionCode == 334) { pid->setI(stof(data)); }
+			//PID - D
+			if (functionCode == 335) { pid->setD(stof(data)); }
 		}
 
         string parity = result.at(5+(i*3));

@@ -51,10 +51,10 @@ void PID::calcValues()
 		if (esc_3 > speedMax) esc_3 = speedMax;           //Limit the esc-3 pulse to 2500.
 		if (esc_4 > speedMax) esc_4 = speedMax;           //Limit the esc-4 pulse to 2500.  
 																   
-		pwm->SetSpeed(0, esc_1);
-		pwm->SetSpeed(1, esc_3);
-		pwm->SetSpeed(2, esc_4);
-		pwm->SetSpeed(3, esc_2);
+		pwm->SetSpeed(0, esc_3);
+		pwm->SetSpeed(1, esc_2);
+		pwm->SetSpeed(2, esc_1);
+		pwm->SetSpeed(3, esc_4);
 
 		/*pwm->SetSpeed(3, esc_1);
 		pwm->SetSpeed(3+4, esc_1);
@@ -72,14 +72,7 @@ void PID::calcValues()
 }
 
 void PID::calcPid() {
-	//std::cout << pid_p_gain_roll << " " << pid_i_gain_roll << " " << pid_d_gain_roll << "\n";
 	double *ar = orientation->getPitchRoll();
-	/*ar[1] = 0;
-	ar[2] = 0;*/
-	/*double ar[3];
-	ar[0] = 50;
-	ar[1] = 0;
-	ar[2] = 0;*/
 
 	//Roll calculations
 	pid_error_temp = ar[1] - pid_roll_setpoint;
@@ -87,7 +80,7 @@ void PID::calcPid() {
 	if (pid_i_mem_roll > pid_max_roll)pid_i_mem_roll = pid_max_roll;
 	else if (pid_i_mem_roll < pid_max_roll * -1)pid_i_mem_roll = pid_max_roll * -1;
 
-	pid_output_roll = pid_p_gain_roll * pid_error_temp + pid_i_mem_roll + pid_d_gain_roll * (pid_error_temp - pid_last_roll_d_error);
+	//pid_output_roll = pid_p_gain_roll * pid_error_temp + pid_i_mem_roll + pid_d_gain_roll * (pid_error_temp - pid_last_roll_d_error);
 	pid_output_roll = pid_p_gain_roll * pid_error_temp + pid_i_mem_roll /*+ pid_d_gain_roll * (pid_error_temp - pid_last_roll_d_error)*/;
 	if (pid_output_roll > pid_max_roll)pid_output_roll = pid_max_roll;
 	else if (pid_output_roll < pid_max_roll * -1)pid_output_roll = pid_max_roll * -1;
@@ -119,8 +112,6 @@ void PID::calcPid() {
 	else if (pid_output_yaw < pid_max_yaw * -1)pid_output_yaw = pid_max_yaw * -1;
 
 	pid_last_yaw_d_error = pid_error_temp;
-	//std::cout << pid_output_pitch << " " << pid_output_roll << " " << pid_output_yaw << "\n";
-	//std::cout.flush();
 }
 
 void PID::setP(float curP) {
@@ -149,7 +140,7 @@ void PID::setRun(bool curRun) {
 }
 
 void PID::setThrottle(float curThrottle) {
-	if (curThrottle >= 1000 && curThrottle <= 2000) {
+	if (curThrottle >= 1050 && curThrottle <= 2000) {
 		throttle = curThrottle;
 	}
 

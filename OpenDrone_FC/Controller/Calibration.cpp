@@ -11,7 +11,7 @@ Calibration::Calibration(Orientation *o)
 	this->orientation = o;
 }
 
-double *Calibration::calibrate() {
+void Calibration::calibrate() {
 	cout << "Starting Calibration\n";
 	int length = 500;
 
@@ -31,7 +31,9 @@ double *Calibration::calibrate() {
 	ar[0] = pitch;
 	ar[1] = roll;
 	ar[2] = yaw;
-	return ar;
+	cout << "Calibrate: " << ar[0] << " " << ar[1] << " " << ar[2] << "\n";
+
+	orientation->setCalibration(ar);
 }
 
 Calibration::~Calibration()

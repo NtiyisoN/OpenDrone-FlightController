@@ -128,3 +128,22 @@ int FlightController::run()
 FlightController::~FlightController()
 {
 }
+
+/*	pwm->ExitMotor();
+	pwm->ArmMotor();
+	cout << "0";
+	pwm->SetSpeed(0, 1500);
+	getchar();
+	cout << "1";
+	pwm->SetSpeed(0, 0);
+	pwm->SetSpeed(1, 1500);
+	getchar();
+	cout << "2";
+	pwm->SetSpeed(1, 0);
+	pwm->SetSpeed(2, 1500);
+	getchar();
+	cout << "3";
+	pwm->SetSpeed(2, 0);
+	pwm->SetSpeed(3, 1500);
+	getchar();
+	pwm->SetSpeed(3, 0);*/

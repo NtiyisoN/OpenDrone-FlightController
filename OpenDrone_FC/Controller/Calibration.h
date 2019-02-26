@@ -6,7 +6,7 @@ class Calibration
 public:
 	Calibration(Orientation *o);
 	~Calibration();
-	double *calibrate();
+	void calibrate();
 
 private:
 	Orientation *orientation;
