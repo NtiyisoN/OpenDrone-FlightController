@@ -61,7 +61,7 @@ void Orientation::interruptOrientation()
 }
 
 void Orientation::setCalibration(double *ar) {
-	cout << "Hallo: " << ar[0] << " " << ar[1] << " " << ar[2];
+	//cout << "Hallo: " << ar[0] << " " << ar[1] << " " << ar[2];
 	calPitch = ar[0];
 	calRoll = ar[1];
 	calYaw = ar[2];
@@ -76,6 +76,7 @@ double *Orientation::getPitchRollReal()
 		ar[0] = this->bno->gyroIntegratedRotationVectorData.lastPitch;
 		ar[1] = this->bno->gyroIntegratedRotationVectorData.lastRoll;
 		ar[2] = this->bno->gyroIntegratedRotationVectorData.lastYaw;
+		//cout << ar[0] << " " << ar[1] << " " << ar[2] << "\n";
 	}
 	else
 	{
@@ -96,7 +97,7 @@ double *Orientation::getPitchRoll()
 		ar[0] = this->bno->gyroIntegratedRotationVectorData.lastPitch - calPitch;
 		ar[1] = this->bno->gyroIntegratedRotationVectorData.lastRoll - calRoll;
 		ar[2] = this->bno->gyroIntegratedRotationVectorData.lastYaw - calYaw;
-		cout << ar[0] << " " << ar[1] << " " << ar[2] << "\n";
+		//cout << ar[0] << " " << ar[1] << " " << ar[2] << "\n";
 	}
 	else
 	{

@@ -42,7 +42,7 @@ private:
 
 	float pid_p_gain_roll = 1.25;              //Gain setting for the roll P-controller 0.8
 	float pid_i_gain_roll = 0.05;              //Gain setting for the roll I-controller 0.0175
-	float pid_d_gain_roll = 90;                //Gain setting for the roll D-controller 10.0
+	float pid_d_gain_roll = 10;                //Gain setting for the roll D-controller 10.0
 	int pid_max_roll = 300;                    //Maximum output of the PID-controller (+/-)
 
 	float pid_p_gain_pitch = pid_p_gain_roll;  //Gain setting for the pitch P-controller.

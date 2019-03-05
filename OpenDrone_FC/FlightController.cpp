@@ -7,6 +7,31 @@
  * 	@version 0.0.1 14.02.2019
  */
 #include "FlightController.h"
+#include "Sensor/AbstractSensor/Barometer.h"
+#include "Sensor/AbstractSensor/Ultrasonic.h"
+#include "Sensor/BMP388.h"
+#include "Sensor/BMP280.h"
+#include "Sensor/BMP180.h"
+#include "Sensor/BNO080.h"
+
+#include "Network/TCPServer.h"
+
+#include "Controller/Calibration.h"
+#include "Controller/Orientation.h"
+#include "Controller/UltrasonicDistance.h"
+#include "Controller/Exit.h"
+#include "Controller/PID.h"
+
+#include "Motor/PWMMotorTest.h"
+
+#include "XML/XMLParser.h"
+
+#include "Motor/PWMMotorTest.h"
+
+#include <wiringPi.h>
+#include <iostream>
+#include <thread>
+#include <fstream>
 using namespace std;
 
 Orientation *orientation;
@@ -60,14 +85,8 @@ void FlightController::initObjects()
 	}
   
 	orientation = new Orientation();
-	barometer = new BMP180();
+	//barometer = new BMP280();
 	pwm = new PWMMotorTest();
-
-	/*cout << "Hallo";
-	getchar();
-	pwm->CalMotor();
-	cout << "Tim";
-	getchar();*/
 
 	//ultrasonic = new UltrasonicDistance();
 	//parser = new XMLParser();
@@ -75,29 +94,26 @@ void FlightController::initObjects()
 
 int FlightController::run()
 {
+	//Start server
 	server = TCPServer::getInstance();
 	thread serverThread(runServer);
 	while (!server->connected) { delay(50); };
 	cout << "Client connected!\n";
 
+	//Initialize all important objects
 	initObjects();
 
 	delay(250);
 
-	/*pwm->ExitMotor();
-	getchar();
-	pwm->ArmMotor();
-	pwm->SetSpeed(16, 1200);
-	getchar();
-	pwm->SetSpeed(16, 1500);
-	getchar();
-	pwm->ExitMotor();*/
+	//Arm Motors
 	/*cout << "Hallo";
 	getchar();
 	pwm->ExitMotor();
 	pwm->ArmMotor();
 	getchar();
 	pwm->ExitMotor();*/
+
+	//Calibrate
 	/*cout << "Hallo";
 	getchar();
 	pwm->ExitMotor();
@@ -106,30 +122,8 @@ int FlightController::run()
 	getchar();
 	pwm->ExitMotor();*/
 
-	thread pitchRollYawThread(runOrientation);
-	thread barometerThread(runBarometer);
-	thread pidController(runPid);
-	cout << "Threads are running!\n";
-
-	//orientation->interruptOrientation();
-	//barometer->interruptBaromter();
-	//pid->interruptPid();
-	//cout << "Interrupting Threads! \n";
-
-	serverThread.join();
-	pitchRollYawThread.join();
-	barometerThread.join();
-	pidController.join();
-	cout << "Stopped Threads!\n";
-
-	return (0);
-}
-
-FlightController::~FlightController()
-{
-}
-
-/*	pwm->ExitMotor();
+	//Check Motors
+	/*pwm->ExitMotor();
 	pwm->ArmMotor();
 	cout << "0";
 	pwm->SetSpeed(0, 1500);
@@ -147,3 +141,31 @@ FlightController::~FlightController()
 	pwm->SetSpeed(3, 1500);
 	getchar();
 	pwm->SetSpeed(3, 0);*/
+
+	//Run Threads
+	thread pitchRollYawThread(runOrientation);
+	//thread barometerThread(runBarometer);
+	thread pidController(runPid);
+	cout << "Threads are running!\n";
+
+	//Interrupt Threads
+	/*orientation->interruptOrientation();
+	barometer->interruptBaromter();
+	pid->interruptPid();
+	cout << "Interrupting Threads! \n";*/
+
+	//Wait until threads stopped
+	serverThread.join();
+	pitchRollYawThread.join();
+	//barometerThread.join();
+	pidController.join();
+	cout << "Stopped Threads!\n";
+
+	return (0);
+}
+
+FlightController::~FlightController()
+{
+}
+
+
