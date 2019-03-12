@@ -45,17 +45,17 @@ Used technologies:
 ## Supported Sensors  
 ### Gyroscope / Accelerometer  
 * BMI088 ⏳  
-* BNO080/85 ⏳  
+* BNO080/85 ✔  
 * MPU6050 ✔  
 * BMF055 ⏳  
 ### Magnetometer  
 * HMC5883L ⏳  
 * BMF055 ⏳  
-* BNO080/85 ⏳  
+* BNO080/85 ✔  
 * BMM150 ⏳  
 ### Barometer  
 * BMP180 ✔  
-* BMP280 ⏳  
+* BMP280 ✔  
 * BMP388 ⏳  
 ### Other
 * HC-SR04 ✔  
