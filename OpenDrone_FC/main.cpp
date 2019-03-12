@@ -9,6 +9,7 @@
 #include <iostream>
 #include "FlightController.h"
 #include <string.h>
+#include "./Database/SQLite.h"
 using namespace std;
 
 /**
@@ -32,7 +33,8 @@ void startFC(int arg) {
 */
 int main(int argc, char * argv[])
 {
-	if (argc == 1) {
+	SQLite *sql = new SQLite();
+	/*if (argc == 1) {
 		startFC(0);
 	}
 	else if (argc == 2) {
@@ -48,5 +50,5 @@ int main(int argc, char * argv[])
 	}
 	else {
 		return 1;
-	}
+	}*/
 }
