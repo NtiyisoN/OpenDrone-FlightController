@@ -148,11 +148,12 @@ int FlightController::run()
 	thread pidController(runPid);
 	cout << "Threads are running!\n";
 
+
 	//Interrupt Threads
-	/*orientation->interruptOrientation();
-	barometer->interruptBaromter();
-	pid->interruptPid();
-	cout << "Interrupting Threads! \n";*/
+	//orientation->interruptOrientation();
+	//barometer->interruptBaromter();
+	//pid->interruptPid();
+	cout << "Interrupting Threads! \n";
 
 	//Wait until threads stopped
 	serverThread.join();

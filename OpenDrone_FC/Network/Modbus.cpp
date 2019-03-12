@@ -19,6 +19,8 @@ Modbus::~Modbus()
 
 void Modbus::Interpret(string str)
 {
+	cout << str << "\n";
+	cout.flush();
     std::stringstream ss(str);
     vector<string> result;
 
