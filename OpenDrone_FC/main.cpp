@@ -12,11 +12,12 @@ using namespace std;
 
 /**
 	Main Method of our Flightcontroller
-	@param void
+	@param int argc, char * argv[]
 	@return Errorcode
 */
-int main(void)
+int main(int argc, char * argv[])
 {
+	cout << "args\t" << argc << "\t" << argv;
 	FlightController *fc = new FlightController();
 
 	cout << "Starting the Flight Controller\n";
