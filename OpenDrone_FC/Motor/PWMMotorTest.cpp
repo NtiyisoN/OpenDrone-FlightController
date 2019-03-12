@@ -19,6 +19,11 @@ using namespace std;
 #define MIN_PWM 1000
 #define HERTZ 50
 
+/**
+	PWMMotorTest
+	@param void
+	@return void
+*/
 PWMMotorTest::PWMMotorTest()
 {
 	this->fd = PCA9685Setup(PIN_BASE, 0x40, HERTZ);
@@ -30,14 +35,33 @@ PWMMotorTest::PWMMotorTest()
 	PCA9685PWMReset(this->fd);
 }
 
+/**
+	Sets speed for a Pin
+	@param short pin ,int speed
+	@return void
+
+	@info
+	* Use 16 for all Motors
+	* Use 0-15 for single Motors
+*/
 void PWMMotorTest::SetSpeed(short pin ,int speed) {
 	pwmWrite(PIN_BASE + pin, speed*0.208);
 }
 
+/**
+	Stops all Motors
+	@param void
+	@return void
+*/
 void PWMMotorTest::ExitMotor() {
 	pwmWrite(PIN_BASE + 16, 0 * 0.208);
 }
 
+/**
+	Arms the ESC
+	@param void
+	@return void
+*/
 void PWMMotorTest::ArmMotor() {
 	pwmWrite(PIN_BASE + 16, 0 * 0.208);
 	delay(2000);
@@ -46,6 +70,11 @@ void PWMMotorTest::ArmMotor() {
 	delay(5000);
 }
 
+/**
+	Calibrate the ESC
+	@param short pin ,int speed
+	@return void
+*/
 void PWMMotorTest::CalMotor() {
 	cout << "MAX\n";
 	pwmWrite(PIN_BASE + 16, MAX_PWM*0.208);
@@ -62,6 +91,14 @@ void PWMMotorTest::CalMotor() {
 	//getchar();
 }
 
+/**
+	Methode to test all Motors
+	@param void
+	@return void
+
+	@info
+	* sets speed from min to max in 1x steps
+*/
 void PWMMotorTest::Test()
 {
 	cout << "MAX\n";
@@ -90,18 +127,9 @@ void PWMMotorTest::Test()
 	}
 }
 
-void PWMMotorTest::Setup() {
-	pwmWrite(PIN_BASE + 16, 0 * 0.208);
-	getchar();
-	pwmWrite(PIN_BASE + 16, MAX_PWM*0.208);
-	getchar();
-	pwmWrite(PIN_BASE + 16, MIN_PWM*0.208);
-	getchar();
-	pwmWrite(PIN_BASE + 16, 0 * 0.208);
-	getchar();
-}
-
-
+/**
+	Destructor
+*/
 PWMMotorTest::~PWMMotorTest()
 {
 }

@@ -50,11 +50,14 @@ int baseReg(int pin);
 
 
 /**
-* Setup a PCA9685 device with wiringPi.
-*
-* pinBase: 	Use a pinBase > 64, eg. 300
-* i2cAddress:	The default address is 0x40
-* freq:		Frequency will be capped to range [40..1000] Hertz. Try 50 for servos
+	Setup a PCA9685 device with wiringPi.
+	@param const int pinBase, const int i2cAddress, float freq
+	@return fd
+
+	@info
+	* pinBase: 		Use a pinBase > 64, eg. 300
+	* i2cAddress:	The default address is 0x40
+	* freq:			Frequency will be capped to range [40..1000] Hertz. Try 50 for servos
 */
 int PCA9685Setup(const int pinBase, const int i2cAddress, float freq)
 {
@@ -91,8 +94,12 @@ int PCA9685Setup(const int pinBase, const int i2cAddress, float freq)
 }
 
 /**
-* Sets the frequency of PWM signals.
-* Frequency will be capped to range [40..1000] Hertz. Try 50 for servos.
+	Sets the frequency of PWM signals.
+	@param int fd, float freq
+	@return void
+
+	@info
+	Frequency will be capped to range [40..1000] Hertz. Try 50 for servos.
 */
 void PCA9685PWMFreq(int fd, float freq)
 {
@@ -103,7 +110,7 @@ void PCA9685PWMFreq(int fd, float freq)
 	// prescale = round(osc_clock / (4096 * frequency))) - 1 where osc_clock = 25 MHz
 	// Further info here: http://www.nxp.com/documents/data_sheet/PCA9685.pdf Page 24
 	//int prescale = (int)(25000000.0f / (2000 * freq) - 0.5f);
-	int prescale = (int)(25000000.0f / 1 * freq)-2.0f;
+	int prescale = (int)(25000000.0f / 1 * freq) - 2.0f;
 
 	// Get settings and calc bytes for the different states.
 	int settings = wiringPiI2CReadReg8(fd, PCA9685_MODE1) & 0x7F;	// Set restart bit to 0
@@ -122,7 +129,9 @@ void PCA9685PWMFreq(int fd, float freq)
 }
 
 /**
-* Set all leds back to default values (: fullOff = 1)
+	Set all leds back to default values (: fullOff = 1)
+	@param int fd
+	@return void
 */
 void PCA9685PWMReset(int fd)
 {
@@ -131,8 +140,12 @@ void PCA9685PWMReset(int fd)
 }
 
 /**
-* Write on and off ticks manually to a pin
-* (Deactivates any full-on and full-off)
+	Write on and off ticks manually to a pin
+	@param int fd, int pin, int on, int off
+	@return void
+
+	@info
+	(Deactivates any full-on and full-off)
 */
 void PCA9685PWMWrite(int fd, int pin, int on, int off)
 {
@@ -144,10 +157,14 @@ void PCA9685PWMWrite(int fd, int pin, int on, int off)
 }
 
 /**
-* Reads both on and off registers as 16 bit of data
-* To get PWM: mask each value with 0xFFF
-* To get full-on or off bit: mask with 0x1000
-* Note: ALL_LED pin will always return 0
+	Reads both on and off registers as 16 bit of data
+	@param int fd, int pin, int *on, int *off
+	@return void
+
+	@info
+	* To get PWM: mask each value with 0xFFF
+	* To get full-on or off bit: mask with 0x1000
+	* Note: ALL_LED pin will always return 0
 */
 void PCA9685PWMRead(int fd, int pin, int *on, int *off)
 {
