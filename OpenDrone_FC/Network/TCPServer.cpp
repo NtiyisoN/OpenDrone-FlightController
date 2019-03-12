@@ -217,7 +217,7 @@ void TCPServer::checkIOOperation(fd_set readfds) {
                 close(sd);
                 client_socket[i] = 0;
 				PID *pid = PID::getInstance(NULL, NULL);
-				pid->setRun(false);
+				pid->interruptPid();
             }
         }
     }
