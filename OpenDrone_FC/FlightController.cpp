@@ -42,9 +42,12 @@ TCPServer *server;
 Exit *error;
 PID *pid;
 PWMMotorTest *pwm;
+int arg;
 
-FlightController::FlightController()
+FlightController::FlightController(int argIn)
 {
+	arg = argIn;
+	cout << arg<<"\n";
 }
 
 static void runUltrasonic()

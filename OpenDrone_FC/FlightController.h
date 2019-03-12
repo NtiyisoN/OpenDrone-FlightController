@@ -12,7 +12,7 @@
 class FlightController
 {
 public:
-	FlightController();
+	FlightController(int arg);
 	~FlightController();
 	int run();
 

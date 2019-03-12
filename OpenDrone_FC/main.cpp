@@ -8,7 +8,22 @@
  */
 #include <iostream>
 #include "FlightController.h"
+#include <string.h>
 using namespace std;
+
+/**
+	Start our Flightcontroller
+	@param int arg
+	@return void
+*/
+void startFC(int arg) {
+	FlightController *fc = new FlightController(arg);
+
+	cout << "Starting the Flight Controller\n";
+	fc->run();
+
+	cout << "Stopping Flight Controller!\n";
+}
 
 /**
 	Main Method of our Flightcontroller
@@ -17,12 +32,21 @@ using namespace std;
 */
 int main(int argc, char * argv[])
 {
-	cout << "args\t" << argc << "\t" << argv;
-	FlightController *fc = new FlightController();
-
-	cout << "Starting the Flight Controller\n";
-	fc->run();
-
-	cout << "Stopping Flight Controller!\n";
-	return (0);
+	if (argc == 1) {
+		startFC(0);
+	}
+	else if (argc == 2) {
+		if (strcmp(argv[1], "-d") == 0) {
+			startFC(1);
+		}
+		else if (strcmp(argv[1], "-l") == 0) {
+			startFC(2);
+		}
+		else {
+			return 1;
+		}
+	}
+	else {
+		return 1;
+	}
 }
