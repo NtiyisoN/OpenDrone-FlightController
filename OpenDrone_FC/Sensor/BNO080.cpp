@@ -262,6 +262,7 @@ void BNO080::parseGyroIntegratedRotationVector(void) {
 	gyroIntegratedRotationVectorData.lastXRate = Gx;
 	gyroIntegratedRotationVectorData.lastYRate = Gy;
 	gyroIntegratedRotationVectorData.lastZRate = Gz;
+	gyroIntegratedRotationVectorData.time = micros();
 
 	//printf("Gyro Integrated Rotation Vector. R:%+07.1f, P:%+07.1f, Y:%+07.1f, GX:%+07.1f, GY:%+07.1f, GZ:%+07.1f\n", roll, pitch, yaw, Gx, Gy, Gz);
 }

@@ -27,6 +27,7 @@ class BNO080 {
 			float lastXRate;
 			float lastYRate;
 			float lastZRate;
+			long time;
 		} gyroIntegratedRotationVectorData;
 
 		BNO080();

@@ -10,20 +10,22 @@
 
 PID *PID::instance = 0;
 
-float pid_p_gain_roll = 0.125; //1.25             //Gain setting for the roll P-controller 0.8
-float pid_i_gain_roll = 0.005; // 0.05;              //Gain setting for the roll I-controller 0.0175
-float pid_d_gain_roll = 0; // 90;                //Gain setting for the roll D-controller 10.0
-int pid_max_roll = 1000;                    //Maximum output of the PID-controller (+/-)
+float pid_p_gain_roll = 2.0; //1.25           //Gain setting for the roll P-controller 0.65
+float pid_i_gain_roll = 0.01; // 0.05;         //Gain setting for the roll I-controller 0.0006
+float pid_d_gain_roll = 60; // 90;               //Gain setting for the roll D-controller 60
+int pid_max_roll = 1000;						//Maximum output of the PID-controller (+/-)
 
-float pid_p_gain_pitch = pid_p_gain_roll;  //Gain setting for the pitch P-controller.
-float pid_i_gain_pitch = pid_i_gain_roll;  //Gain setting for the pitch I-controller.
-float pid_d_gain_pitch = pid_d_gain_roll;  //Gain setting for the pitch D-controller.
-int pid_max_pitch = pid_max_roll;          //Maximum output of the PID-controller (+/-)
+float pid_p_gain_pitch = pid_p_gain_roll;		//Gain setting for the pitch P-controller.
+float pid_i_gain_pitch = pid_i_gain_roll;		//Gain setting for the pitch I-controller.
+float pid_d_gain_pitch = pid_d_gain_roll;		//Gain setting for the pitch D-controller.
+int pid_max_pitch = pid_max_roll;				//Maximum output of the PID-controller (+/-)
 
-float pid_p_gain_yaw = 4.0;                //Gain setting for the pitch P-controller.
-float pid_i_gain_yaw = 0.02;               //Gain setting for the pitch I-controller.
-float pid_d_gain_yaw = 0.00;               //Gain setting for the pitch D-controller.
-int pid_max_yaw = 300;                     //Maximum output of the PID-controller (+/-)
+float pid_p_gain_yaw = 4.0;						//Gain setting for the pitch P-controller.
+float pid_i_gain_yaw = 0.02;					//Gain setting for the pitch I-controller.
+float pid_d_gain_yaw = 0.00;					//Gain setting for the pitch D-controller.
+int pid_max_yaw = 300;							//Maximum output of the PID-controller (+/-)
+
+float pid_cur_val = 0;
 
 PID *PID::getInstance(Orientation *o, PWMMotorTest *p)
 {
@@ -46,7 +48,7 @@ void PID::calcValues()
 		delay(50);
 	}
 
-	getchar();
+	/*getchar();
 	pwm->SetSpeed(16, 2000);
 	getchar();
 	pwm->SetSpeed(16, 1750);
@@ -55,8 +57,9 @@ void PID::calcValues()
 	getchar();
 	pwm->SetSpeed(16, 1050);
 	getchar();
-	pwm->ExitMotor();
-	/*while (run) {
+	pwm->ExitMotor();*/
+
+	while (run) {
 		calcPid();
 
 		esc_1 = throttle - pid_output_pitch + pid_output_roll - pid_output_yaw;   //Calculate the pulse for esc 1 (front-right - CCW)
@@ -64,36 +67,31 @@ void PID::calcValues()
 		esc_3 = throttle + pid_output_pitch - pid_output_roll - pid_output_yaw;   //Calculate the pulse for esc 3 (rear-left - CCW)
 		esc_4 = throttle - pid_output_pitch - pid_output_roll + pid_output_yaw;   //Calculate the pulse for esc 4 (front-left - CW)
 
-		int speedMin = 1200;
+		int speedMin = 1050;
 		if (esc_1 < speedMin) esc_1 = speedMin;           //Keep the motors running.
 		if (esc_2 < speedMin) esc_2 = speedMin;           //Keep the motors running.
 		if (esc_3 < speedMin) esc_3 = speedMin;           //Keep the motors running.
 		if (esc_4 < speedMin) esc_4 = speedMin;           //Keep the motors running.
 
-		int speedMax = 2500;
+		int speedMax = 1800;
 		if (esc_1 > speedMax) esc_1 = speedMax;           //Limit the esc-1 pulse to 2500.
 		if (esc_2 > speedMax) esc_2 = speedMax;           //Limit the esc-2 pulse to 2500.
 		if (esc_3 > speedMax) esc_3 = speedMax;           //Limit the esc-3 pulse to 2500.
 		if (esc_4 > speedMax) esc_4 = speedMax;           //Limit the esc-4 pulse to 2500.  
 		
-		pwm->SetSpeed(0, esc_2);
-		pwm->SetSpeed(3, esc_1);
-		//std::cout << throttle << "\n";
-		pwm->SetSpeed(15, throttle);
-		delay(1);
+		pwm->SetSpeed(1, esc_1);	//Front right
+		pwm->SetSpeed(0, esc_2);	//Rear right
+		pwm->SetSpeed(3, esc_3);	//Rear left
+		pwm->SetSpeed(2, esc_4);	//Front left
+		delay(5);
 
-		/*pwm->SetSpeed(0, esc_3);
+		/*Default:
+		pwm->SetSpeed(0, esc_3);
 		pwm->SetSpeed(1, esc_2);
 		pwm->SetSpeed(2, esc_1);
 		pwm->SetSpeed(3, esc_4);*/
+	}
 
-		/*pwm->SetSpeed(3, esc_1);
-		pwm->SetSpeed(3+4, esc_1);
-		pwm->SetSpeed(2, esc_2);
-		pwm->SetSpeed(2 + 4, esc_2);*/
-
-		//std::cout << esc_1 << " " << esc_2 << " " << esc_3 << " " << esc_4 << "\n";
-	//}
 	delay(100);
 	if (!stop) {
 		calcValues();
@@ -103,18 +101,20 @@ void PID::calcValues()
 }
 
 void PID::calcPid() {
-	double *ar = orientation->getPitchRollReal();
-	ar[1] = 0;
-	ar[2] = 0;
-	//std::cout << ar[0] << " " << ar[1] << " " << ar[2] << "\n";
+	double *ar = orientation->getPitchRoll();
+
+	long lastMeasureTime = ar[3]; //microseconds
 
 	//Roll calculations
 	pid_error_temp = ar[1] - pid_roll_setpoint;
+	if (pid_error_temp != pid_error_temp) {
+		calcPid();
+	}
 	pid_i_mem_roll += pid_i_gain_roll * pid_error_temp;
 	if (pid_i_mem_roll > pid_max_roll)pid_i_mem_roll = pid_max_roll;
 	else if (pid_i_mem_roll < pid_max_roll * -1)pid_i_mem_roll = pid_max_roll * -1;
 
-	pid_output_roll = pid_p_gain_roll * pid_error_temp + pid_i_mem_roll + pid_d_gain_roll * (pid_error_temp - pid_last_roll_d_error);
+	pid_output_roll = pid_p_gain_roll * pid_error_temp + pid_i_mem_roll + pid_d_gain_roll * ((pid_error_temp - pid_last_roll_d_error));
 	//pid_output_roll = pid_p_gain_roll * pid_error_temp + pid_i_mem_roll /*+ pid_d_gain_roll * (pid_error_temp - pid_last_roll_d_error)*/;
 	if (pid_output_roll > pid_max_roll)pid_output_roll = pid_max_roll;
 	else if (pid_output_roll < pid_max_roll * -1)pid_output_roll = pid_max_roll * -1;
@@ -122,12 +122,15 @@ void PID::calcPid() {
 	pid_last_roll_d_error = pid_error_temp;
 
 	//Pitch calculations
-	pid_error_temp = ar[0] - pid_pitch_setpoint;
+	pid_cur_val = pid_error_temp = ar[0] - pid_pitch_setpoint;
+	if (pid_error_temp != pid_error_temp) {
+		calcPid();
+	}
 	pid_i_mem_pitch += pid_i_gain_pitch * pid_error_temp;
 	if (pid_i_mem_pitch > pid_max_pitch)pid_i_mem_pitch = pid_max_pitch;
 	else if (pid_i_mem_pitch < pid_max_pitch * -1)pid_i_mem_pitch = pid_max_pitch * -1;
 
-	pid_output_pitch = pid_p_gain_pitch * pid_error_temp + pid_i_mem_pitch + pid_d_gain_pitch * (pid_error_temp - pid_last_pitch_d_error);
+	pid_output_pitch = pid_p_gain_pitch * pid_error_temp + pid_i_mem_pitch + pid_d_gain_pitch * ((pid_error_temp - pid_last_pitch_d_error));
 	//pid_output_pitch = pid_p_gain_pitch * pid_error_temp + pid_i_mem_pitch /*+ pid_d_gain_pitch * (pid_error_temp - pid_last_pitch_d_error)*/;
 	if (pid_output_pitch > pid_max_pitch)pid_output_pitch = pid_max_pitch;
 	else if (pid_output_pitch < pid_max_pitch * -1)pid_output_pitch = pid_max_pitch * -1;
@@ -136,11 +139,14 @@ void PID::calcPid() {
 
 	//Yaw calculations
 	pid_error_temp = ar[2] - pid_yaw_setpoint;
+	if (pid_error_temp != pid_error_temp) {
+		calcPid();
+	}
 	pid_i_mem_yaw += pid_i_gain_yaw * pid_error_temp;
 	if (pid_i_mem_yaw > pid_max_yaw)pid_i_mem_yaw = pid_max_yaw;
 	else if (pid_i_mem_yaw < pid_max_yaw * -1)pid_i_mem_yaw = pid_max_yaw * -1;
 
-	pid_output_yaw = pid_p_gain_yaw * pid_error_temp + pid_i_mem_yaw + pid_d_gain_yaw * (pid_error_temp - pid_last_yaw_d_error);
+	pid_output_yaw = pid_p_gain_yaw * pid_error_temp + pid_i_mem_yaw + pid_d_gain_yaw * ((pid_error_temp - pid_last_yaw_d_error));
 	//pid_output_yaw = pid_p_gain_yaw * pid_error_temp + pid_i_mem_yaw /*+ pid_d_gain_yaw * (pid_error_temp - pid_last_yaw_d_error)*/;
 	if (pid_output_yaw > pid_max_yaw)pid_output_yaw = pid_max_yaw;
 	else if (pid_output_yaw < pid_max_yaw * -1)pid_output_yaw = pid_max_yaw * -1;
@@ -150,8 +156,8 @@ void PID::calcPid() {
 
 void PID::setP(float curP) {
 	if (curP >= 0) {
-		pid_p_gain_roll = curP;
-		pid_p_gain_pitch = curP;
+		//pid_p_gain_roll = curP;
+		//pid_p_gain_pitch = curP;
 	}
 }
 
@@ -159,13 +165,14 @@ void PID::setI(float curI) {
 	if (curI >= 0) {
 		pid_i_gain_roll = curI;
 		pid_i_gain_pitch = curI;
+		std::cout << pid_i_gain_pitch << "\n";
 	}
 }
 
 void PID::setD(float curD) {
 	if (curD >= 0) {
-		pid_d_gain_roll = curD;
-		pid_d_gain_pitch = curD;
+		//pid_d_gain_roll = curD;
+		//pid_d_gain_pitch = curD;
 	}
 }
 
@@ -174,7 +181,7 @@ void PID::setRun(bool curRun) {
 }
 
 void PID::setThrottle(float curThrottle) {
-	if (curThrottle >= 1050 && curThrottle <= 1800) {
+	if (curThrottle >= 1050 && curThrottle <= 1600) {
 		throttle = curThrottle;
 	}
 
@@ -238,6 +245,23 @@ void PID::armMotor() {
 void PID::interruptPid() {
 	run = false;
 	stop = true;
+}
+
+int *PID::getThrottles() {
+	static int ar[4];
+	ar[0] = esc_1;
+	ar[1] = esc_2;
+	ar[2] = esc_3;
+	ar[3] = esc_4;
+	return ar;
+}
+
+float *PID::getPIDVals() {
+	static float ar[3];
+	ar[0] = pid_output_pitch;
+	ar[1] = pid_cur_val;
+	ar[2] = pid_i_mem_pitch;
+	return ar;
 }
 
 bool PID::isInit() {

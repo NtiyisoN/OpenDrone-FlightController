@@ -30,6 +30,8 @@ public:
 	void armMotor();
 	bool isInit();
 	void interruptPid();
+	int* getThrottles();
+	float *getPIDVals();
 
 	Orientation *getOrientatin();
 
@@ -48,7 +50,7 @@ private:
 	float pid_i_mem_yaw = 0, pid_yaw_setpoint = 0, pid_output_yaw, pid_last_yaw_d_error = 0;
 
 	int esc_1, esc_2, esc_3, esc_4;
-	int throttle = 1500;
+	int throttle = 1050;
 	bool run = false, stop = false;
 
 	void calcPid();

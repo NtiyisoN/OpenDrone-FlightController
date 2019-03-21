@@ -26,12 +26,16 @@
 
 #include "XML/XMLParser.h"
 
+#include "Database/SQLite.h"
+
 #include "Motor/PWMMotorTest.h"
 
 #include <wiringPi.h>
 #include <iostream>
 #include <thread>
 #include <fstream>
+#include <signal.h>
+
 using namespace std;
 
 Orientation *orientation;
@@ -42,12 +46,12 @@ TCPServer *server;
 Exit *error;
 PID *pid;
 PWMMotorTest *pwm;
+SQLite *sql;
 int arg;
 
 FlightController::FlightController(int argIn)
 {
 	arg = argIn;
-	cout << arg<<"\n";
 }
 
 static void runUltrasonic()
@@ -75,6 +79,31 @@ static void runPid() {
 	pid->calcValues();
 }
 
+static void runSQL()
+{
+	sql->initSQL("opendrone");
+	sql->startSQL(orientation);
+}
+
+void sighandler(int sig)
+{
+	cout << "Signal " << sig << " caught..." << endl;
+
+	//Interrupt Threads
+	orientation->interruptOrientation();
+	pid->interruptPid();
+	cout << "Interrupting Threads! \n";
+
+	pwm->ExitMotor();
+	cout << "Exitmotors called";
+	getchar();
+	pwm->ExitMotor();
+
+	system("sudo /home/pi/projects/getValues.sh");
+
+	exit(1);
+}
+
 void FlightController::initObjects() 
 {
 	error = Exit::getInstance();
@@ -93,10 +122,22 @@ void FlightController::initObjects()
 
 	//ultrasonic = new UltrasonicDistance();
 	//parser = new XMLParser();
+	sql = new SQLite();
 }
 
 int FlightController::run()
 {
+	/*pwm = new PWMMotorTest();
+
+	int rc = wiringPiSetupGpio();
+	pinMode(4, OUTPUT);
+	digitalWrite(4, LOW);
+	digitalWrite(4, HIGH);
+	pwm->SetSpeed(15, 2000);
+	getchar();
+	digitalWrite(4, LOW);
+	pwm->ExitMotor();*/
+	
 	//Start server
 	server = TCPServer::getInstance();
 	thread serverThread(runServer);
@@ -106,6 +147,8 @@ int FlightController::run()
 	//Initialize all important objects
 	initObjects();
 
+	signal(SIGINT, &sighandler);
+
 	delay(250);
 
 	//Arm Motors
@@ -114,7 +157,7 @@ int FlightController::run()
 	pwm->ExitMotor();
 	pwm->ArmMotor();
 	getchar();
-	pwm->ExitMotor();*/
+	pwm->ExitMotor();
 
 	//Calibrate
 	/*cout << "Hallo";
@@ -126,43 +169,48 @@ int FlightController::run()
 	pwm->ExitMotor();*/
 
 	//Check Motors
-	/*pwm->ExitMotor();
+	/*int rc = wiringPiSetupGpio();
+	pwm = new PWMMotorTest();
+	pwm->ExitMotor();
 	pwm->ArmMotor();
 	cout << "0";
-	pwm->SetSpeed(0, 1500);
+	pwm->SetSpeed(0, 1150);
 	getchar();
 	cout << "1";
 	pwm->SetSpeed(0, 0);
-	pwm->SetSpeed(1, 1500);
+	pwm->SetSpeed(1, 1150);
 	getchar();
 	cout << "2";
 	pwm->SetSpeed(1, 0);
-	pwm->SetSpeed(2, 1500);
+	pwm->SetSpeed(2, 1150);
 	getchar();
 	cout << "3";
 	pwm->SetSpeed(2, 0);
-	pwm->SetSpeed(3, 1500);
+	pwm->SetSpeed(3, 1150);
 	getchar();
 	pwm->SetSpeed(3, 0);*/
+
 
 	//Run Threads
 	thread pitchRollYawThread(runOrientation);
 	//thread barometerThread(runBarometer);
 	thread pidController(runPid);
+	thread sqlThread(runSQL);
 	cout << "Threads are running!\n";
-
 
 	//Interrupt Threads
 	//orientation->interruptOrientation();
 	//barometer->interruptBaromter();
 	//pid->interruptPid();
-	cout << "Interrupting Threads! \n";
+	//sql->interruptSQL();
+	//cout << "Interrupting Threads! \n";
 
 	//Wait until threads stopped
 	serverThread.join();
 	pitchRollYawThread.join();
 	//barometerThread.join();
 	pidController.join();
+	sqlThread.join();
 	cout << "Stopped Threads!\n";
 
 	return (0);

@@ -61,7 +61,6 @@ void Orientation::interruptOrientation()
 }
 
 void Orientation::setCalibration(double *ar) {
-	//cout << "Hallo: " << ar[0] << " " << ar[1] << " " << ar[2];
 	calPitch = ar[0];
 	calRoll = ar[1];
 	calYaw = ar[2];
@@ -70,19 +69,20 @@ void Orientation::setCalibration(double *ar) {
 //Use for calibration
 double *Orientation::getPitchRollReal()
 {
-	static double ar[3];
+	static double ar[4];
 	if (this->run)
 	{
 		ar[0] = this->bno->gyroIntegratedRotationVectorData.lastPitch;
 		ar[1] = this->bno->gyroIntegratedRotationVectorData.lastRoll;
 		ar[2] = this->bno->gyroIntegratedRotationVectorData.lastYaw;
-		//cout << ar[0] << " " << ar[1] << " " << ar[2] << "\n";
+		ar[3] = this->bno->gyroIntegratedRotationVectorData.time;
 	}
 	else
 	{
 		ar[0] = NULL;
 		ar[1] = NULL;
 		ar[2] = NULL;
+		ar[3] = NULL;
 	}
 
 	return ar;
@@ -91,19 +91,20 @@ double *Orientation::getPitchRollReal()
 //Use for flying
 double *Orientation::getPitchRoll()
 {
-	static double ar[3];
+	static double ar[4];
 	if (this->run)
 	{
 		ar[0] = this->bno->gyroIntegratedRotationVectorData.lastPitch - calPitch;
 		ar[1] = this->bno->gyroIntegratedRotationVectorData.lastRoll - calRoll;
 		ar[2] = this->bno->gyroIntegratedRotationVectorData.lastYaw - calYaw;
-		//cout << ar[0] << " " << ar[1] << " " << ar[2] << "\n";
+		ar[3] = this->bno->gyroIntegratedRotationVectorData.time;
 	}
 	else
 	{
 		ar[0] = NULL;
 		ar[1] = NULL;
 		ar[2] = NULL;
+		ar[3] = NULL;
 	}
 
 	return ar;
