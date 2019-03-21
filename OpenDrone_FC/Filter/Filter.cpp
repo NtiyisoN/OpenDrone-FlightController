@@ -12,6 +12,10 @@
 #include <iterator> 
 using namespace std;
 
+/**
+	Filter
+	@param double minValue, double maxValue, double minSize
+*/
 Filter::Filter(double minValue, double maxValue, double minSize)
 {
 	this->maxValue = maxValue;
@@ -19,6 +23,14 @@ Filter::Filter(double minValue, double maxValue, double minSize)
 	this->minSize = minSize;
 }
 
+/**
+	adds a value to the Filtered array
+	@param double value
+	@return double
+
+	@info
+	* returns the filtered array
+*/
 double Filter::addValue(double value)
 {	
 	if (value <= maxValue && value > minValue)

@@ -3,25 +3,52 @@
  * The entire project (including this file) is licensed under the GNU GPL v3.0
  * Purpose: TODO
  *
- * 	@author Tim Klecka
- * 	@version 0.0.1 07.01.2019
+ * 	@author Tim Klecka, Thomas Brych
+ * 	@version 0.0.1 14.02.2019
  */
 #include <iostream>
 #include "FlightController.h"
+#include <string.h>
+#include "./Database/SQLite.h"
 using namespace std;
 
 /**
-	Main Method of our Flightcontroller
-	@param void
-	@return Errorcode
+	Start our Flightcontroller
+	@param int arg
+	@return void
 */
-int main(void)
-{
-	FlightController *fc = new FlightController();
+void startFC(int arg) {
+	FlightController *fc = new FlightController(arg);
 
 	cout << "Starting the Flight Controller\n";
 	fc->run();
-	
+
 	cout << "Stopping Flight Controller!\n";
-	return (0);
+}
+
+/**
+	Main Method of our Flightcontroller
+	@param int argc, char * argv[]
+	@return Errorcode
+*/
+int main(int argc, char * argv[])
+{
+	//SQLite *sql = new SQLite();
+	if (argc == 1) {
+		startFC(0);
+	}
+	else if (argc == 2) {
+		if (strcmp(argv[1], "-d") == 0) {
+			startFC(1);
+		}
+		else if (strcmp(argv[1], "-l") == 0) {
+			startFC(2);
+		}
+		else {
+			return 1;
+		}
+	}
+	else {
+		return 1;
+	}
 }

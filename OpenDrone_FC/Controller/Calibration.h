@@ -6,10 +6,9 @@ class Calibration
 public:
 	Calibration(Orientation *o);
 	~Calibration();
-	bool calibrate();
+	void calibrate();
 
 private:
 	Orientation *orientation;
-	bool writeToXML(double *values);
 };
 

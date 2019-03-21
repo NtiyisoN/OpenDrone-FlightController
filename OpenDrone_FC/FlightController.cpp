@@ -3,11 +3,10 @@
  * The entire project (including this file) is licensed under the GNU GPL v3.0
  * Purpose: TODO
  *
- * 	@author Tim Klecka
- * 	@version 0.0.1 07.01.2019
+ * 	@author Thomas Brych, Tim Klecka
+ * 	@version 0.0.1 14.02.2019
  */
 #include "FlightController.h"
-
 #include "Sensor/AbstractSensor/Barometer.h"
 #include "Sensor/AbstractSensor/Ultrasonic.h"
 #include "Sensor/BMP388.h"
@@ -21,8 +20,13 @@
 #include "Controller/Orientation.h"
 #include "Controller/UltrasonicDistance.h"
 #include "Controller/Exit.h"
+#include "Controller/PID.h"
+
+#include "Motor/PWMMotorTest.h"
 
 #include "XML/XMLParser.h"
+
+#include "Database/SQLite.h"
 
 #include "Motor/PWMMotorTest.h"
 
@@ -30,9 +34,9 @@
 #include <iostream>
 #include <thread>
 #include <fstream>
-using namespace std;
+#include <signal.h>
 
-PWMMotorTest *pw = new PWMMotorTest();
+using namespace std;
 
 Orientation *orientation;
 Barometer *barometer;
@@ -40,9 +44,14 @@ UltrasonicDistance *ultrasonic;
 XMLParser *parser;
 TCPServer *server;
 Exit *error;
+PID *pid;
+PWMMotorTest *pwm;
+SQLite *sql;
+int arg;
 
-FlightController::FlightController()
+FlightController::FlightController(int argIn)
 {
+	arg = argIn;
 }
 
 static void runUltrasonic()
@@ -65,6 +74,36 @@ static void runServer()
 	server->startUp();
 }
 
+static void runPid() {
+	pid = PID::getInstance(orientation, pwm);
+	pid->calcValues();
+}
+
+static void runSQL()
+{
+	sql->initSQL("opendrone");
+	sql->startSQL(orientation);
+}
+
+void sighandler(int sig)
+{
+	cout << "Signal " << sig << " caught..." << endl;
+
+	//Interrupt Threads
+	orientation->interruptOrientation();
+	pid->interruptPid();
+	cout << "Interrupting Threads! \n";
+
+	pwm->ExitMotor();
+	cout << "Exitmotors called";
+	getchar();
+	pwm->ExitMotor();
+
+	system("sudo /home/pi/projects/getValues.sh");
+
+	exit(1);
+}
+
 void FlightController::initObjects() 
 {
 	error = Exit::getInstance();
@@ -78,46 +117,107 @@ void FlightController::initObjects()
 	}
   
 	orientation = new Orientation();
-	barometer = new BMP180();
+	//barometer = new BMP280();
+	pwm = new PWMMotorTest();
+
 	//ultrasonic = new UltrasonicDistance();
 	//parser = new XMLParser();
+	sql = new SQLite();
 }
 
 int FlightController::run()
 {
+	/*pwm = new PWMMotorTest();
+
+	int rc = wiringPiSetupGpio();
+	pinMode(4, OUTPUT);
+	digitalWrite(4, LOW);
+	digitalWrite(4, HIGH);
+	pwm->SetSpeed(15, 2000);
+	getchar();
+	digitalWrite(4, LOW);
+	pwm->ExitMotor();*/
+	
+	//Start server
 	server = TCPServer::getInstance();
 	thread serverThread(runServer);
-	//while (!server->connected) { delay(50); };
-	
+	while (!server->connected) { delay(50); };
+	cout << "Client connected!\n";
+
+	//Initialize all important objects
 	initObjects();
+
+	signal(SIGINT, &sighandler);
 
 	delay(250);
 
+	//Arm Motors
+	/*cout << "Hallo";
+	getchar();
+	pwm->ExitMotor();
+	pwm->ArmMotor();
+	getchar();
+	pwm->ExitMotor();
+
+	//Calibrate
+	/*cout << "Hallo";
+	getchar();
+	pwm->ExitMotor();
+	pwm->CalMotor();
+	cout << "Tim";
+	getchar();
+	pwm->ExitMotor();*/
+
+	//Check Motors
+	/*int rc = wiringPiSetupGpio();
+	pwm = new PWMMotorTest();
+	pwm->ExitMotor();
+	pwm->ArmMotor();
+	cout << "0";
+	pwm->SetSpeed(0, 1150);
+	getchar();
+	cout << "1";
+	pwm->SetSpeed(0, 0);
+	pwm->SetSpeed(1, 1150);
+	getchar();
+	cout << "2";
+	pwm->SetSpeed(1, 0);
+	pwm->SetSpeed(2, 1150);
+	getchar();
+	cout << "3";
+	pwm->SetSpeed(2, 0);
+	pwm->SetSpeed(3, 1150);
+	getchar();
+	pwm->SetSpeed(3, 0);*/
+
+
+	//Run Threads
 	thread pitchRollYawThread(runOrientation);
-	thread barometerThread(runBarometer);
+	//thread barometerThread(runBarometer);
+	thread pidController(runPid);
+	thread sqlThread(runSQL);
+	cout << "Threads are running!\n";
 
-	delay(1000);
-
-	int i = 0;
-	while (i < 100000) {
-		double *valuesPitchRollYaw = orientation->getPitchRoll();
-		double *valuesBarometer = barometer->getBarometerValues();
-		cout << i << " Pitch: " << valuesPitchRollYaw[0] << " Roll: " << valuesPitchRollYaw[1] << " Yaw: " << valuesPitchRollYaw[2] <<
-			" Temperature: " << valuesBarometer[0] << " Pressure: " << valuesBarometer[1] << "\n";
-		i++;
-		delay(100);
-	}
-
+	//Interrupt Threads
 	//orientation->interruptOrientation();
 	//barometer->interruptBaromter();
+	//pid->interruptPid();
+	//sql->interruptSQL();
+	//cout << "Interrupting Threads! \n";
 
+	//Wait until threads stopped
 	serverThread.join();
 	pitchRollYawThread.join();
-	barometerThread.join();
-  
+	//barometerThread.join();
+	pidController.join();
+	sqlThread.join();
+	cout << "Stopped Threads!\n";
+
 	return (0);
 }
 
 FlightController::~FlightController()
 {
 }
+
+
