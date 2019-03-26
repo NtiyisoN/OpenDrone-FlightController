@@ -57,6 +57,8 @@ Used technologies:
 * BMP180 ✔  
 * BMP280 ✔  
 * BMP388 ⏳  
+### GPS
+* BN-880 ⏳ 
 ### Other
 * HC-SR04 ✔  
 ---  
