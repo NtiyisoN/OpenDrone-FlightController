@@ -48,24 +48,24 @@ void PID::calcValues()
 		delay(50);
 	}
 
-	/*getchar();
-	pwm->SetSpeed(16, 2000);
-	getchar();
-	pwm->SetSpeed(16, 1750);
-	getchar();
-	pwm->SetSpeed(16, 1500);
-	getchar();
-	pwm->SetSpeed(16, 1050);
-	getchar();
-	pwm->ExitMotor();*/
-
 	while (run) {
 		calcPid();
 
-		esc_1 = throttle - pid_output_pitch + pid_output_roll - pid_output_yaw;   //Calculate the pulse for esc 1 (front-right - CCW)
-		esc_2 = throttle + pid_output_pitch + pid_output_roll + pid_output_yaw;   //Calculate the pulse for esc 2 (rear-right - CW)
-		esc_3 = throttle + pid_output_pitch - pid_output_roll - pid_output_yaw;   //Calculate the pulse for esc 3 (rear-left - CCW)
-		esc_4 = throttle - pid_output_pitch - pid_output_roll + pid_output_yaw;   //Calculate the pulse for esc 4 (front-left - CW)
+		if (throttle < 1200) {
+			esc_1 = throttle;   //Calculate the pulse for esc 1 (front-right - CCW)
+			esc_2 = throttle;   //Calculate the pulse for esc 2 (rear-right - CW)
+			esc_3 = throttle;   //Calculate the pulse for esc 3 (rear-left - CCW)
+			esc_4 = throttle;   //Calculate the pulse for esc 4 (front-left - CW)
+			pid_last_pitch_d_error = 0.0;
+			pid_last_roll_d_error = 0.0;
+			pid_last_yaw_d_error = 0.0;
+		}
+		else {
+			esc_1 = throttle - pid_output_pitch + pid_output_roll - pid_output_yaw;   //Calculate the pulse for esc 1 (front-right - CCW)
+			esc_2 = throttle + pid_output_pitch + pid_output_roll + pid_output_yaw;   //Calculate the pulse for esc 2 (rear-right - CW)
+			esc_3 = throttle + pid_output_pitch - pid_output_roll - pid_output_yaw;   //Calculate the pulse for esc 3 (rear-left - CCW)
+			esc_4 = throttle - pid_output_pitch - pid_output_roll + pid_output_yaw;   //Calculate the pulse for esc 4 (front-left - CW)
+		}
 
 		int speedMin = 1050;
 		if (esc_1 < speedMin) esc_1 = speedMin;           //Keep the motors running.
@@ -79,10 +79,10 @@ void PID::calcValues()
 		if (esc_3 > speedMax) esc_3 = speedMax;           //Limit the esc-3 pulse to 2500.
 		if (esc_4 > speedMax) esc_4 = speedMax;           //Limit the esc-4 pulse to 2500.  
 		
-		pwm->SetSpeed(1, esc_1);	//Front right
-		pwm->SetSpeed(0, esc_2);	//Rear right
-		pwm->SetSpeed(3, esc_3);	//Rear left
-		pwm->SetSpeed(2, esc_4);	//Front left
+		pwm->SetSpeed(1, esc_1);	//Front left
+		pwm->SetSpeed(0, esc_2);	//Rear left
+		pwm->SetSpeed(3, esc_3);	//Rear right
+		pwm->SetSpeed(2, esc_4);	//Front right
 		delay(5);
 
 		/*Default:
@@ -102,9 +102,7 @@ void PID::calcValues()
 
 void PID::calcPid() {
 	double *ar = orientation->getPitchRoll();
-
-	long lastMeasureTime = ar[3]; //microseconds
-
+	//std::cout << ar[0] << " " << ar[1] << " " << ar[2] << "\n";
 	//Roll calculations
 	pid_error_temp = ar[1] - pid_roll_setpoint;
 	if (pid_error_temp != pid_error_temp) {
@@ -115,7 +113,6 @@ void PID::calcPid() {
 	else if (pid_i_mem_roll < pid_max_roll * -1)pid_i_mem_roll = pid_max_roll * -1;
 
 	pid_output_roll = pid_p_gain_roll * pid_error_temp + pid_i_mem_roll + pid_d_gain_roll * ((pid_error_temp - pid_last_roll_d_error));
-	//pid_output_roll = pid_p_gain_roll * pid_error_temp + pid_i_mem_roll /*+ pid_d_gain_roll * (pid_error_temp - pid_last_roll_d_error)*/;
 	if (pid_output_roll > pid_max_roll)pid_output_roll = pid_max_roll;
 	else if (pid_output_roll < pid_max_roll * -1)pid_output_roll = pid_max_roll * -1;
 
@@ -131,7 +128,6 @@ void PID::calcPid() {
 	else if (pid_i_mem_pitch < pid_max_pitch * -1)pid_i_mem_pitch = pid_max_pitch * -1;
 
 	pid_output_pitch = pid_p_gain_pitch * pid_error_temp + pid_i_mem_pitch + pid_d_gain_pitch * ((pid_error_temp - pid_last_pitch_d_error));
-	//pid_output_pitch = pid_p_gain_pitch * pid_error_temp + pid_i_mem_pitch /*+ pid_d_gain_pitch * (pid_error_temp - pid_last_pitch_d_error)*/;
 	if (pid_output_pitch > pid_max_pitch)pid_output_pitch = pid_max_pitch;
 	else if (pid_output_pitch < pid_max_pitch * -1)pid_output_pitch = pid_max_pitch * -1;
 
@@ -147,7 +143,6 @@ void PID::calcPid() {
 	else if (pid_i_mem_yaw < pid_max_yaw * -1)pid_i_mem_yaw = pid_max_yaw * -1;
 
 	pid_output_yaw = pid_p_gain_yaw * pid_error_temp + pid_i_mem_yaw + pid_d_gain_yaw * ((pid_error_temp - pid_last_yaw_d_error));
-	//pid_output_yaw = pid_p_gain_yaw * pid_error_temp + pid_i_mem_yaw /*+ pid_d_gain_yaw * (pid_error_temp - pid_last_yaw_d_error)*/;
 	if (pid_output_yaw > pid_max_yaw)pid_output_yaw = pid_max_yaw;
 	else if (pid_output_yaw < pid_max_yaw * -1)pid_output_yaw = pid_max_yaw * -1;
 
@@ -190,51 +185,38 @@ void PID::setThrottle(float curThrottle) {
 }
 
 void PID::setPitchSetpoint(int curPitchSetpoint) {
-	//pwm->SetSpeed(1, curPitchSetpoint);
-	//pwm->SetSpeed(9, curPitchSetpoint);
-
-
-	//The PID set point in degrees per second is determined by the pitch receiver input.
-	//In the case of deviding by 3 the max pitch rate is aprox 164 degrees per second ( (500-8)/3 = 164d/s ).
-	//pid_pitch_setpoint = 0;
-	/*//We need a little dead band of 16us for better results.
-	if (receiver_input_channel_2 > 1508)pid_pitch_setpoint = receiver_input_channel_2 - 1508;
-	else if (receiver_input_channel_2 < 1492)pid_pitch_setpoint = receiver_input_channel_2 - 1492;
-
-	pid_pitch_setpoint -= pitch_level_adjust;                                  //Subtract the angle correction from the standardized receiver pitch input value.
-	pid_pitch_setpoint /= 3.0;   */                                              //Divide the setpoint for the PID pitch controller by 3 to get angles in degrees.
+	if (curPitchSetpoint >= 1000 && curPitchSetpoint <= 2000) {
+		if (curPitchSetpoint > 1480 && curPitchSetpoint < 1520) {
+			pid_pitch_setpoint = 0;
+		} else if (curPitchSetpoint < 1480) {
+			int diff = (curPitchSetpoint - 1480)*-1;
+			pid_pitch_setpoint = diff * 0.0625;
+		} else if (curPitchSetpoint > 1520) {
+			int diff = (curPitchSetpoint - 1520)*-1;
+			pid_pitch_setpoint = diff * 0.0625;
+		}
+	}
 }
 
 void PID::setRollSetpoint(int curRollSetpoint) {
-	//pwm->SetSpeed(2, curRollSetpoint);
-	//pwm->SetSpeed(10, curRollSetpoint);
-
-
-	//The PID set point in degr1ees per second is determined by the roll receiver input.
-	//In the case of deviding by 3 the max roll rate is aprox 164 degrees per second ( (500-8)/3 = 164d/s ).
-	//pid_roll_setpoint = 0;
-	//We need a little dead band of 16us for better results.
-	/*if (receiver_input_channel_1 > 1508)pid_roll_setpoint = receiver_input_channel_1 - 1508;
-	else if (receiver_input_channel_1 < 1492)pid_roll_setpoint = receiver_input_channel_1 - 1492;
-
-	pid_roll_setpoint -= roll_level_adjust;										//Subtract the angle correction from the standardized receiver roll input value.
-	pid_roll_setpoint /= 3.0;  */                                               //Divide the setpoint for the PID roll controller by 3 to get angles in degrees.
-
+	int setPoint = curRollSetpoint;
+	if (setPoint >= 1000 && setPoint <= 2000) {
+		if (setPoint > 1480 && setPoint < 1520) {
+			pid_roll_setpoint = 0;
+		}
+		else if (setPoint < 1480) {
+			int diff = (setPoint - 1480)*-1;
+			pid_roll_setpoint = diff * 0.0625;
+		}
+		else if (setPoint > 1520) {
+			int diff = (setPoint - 1520)*-1;
+			pid_roll_setpoint = diff * 0.0625;
+		}
+	}
 }
 
 void PID::setYawSetpoint(int curYawSetpoint) {
-	//pwm->SetSpeed(3, curYawSetpoint);
-	//pwm->SetSpeed(11, curYawSetpoint);
-
-	//The PID set point in degrees per second is determined by the yaw receiver input.
-	//In the case of deviding by 3 the max yaw rate is aprox 164 degrees per second ( (500-8)/3 = 164d/s ).
-	//pid_yaw_setpoint = 0;
-	//We need a little dead band of 16us for better results.
-	/*if (receiver_input_channel_3 > 1050) { //Do not yaw when turning off the motors.
-		if (receiver_input_channel_4 > 1508)pid_yaw_setpoint = (receiver_input_channel_4 - 1508) / 3.0;
-		else if (receiver_input_channel_4 < 1492)pid_yaw_setpoint = (receiver_input_channel_4 - 1492) / 3.0;
-	}*/
-
+	//TODO: 
 }
 
 void PID::armMotor() {

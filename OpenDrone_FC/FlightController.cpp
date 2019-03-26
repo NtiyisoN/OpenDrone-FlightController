@@ -173,20 +173,21 @@ int FlightController::run()
 	pwm = new PWMMotorTest();
 	pwm->ExitMotor();
 	pwm->ArmMotor();
+	//cout << "Front right";
 	cout << "0";
-	pwm->SetSpeed(0, 1150);
+	pwm->SetSpeed(2, 1050);
 	getchar();
 	cout << "1";
-	pwm->SetSpeed(0, 0);
-	pwm->SetSpeed(1, 1150);
+	pwm->SetSpeed(2, 0);
+	/*pwm->SetSpeed(1, 1050);
 	getchar();
 	cout << "2";
 	pwm->SetSpeed(1, 0);
-	pwm->SetSpeed(2, 1150);
+	pwm->SetSpeed(2, 1050);
 	getchar();
 	cout << "3";
 	pwm->SetSpeed(2, 0);
-	pwm->SetSpeed(3, 1150);
+	pwm->SetSpeed(3, 1050);
 	getchar();
 	pwm->SetSpeed(3, 0);*/
 
