@@ -33,7 +33,7 @@ Used technologies:
 * Configure Drone ✔  
 * Create/Modify Flightplans ✔   
 * GUI for Manual Flight ✔  
-* Communtication ⏳  
+* Communtication ✔  
 ### FC  
 * Rotors rotating round and round ✔  
 * Reading Sensors ✔  
