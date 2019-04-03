@@ -18,7 +18,7 @@ using namespace std;
 	@return void
 */
 void startFC(int arg) {
-	FlightController *fc = new FlightController(arg);
+	FlightController* fc = new FlightController(arg);
 
 	cout << "Starting the Flight Controller\n";
 	fc->run();
@@ -31,7 +31,7 @@ void startFC(int arg) {
 	@param int argc, char * argv[]
 	@return Errorcode
 */
-int main(int argc, char * argv[])
+int main(int argc, char* argv[])
 {
 	//SQLite *sql = new SQLite();
 	if (argc == 1) {
