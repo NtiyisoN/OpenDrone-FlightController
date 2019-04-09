@@ -23,6 +23,8 @@
 #include <typeinfo>
 #include <stdbool.h>
 #include "../Controller/PID.h"
+#include <list>
+#include "Command.h"
 
 #define TRUE   1  
 #define FALSE  0  
@@ -139,6 +141,10 @@ void TCPServer::acceptClients()
 			this->connected = true;
         }
         valread = read(new_socket, buffer, 1024);
+
+		Command *c = new Command(millis(), 1, buffer);
+		this->list1.push_back(c);
+
         mb->Interpret(buffer);
         
         this->checkIOOperation(readfds);
@@ -216,7 +222,7 @@ void TCPServer::checkIOOperation(fd_set readfds) {
                 //Close the socket and mark as 0 in list for reuse  
                 close(sd);
                 client_socket[i] = 0;
-				PID *pid = PID::getInstance(NULL, NULL);
+				PID *pid = PID::getInstanceCreated();
 				pid->interruptPid();
             }
         }

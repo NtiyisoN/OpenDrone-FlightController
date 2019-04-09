@@ -10,9 +10,9 @@
 
 PID *PID::instance = 0;
 
-float pid_p_gain_roll = 2.0; //1.25           //Gain setting for the roll P-controller 0.65
-float pid_i_gain_roll = 0.01; // 0.05;         //Gain setting for the roll I-controller 0.0006
-float pid_d_gain_roll = 60; // 90;               //Gain setting for the roll D-controller 60
+float pid_p_gain_roll = 2.0; //1.25             //Gain setting for the roll P-controller 0.65
+float pid_i_gain_roll = 0.01; // 0.05;          //Gain setting for the roll I-controller 0.0006
+float pid_d_gain_roll = 60; // 90;              //Gain setting for the roll D-controller 60
 int pid_max_roll = 1000;						//Maximum output of the PID-controller (+/-)
 
 float pid_p_gain_pitch = pid_p_gain_roll;		//Gain setting for the pitch P-controller.
@@ -27,19 +27,47 @@ int pid_max_yaw = 300;							//Maximum output of the PID-controller (+/-)
 
 float pid_cur_val = 0;
 
-PID *PID::getInstance(Orientation *o, PWMMotorTest *p)
+float nominalBaroVal = 0;						//The height, that the drone should have
+float throttleUpDown = 0;
+
+float maxAngle = 45;
+float factorControl = maxAngle / 480;			//Maximum 45° (480 steps)
+
+bool run = false, stop = false;
+
+PID *PID::getInstance(Orientation *o, PWMMotorTest *p, Barometer *b)
 {
 	if (instance == 0)
 	{
-		instance = new PID(o, p);
+		instance = new PID(o, p, b);
 	}
 	return instance;
 }
 
-PID::PID(Orientation *o, PWMMotorTest *p)
+PID *PID::getInstanceCreated()
+{
+	return instance;
+}
+
+PID::PID(Orientation *o, PWMMotorTest *p, Barometer *b)
 {
 	orientation = o;
 	pwm = p;
+	barometer = b;
+}
+
+static void manipulateBarometer() {
+	while (run) {
+		if (throttleUpDown == -1) {
+			//Throttle down
+			nominalBaroVal += 0.01;
+		}
+		else if (throttleUpDown == 1) {
+			//Throttle up
+			nominalBaroVal -= 0.01;
+		}
+		delay(50);
+	}
 }
 
 void PID::calcValues()
@@ -48,10 +76,13 @@ void PID::calcValues()
 		delay(50);
 	}
 
+	nominalBaroVal = barometer->getBarometerValues()[1];
+	std::thread heightThread(manipulateBarometer);
+
 	while (run) {
 		calcPid();
 
-		if (throttle < 1200) {
+		/*if (throttle < 1200) {
 			esc_1 = throttle;   //Calculate the pulse for esc 1 (front-right - CCW)
 			esc_2 = throttle;   //Calculate the pulse for esc 2 (rear-right - CW)
 			esc_3 = throttle;   //Calculate the pulse for esc 3 (rear-left - CCW)
@@ -60,12 +91,12 @@ void PID::calcValues()
 			pid_last_roll_d_error = 0.0;
 			pid_last_yaw_d_error = 0.0;
 		}
-		else {
-			esc_1 = throttle - pid_output_pitch + pid_output_roll - pid_output_yaw;   //Calculate the pulse for esc 1 (front-right - CCW)
-			esc_2 = throttle + pid_output_pitch + pid_output_roll + pid_output_yaw;   //Calculate the pulse for esc 2 (rear-right - CW)
-			esc_3 = throttle + pid_output_pitch - pid_output_roll - pid_output_yaw;   //Calculate the pulse for esc 3 (rear-left - CCW)
-			esc_4 = throttle - pid_output_pitch - pid_output_roll + pid_output_yaw;   //Calculate the pulse for esc 4 (front-left - CW)
-		}
+		else {*/
+
+		esc_1 = throttle - pid_output_pitch + pid_output_roll - pid_output_yaw;   //Calculate the pulse for esc 1 (front-right - CCW)
+		esc_2 = throttle + pid_output_pitch + pid_output_roll + pid_output_yaw;   //Calculate the pulse for esc 2 (rear-right - CW)
+		esc_3 = throttle + pid_output_pitch - pid_output_roll - pid_output_yaw;   //Calculate the pulse for esc 3 (rear-left - CCW)
+		esc_4 = throttle - pid_output_pitch - pid_output_roll + pid_output_yaw;   //Calculate the pulse for esc 4 (front-left - CW)
 
 		int speedMin = 1050;
 		if (esc_1 < speedMin) esc_1 = speedMin;           //Keep the motors running.
@@ -98,11 +129,13 @@ void PID::calcValues()
 	}
 
 	pwm->SetSpeed(16, 0);
+
+	heightThread.join();
 }
 
 void PID::calcPid() {
 	double *ar = orientation->getPitchRoll();
-	//std::cout << ar[0] << " " << ar[1] << " " << ar[2] << "\n";
+
 	//Roll calculations
 	pid_error_temp = ar[1] - pid_roll_setpoint;
 	if (pid_error_temp != pid_error_temp) {
@@ -147,28 +180,30 @@ void PID::calcPid() {
 	else if (pid_output_yaw < pid_max_yaw * -1)pid_output_yaw = pid_max_yaw * -1;
 
 	pid_last_yaw_d_error = pid_error_temp;
+
+
+	std::cout << nominalBaroVal << "\n";
 }
 
 void PID::setP(float curP) {
-	if (curP >= 0) {
-		//pid_p_gain_roll = curP;
-		//pid_p_gain_pitch = curP;
-	}
+	/*if (curP >= 0) {
+		pid_p_gain_roll = curP;
+		pid_p_gain_pitch = curP;
+	}*/
 }
 
 void PID::setI(float curI) {
-	if (curI >= 0) {
+	/*if (curI >= 0) {
 		pid_i_gain_roll = curI;
 		pid_i_gain_pitch = curI;
-		std::cout << pid_i_gain_pitch << "\n";
-	}
+	}*/
 }
 
 void PID::setD(float curD) {
-	if (curD >= 0) {
-		//pid_d_gain_roll = curD;
-		//pid_d_gain_pitch = curD;
-	}
+	/*if (curD >= 0) {
+		pid_d_gain_roll = curD;
+		pid_d_gain_pitch = curD;
+	}*/
 }
 
 void PID::setRun(bool curRun) {
@@ -176,47 +211,65 @@ void PID::setRun(bool curRun) {
 }
 
 void PID::setThrottle(float curThrottle) {
-	if (curThrottle >= 1050 && curThrottle <= 1600) {
-		throttle = curThrottle;
+	if (curThrottle >= 1000 && curThrottle <= 2000) {
+		if (curThrottle >= 1450 && curThrottle <= 1550) {
+			nominalBaroVal = barometer->getBarometerValues()[1];
+		} else if (curThrottle < 1450) {
+			nominalBaroVal = barometer->getBarometerValues()[1];
+			throttleUpDown = -1;
+		} else if (curThrottle > 1550) {
+			nominalBaroVal = barometer->getBarometerValues()[1];
+			throttleUpDown = 1;
+		}
 	}
-
-	//pwm->SetSpeed(0, throttle);
-	//pwm->SetSpeed(8, throttle);
 }
 
 void PID::setPitchSetpoint(int curPitchSetpoint) {
 	if (curPitchSetpoint >= 1000 && curPitchSetpoint <= 2000) {
+		int diff = 0;
 		if (curPitchSetpoint > 1480 && curPitchSetpoint < 1520) {
 			pid_pitch_setpoint = 0;
 		} else if (curPitchSetpoint < 1480) {
-			int diff = (curPitchSetpoint - 1480)*-1;
-			pid_pitch_setpoint = diff * 0.0625;
+			diff = (curPitchSetpoint - 1480)*-1;
 		} else if (curPitchSetpoint > 1520) {
-			int diff = (curPitchSetpoint - 1520)*-1;
-			pid_pitch_setpoint = diff * 0.0625;
+			diff = (curPitchSetpoint - 1520)*-1;
 		}
+		pid_pitch_setpoint = diff * factorControl;
 	}
 }
 
 void PID::setRollSetpoint(int curRollSetpoint) {
 	int setPoint = curRollSetpoint;
 	if (setPoint >= 1000 && setPoint <= 2000) {
+		int diff = 0;
 		if (setPoint > 1480 && setPoint < 1520) {
 			pid_roll_setpoint = 0;
 		}
 		else if (setPoint < 1480) {
-			int diff = (setPoint - 1480)*-1;
-			pid_roll_setpoint = diff * 0.0625;
+			diff = (setPoint - 1480)*-1;
 		}
 		else if (setPoint > 1520) {
-			int diff = (setPoint - 1520)*-1;
-			pid_roll_setpoint = diff * 0.0625;
+			diff = (setPoint - 1520)*-1;
 		}
+		pid_roll_setpoint = diff * factorControl;
 	}
 }
 
 void PID::setYawSetpoint(int curYawSetpoint) {
-	//TODO: 
+	/*int setPoint = curYawSetpoint;
+	if (setPoint >= 1000 && setPoint <= 2000) {
+		int diff = 0;
+		if (setPoint > 1480 && setPoint < 1520) {
+			pid_yaw_setpoint = 0;
+		}
+		else if (setPoint < 1480) {
+			diff = (setPoint - 1480)*-1;
+		}
+		else if (setPoint > 1520) {
+			diff = (setPoint - 1520)*-1;
+		}
+		pid_yaw_setpoint = diff / 5;
+	}*/
 }
 
 void PID::armMotor() {

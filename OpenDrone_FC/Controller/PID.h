@@ -10,13 +10,16 @@
 #include "../Motor/PWMMotorTest.h"
 #include "wiringPi.h"
 #include "iostream"
+#include "../Sensor/AbstractSensor/Barometer.h"
+#include "thread";
 
 #pragma once
 class PID
 {
 public:
 	~PID();
-	static PID *getInstance(Orientation *o, PWMMotorTest *p);
+	static PID *getInstance(Orientation *o, PWMMotorTest *p, Barometer *b);
+	static PID *getInstanceCreated();
 	static PID *instance;
 
 	void setP(float curP);
@@ -38,10 +41,10 @@ public:
 	void calcValues();
 
 private:
-	PID(Orientation *o, PWMMotorTest *p);
+	PID(Orientation *o, PWMMotorTest *p, Barometer *b);
 	PWMMotorTest *pwm = NULL;
 	Orientation *orientation = NULL;
-
+	Barometer *barometer = NULL;
 
 
 	float pid_error_temp;
@@ -51,7 +54,6 @@ private:
 
 	int esc_1, esc_2, esc_3, esc_4;
 	int throttle = 1050;
-	bool run = false, stop = false;
 
 	void calcPid();
 };
