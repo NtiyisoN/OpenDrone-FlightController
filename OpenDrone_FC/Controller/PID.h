@@ -51,6 +51,7 @@ private:
 	float pid_i_mem_roll = 0, pid_roll_setpoint = 0, pid_output_roll, pid_last_roll_d_error = 0;
 	float pid_i_mem_pitch = 0, pid_pitch_setpoint = 0, pid_output_pitch, pid_last_pitch_d_error = 0;
 	float pid_i_mem_yaw = 0, pid_yaw_setpoint = 0, pid_output_yaw, pid_last_yaw_d_error = 0;
+	float pid_output_height, pid_last_height_error, pid_p_gain_height = 0.0, pid_d_gain_height = 0.0;
 
 	int esc_1, esc_2, esc_3, esc_4;
 	int throttle = 1050;

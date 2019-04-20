@@ -20,10 +20,14 @@ float pid_i_gain_pitch = pid_i_gain_roll;		//Gain setting for the pitch I-contro
 float pid_d_gain_pitch = pid_d_gain_roll;		//Gain setting for the pitch D-controller.
 int pid_max_pitch = pid_max_roll;				//Maximum output of the PID-controller (+/-)
 
-float pid_p_gain_yaw = 4.0;						//Gain setting for the pitch P-controller.
-float pid_i_gain_yaw = 0.02;					//Gain setting for the pitch I-controller.
-float pid_d_gain_yaw = 0.00;					//Gain setting for the pitch D-controller.
+float pid_p_gain_yaw = 4.0;						//Gain setting for the yaw P-controller.
+float pid_i_gain_yaw = 0.02;					//Gain setting for the yaw I-controller.
+float pid_d_gain_yaw = 0.00;					//Gain setting for the yaw D-controller.
 int pid_max_yaw = 300;							//Maximum output of the PID-controller (+/-)
+
+//TODO: Change these values
+float pid_p_gain_height = 2.5;
+float pid_d_gain_height = 10.0;
 
 float pid_cur_val = 0;
 
@@ -82,17 +86,9 @@ void PID::calcValues()
 	while (run) {
 		calcPid();
 
-		/*if (throttle < 1200) {
-			esc_1 = throttle;   //Calculate the pulse for esc 1 (front-right - CCW)
-			esc_2 = throttle;   //Calculate the pulse for esc 2 (rear-right - CW)
-			esc_3 = throttle;   //Calculate the pulse for esc 3 (rear-left - CCW)
-			esc_4 = throttle;   //Calculate the pulse for esc 4 (front-left - CW)
-			pid_last_pitch_d_error = 0.0;
-			pid_last_roll_d_error = 0.0;
-			pid_last_yaw_d_error = 0.0;
+		if (throttle + pid_output_height < 1800 && throttle + pid_output_height > 1200) {
+			throttle = throttle + pid_output_height;
 		}
-		else {*/
-
 		esc_1 = throttle - pid_output_pitch + pid_output_roll - pid_output_yaw;   //Calculate the pulse for esc 1 (front-right - CCW)
 		esc_2 = throttle + pid_output_pitch + pid_output_roll + pid_output_yaw;   //Calculate the pulse for esc 2 (rear-right - CW)
 		esc_3 = throttle + pid_output_pitch - pid_output_roll - pid_output_yaw;   //Calculate the pulse for esc 3 (rear-left - CCW)
@@ -181,6 +177,14 @@ void PID::calcPid() {
 
 	pid_last_yaw_d_error = pid_error_temp;
 
+	//Throttle calculations
+	pid_error_temp = barometer->getBarometerValues()[1] - nominalBaroVal;
+	if (pid_error_temp != pid_error_temp) {
+		calcPid();
+	}
+
+	pid_output_height = pid_p_gain_height * pid_error_temp + pid_d_gain_height * ((pid_error_temp - pid_last_height_error));
+	pid_last_height_error = pid_error_temp;
 
 	std::cout << nominalBaroVal << "\n";
 }
