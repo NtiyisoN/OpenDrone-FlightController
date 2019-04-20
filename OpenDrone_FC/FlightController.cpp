@@ -51,6 +51,7 @@ FlightController::FlightController(int argIn)
 	arg = argIn;
 }
 
+
 static void runUltrasonic()
 {
 	ultrasonic->runUltrasonic();
@@ -72,7 +73,6 @@ static void runServer()
 }
 
 static void runPid() {
-	pid = PID::getInstance(orientation, pwm, barometer);
 	pid->calcValues();
 }
 
@@ -116,25 +116,21 @@ void FlightController::initObjects()
 	orientation = new Orientation();
 	barometer = new BMP280();
 	pwm = new PWMMotorTest();
-
 	//ultrasonic = new UltrasonicDistance();
 	//parser = new XMLParser();
 	sql = new SQLite();
+	pid = PID::getInstance(orientation, pwm, barometer);
 }
 
+/**
+	Default method that's called to start the Flight 
+	@return int
+
+	@info
+	* Starts all the threads
+*/
 int FlightController::run()
 {
-	/*pwm = new PWMMotorTest();
-
-	int rc = wiringPiSetupGpio();
-	pinMode(4, OUTPUT);
-	digitalWrite(4, LOW);
-	digitalWrite(4, HIGH);
-	pwm->SetSpeed(15, 2000);
-	getchar();
-	digitalWrite(4, LOW);
-	pwm->ExitMotor();*/
-	
 	//Start server
 	server = TCPServer::getInstance();
 	thread serverThread(runServer);
