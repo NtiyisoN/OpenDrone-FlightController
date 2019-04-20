@@ -1,7 +1,6 @@
 #include "SQLite.h"
 #include <stdio.h>
 #include <sqlite3.h>
-#include "../Controller/Exit.h"
 #include "../Controller/Orientation.h"
 #include "../Controller/PID.h"
 #include "wiringPi.h"
@@ -32,7 +31,7 @@ void SQLite::startSQL(Orientation *o) {
 	const char* data = "Callback function called";
 
 	PID *pid = PID::getInstanceCreated();
-	TCPServer *tcp = TCPServer::getInstance();
+	//TCPServer *tcp = TCPServer::getInstance();
 	run = true;
 	while (run == true) {
 		double *ar = o->getPitchRollReal();
@@ -75,13 +74,12 @@ void SQLite::startSQL(Orientation *o) {
 				sqlite3_free(zErrMsg);
 			}
 
-			if (tcp->list1.size() > 0)
+			/*if (tcp->list1.size() > 0)
 			{
 				Command *c = tcp->list1.front();
 				
 				sql = "INSERT INTO Commands (timestamp, droneid, command) VALUES (" + to_string(c->timestamp) + ",1,'" + c->command + "');";
 
-				/* Execute SQL statement */
 				rc = sqlite3_exec(db, sql.c_str(), callback, (void*)data, &zErrMsg);
 				if (rc != SQLITE_OK) {
 					fprintf(stderr, "SQL error: %s\n", zErrMsg);
@@ -89,7 +87,7 @@ void SQLite::startSQL(Orientation *o) {
 				}
 
 				tcp->list1.pop_front();
-			}
+			}*/
 		}
 		delay(1);
 	}

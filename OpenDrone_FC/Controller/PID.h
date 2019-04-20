@@ -35,6 +35,7 @@ public:
 	void interruptPid();
 	int* getThrottles();
 	float *getPIDVals();
+    float *getPIDCurrentValues();
 
 	Orientation *getOrientatin();
 

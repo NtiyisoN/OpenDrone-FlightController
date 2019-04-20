@@ -37,10 +37,7 @@ bool run = false, stop = false;
 
 PID *PID::getInstance(Orientation *o, PWMMotorTest *p, Barometer *b)
 {
-	if (instance == 0)
-	{
-		instance = new PID(o, p, b);
-	}
+    instance = new PID(o, p, b);
 	return instance;
 }
 
@@ -294,9 +291,17 @@ int *PID::getThrottles() {
 float *PID::getPIDVals() {
 	static float ar[3];
 	ar[0] = pid_output_pitch;
-	ar[1] = pid_cur_val;
-	ar[2] = pid_i_mem_pitch;
+	ar[1] = pid_output_roll;
+	ar[2] = pid_output_yaw;
 	return ar;
+}
+
+float *PID::getPIDCurrentValues() {
+    static float ar[3];
+    ar[0] = pid_p_gain_pitch;
+    ar[1] = pid_i_gain_pitch;
+    ar[2] = pid_d_gain_pitch;
+    return ar;
 }
 
 bool PID::isInit() {

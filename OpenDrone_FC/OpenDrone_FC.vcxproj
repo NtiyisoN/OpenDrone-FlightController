@@ -53,7 +53,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>
-      <LibraryDependencies>wiringPi;pthread;tinyxml2;bcm2835;sqlite3</LibraryDependencies>
+      <LibraryDependencies>wiringPi;pthread;tinyxml2;bcm2835;sqlite3;pistache</LibraryDependencies>
     </Link>
     <RemotePostBuildEvent>
       <Command>gpio export 17 out</Command>
@@ -82,8 +82,8 @@
     <ClCompile Include="Motor\PCA9685.cpp" />
     <ClCompile Include="Motor\PWMMotorTest.cpp" />
     <ClCompile Include="Network\Command.cpp" />
-    <ClCompile Include="Network\Modbus.cpp" />
-    <ClCompile Include="Network\TCPServer.cpp" />
+    <ClCompile Include="Network\REST\DroneREST.cpp" />
+    <ClCompile Include="Network\REST\StatsEndpoint.cpp" />
     <ClCompile Include="Sensor\BMF055.cpp" />
     <ClCompile Include="Sensor\BMM150.cpp" />
     <ClCompile Include="Sensor\BMP180.cpp" />
@@ -102,7 +102,9 @@
     <ClInclude Include="Controller\UltrasonicDistance.h" />
     <ClInclude Include="Database\SQLite.h" />
     <ClInclude Include="Network\Command.h" />
-    <ClInclude Include="Network\Modbus.h" />
+    <ClInclude Include="Network\REST\DroneREST.h" />
+    <ClInclude Include="Network\REST\json.hpp" />
+    <ClInclude Include="Network\REST\StatsEndpoint.h" />
     <ClInclude Include="Sensor\BMF055.h" />
     <ClInclude Include="Sensor\BMM150.h" />
     <ClInclude Include="Sensor\BMP280.h" />
@@ -111,7 +113,6 @@
     <ClInclude Include="FlightController.h" />
     <ClInclude Include="Motor\PCA9685.h" />
     <ClInclude Include="Motor\PWMMotorTest.h" />
-    <ClInclude Include="Network\TCPServer.h" />
     <ClInclude Include="Sensor\AbstractSensor\Accelerometer.h" />
     <ClInclude Include="Sensor\AbstractSensor\Barometer.h" />
     <ClInclude Include="Sensor\AbstractSensor\Gyroscope.h" />

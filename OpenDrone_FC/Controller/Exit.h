@@ -1,5 +1,4 @@
 #pragma once
-#include "../Network/TCPServer.h"
 #include <iostream>
 class Exit
 {
@@ -11,7 +10,5 @@ public:
 private:
 	Exit();
 	~Exit();
-
-	TCPServer *server;
 };
 

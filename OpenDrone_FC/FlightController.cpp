@@ -14,7 +14,7 @@
 #include "Sensor/BMP180.h"
 #include "Sensor/BNO080.h"
 
-#include "Network/TCPServer.h"
+#include "Network/REST/DroneREST.h"
 
 #include "Controller/Calibration.h"
 #include "Controller/Orientation.h"
@@ -39,7 +39,7 @@ using namespace std;
 Orientation *orientation;
 Barometer *barometer;
 UltrasonicDistance *ultrasonic;
-TCPServer *server;
+DroneREST *rest;
 Exit *error;
 PID *pid;
 PWMMotorTest *pwm;
@@ -69,7 +69,7 @@ static void runOrientation()
 
 static void runServer()
 {
-	server->startUp();
+    rest->startUp();
 }
 
 static void runPid() {
@@ -93,12 +93,10 @@ void sighandler(int sig)
 
 	pwm->ExitMotor();
 	cout << "Exitmotors called";
-	getchar();
-	pwm->ExitMotor();
+    rest->stop();
 
-	system("sudo /home/pi/projects/getValues.sh");
-
-	exit(1);
+	//system("sudo /home/pi/projects/getValues.sh");
+	exit(0);
 }
 
 void FlightController::initObjects() 
@@ -117,9 +115,9 @@ void FlightController::initObjects()
 	barometer = new BMP280();
 	pwm = new PWMMotorTest();
 	//ultrasonic = new UltrasonicDistance();
-	//parser = new XMLParser();
 	sql = new SQLite();
 	pid = PID::getInstance(orientation, pwm, barometer);
+    rest = new DroneREST();
 }
 
 /**
@@ -131,16 +129,8 @@ void FlightController::initObjects()
 */
 int FlightController::run()
 {
-	//Start server
-	server = TCPServer::getInstance();
-	thread serverThread(runServer);
-	while (!server->connected) { delay(50); };
-	cout << "Client connected!\n";
-
 	//Initialize all important objects
 	initObjects();
-
-	signal(SIGINT, &sighandler);
 
 	delay(250);
 
@@ -189,14 +179,17 @@ int FlightController::run()
 	thread barometerThread(runBarometer);
 	thread pidController(runPid);
 	thread sqlThread(runSQL);
+    thread serverThread(runServer);
 	cout << "Threads are running!\n";
+    delay(500);
+    signal(SIGINT, &sighandler);
 
 	//Interrupt Threads
-	//orientation->interruptOrientation();
-	//barometer->interruptBaromter();
-	//pid->interruptPid();
-	//sql->interruptSQL();
-	//cout << "Interrupting Threads! \n";
+	/*orientation->interruptOrientation();
+	barometer->interruptBaromter();
+	pid->interruptPid();
+	sql->interruptSQL();
+	cout << "Interrupting Threads! \n";*/
 
 	//Wait until threads stopped
 	serverThread.join();

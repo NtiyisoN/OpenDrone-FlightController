@@ -8,7 +8,7 @@ Exit* Exit::instance = 0;
 
 Exit::Exit()
 {
-	server = TCPServer::getInstance();
+	//server = TCPServer::getInstance();
 }
 
 
@@ -23,14 +23,15 @@ Exit* Exit::getInstance()
 }
 
 void Exit::sendError(int errorcode, bool stopFC) {
-	stringstream ss;
+	/*stringstream ss;
 	ss << "255;Error: " << errorcode;
 	char *str = (char*)(ss.str().c_str());
 
 	server->sendMessage(str);
 	if (stopFC) {
 		exit(1);
-	}
+	}*/
+    ;
 }
 
 Exit::~Exit()
