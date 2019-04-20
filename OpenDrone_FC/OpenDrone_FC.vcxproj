@@ -81,6 +81,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Motor\PCA9685.cpp" />
     <ClCompile Include="Motor\PWMMotorTest.cpp" />
+    <ClCompile Include="Network\Command.cpp" />
     <ClCompile Include="Network\Modbus.cpp" />
     <ClCompile Include="Network\TCPServer.cpp" />
     <ClCompile Include="Sensor\BMF055.cpp" />
@@ -92,7 +93,6 @@
     <ClCompile Include="Sensor\MPU6050.cpp" />
     <ClCompile Include="Sensor\HMC5883L.cpp" />
     <ClCompile Include="Sensor\HCSR04.cpp" />
-    <ClCompile Include="XML\XMLParser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controller\Calibration.h" />
@@ -101,6 +101,7 @@
     <ClInclude Include="Controller\PID.h" />
     <ClInclude Include="Controller\UltrasonicDistance.h" />
     <ClInclude Include="Database\SQLite.h" />
+    <ClInclude Include="Network\Command.h" />
     <ClInclude Include="Network\Modbus.h" />
     <ClInclude Include="Sensor\BMF055.h" />
     <ClInclude Include="Sensor\BMM150.h" />
@@ -121,7 +122,6 @@
     <ClInclude Include="Sensor\HMC5883L.h" />
     <ClInclude Include="Sensor\HCSR04.h" />
     <ClInclude Include="Sensor\AbstractSensor\Ultrasonic.h" />
-    <ClInclude Include="XML\XMLParser.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="CONFIG.xml">

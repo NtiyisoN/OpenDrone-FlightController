@@ -9,7 +9,8 @@
  */
 
 #include <sys/time.h> 
-
+#include "Command.h"
+#include <list>
 class TCPServer
 {
 private:
@@ -35,6 +36,6 @@ public:
     void getTemp();
     void stopServer();
     void startSendingValues();
-
+	std::list<Command*> list1;
     int client_socket[30], max_clients = 30;
 };

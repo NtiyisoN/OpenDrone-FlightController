@@ -6,8 +6,40 @@
  * 	@author Markus Kurzmann
  * 	@version 0.0.1 14.02.2019
  */
+#include <list> 
+#include <iterator>
 #include "Modbus.h";
+#include "thread"
+#include "TCPServer.h"
+#include "Command.h"
 using namespace std;
+
+bool boolRunThread = false;
+int timeoutCounter = 0;
+
+
+static void getTimeout() {
+	while (!boolRunThread) {
+		delay(50);
+	}
+
+	while (boolRunThread) {
+		PID *pid = PID::getInstanceCreated();
+		if (pid != 0)
+		{
+			timeoutCounter++;
+			cout << timeoutCounter << "\n";
+			if (timeoutCounter >= 5) {
+				//TODO: Land drone
+				pid->interruptPid();
+				boolRunThread = false;
+			}
+		}
+		delay(1000);
+	}
+}
+
+thread timeout(getTimeout);
 
 Modbus::Modbus()
 {
@@ -23,7 +55,6 @@ void Modbus::Interpret(string str)
 	cout.flush();
     std::stringstream ss(str);
     vector<string> result;
-
     while (ss.good()) 
     {
         string substr;
@@ -52,9 +83,9 @@ void Modbus::Interpret(string str)
         int functionCode = stoi(result.at(3+(i*3)));
         string data = result.at(4+(i*3));
 
-		PID *pid = PID::getInstance(NULL, NULL);
+		PID *pid = PID::getInstanceCreated();
 
-		if (pid->isInit()) {
+		if (pid != 0) {
 			//Throttle
 			if (functionCode == 1) { pid->setThrottle(stoi(data)); }
 			//Yaw
@@ -68,13 +99,15 @@ void Modbus::Interpret(string str)
 			//Calibrate
 			if (functionCode == 20) { Calibration *c = new Calibration(pid->getOrientatin()); c->calibrate(); }
 			//Arm Motor
-			if (functionCode == 30) { pid->armMotor(); pid->setRun(true); }
+			if (functionCode == 30) { pid->armMotor(); pid->setRun(true); boolRunThread = true; }
 			//PID - P
 			if (functionCode == 333) { pid->setP(stof(data)); }
 			//PID - I
 			if (functionCode == 334) { pid->setI(stof(data)); }
 			//PID - D
 			if (functionCode == 335) { pid->setD(stof(data)); }
+			//Ping
+			if (functionCode == 1337) { timeoutCounter = 0; }
 		}
 
         string parity = result.at(5+(i*3));
@@ -87,3 +120,5 @@ void Modbus::Interpret(string str)
     }*/
     //cout.flush();
 }
+
+

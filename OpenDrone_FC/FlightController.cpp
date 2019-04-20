@@ -24,8 +24,6 @@
 
 #include "Motor/PWMMotorTest.h"
 
-#include "XML/XMLParser.h"
-
 #include "Database/SQLite.h"
 
 #include "Motor/PWMMotorTest.h"
@@ -41,7 +39,6 @@ using namespace std;
 Orientation *orientation;
 Barometer *barometer;
 UltrasonicDistance *ultrasonic;
-XMLParser *parser;
 TCPServer *server;
 Exit *error;
 PID *pid;
@@ -75,7 +72,7 @@ static void runServer()
 }
 
 static void runPid() {
-	pid = PID::getInstance(orientation, pwm);
+	pid = PID::getInstance(orientation, pwm, barometer);
 	pid->calcValues();
 }
 
@@ -117,7 +114,7 @@ void FlightController::initObjects()
 	}
   
 	orientation = new Orientation();
-	//barometer = new BMP280();
+	barometer = new BMP280();
 	pwm = new PWMMotorTest();
 
 	//ultrasonic = new UltrasonicDistance();
@@ -173,13 +170,12 @@ int FlightController::run()
 	pwm = new PWMMotorTest();
 	pwm->ExitMotor();
 	pwm->ArmMotor();
-	//cout << "Front right";
 	cout << "0";
-	pwm->SetSpeed(2, 1050);
+	pwm->SetSpeed(2, 1100);
 	getchar();
 	cout << "1";
 	pwm->SetSpeed(2, 0);
-	/*pwm->SetSpeed(1, 1050);
+	pwm->SetSpeed(1, 1050);
 	getchar();
 	cout << "2";
 	pwm->SetSpeed(1, 0);
@@ -194,7 +190,7 @@ int FlightController::run()
 
 	//Run Threads
 	thread pitchRollYawThread(runOrientation);
-	//thread barometerThread(runBarometer);
+	thread barometerThread(runBarometer);
 	thread pidController(runPid);
 	thread sqlThread(runSQL);
 	cout << "Threads are running!\n";
@@ -209,7 +205,7 @@ int FlightController::run()
 	//Wait until threads stopped
 	serverThread.join();
 	pitchRollYawThread.join();
-	//barometerThread.join();
+	barometerThread.join();
 	pidController.join();
 	sqlThread.join();
 	cout << "Stopped Threads!\n";
