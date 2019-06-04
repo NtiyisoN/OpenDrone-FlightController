@@ -38,7 +38,8 @@ using namespace std;
 
 Orientation *orientation;
 Barometer *barometer;
-UltrasonicDistance *ultrasonic;
+//UltrasonicDistance *ultrasonic;
+HCSR04 *ultrasonic;
 TCPServer *server;
 Exit *error;
 PID *pid;
@@ -54,7 +55,9 @@ FlightController::FlightController(int argIn)
 
 static void runUltrasonic()
 {
-	ultrasonic->runUltrasonic();
+	while (true) {
+		ultrasonic->calcDistance();
+	}
 }
 
 static void runBarometer()
@@ -79,7 +82,7 @@ static void runPid() {
 static void runSQL()
 {
 	sql->initSQL("opendrone");
-	sql->startSQL(orientation);
+	sql->startSQL(orientation, ultrasonic);
 }
 
 void sighandler(int sig)
@@ -118,6 +121,7 @@ void FlightController::initObjects()
 	pwm = new PWMMotorTest();
 	//ultrasonic = new UltrasonicDistance();
 	//parser = new XMLParser();
+	ultrasonic = new HCSR04(5,6,0);
 	sql = new SQLite();
 	pid = PID::getInstance(orientation, pwm, barometer);
 }
@@ -167,28 +171,28 @@ int FlightController::run()
 	pwm->ExitMotor();
 	pwm->ArmMotor();
 	cout << "0";
-	pwm->SetSpeed(2, 1100);
+	pwm->SetSpeed(0, 1200);
 	getchar();
 	cout << "1";
-	pwm->SetSpeed(2, 0);
-	pwm->SetSpeed(1, 1050);
+	pwm->SetSpeed(0, 0);
+	pwm->SetSpeed(1, 1200);
 	getchar();
 	cout << "2";
 	pwm->SetSpeed(1, 0);
-	pwm->SetSpeed(2, 1050);
+	pwm->SetSpeed(2, 1200);
 	getchar();
 	cout << "3";
 	pwm->SetSpeed(2, 0);
-	pwm->SetSpeed(3, 1050);
+	pwm->SetSpeed(3, 1200);
 	getchar();
 	pwm->SetSpeed(3, 0);*/
-
 
 	//Run Threads
 	thread pitchRollYawThread(runOrientation);
 	thread barometerThread(runBarometer);
 	thread pidController(runPid);
 	thread sqlThread(runSQL);
+	thread ultrasonicThread(runUltrasonic);
 	cout << "Threads are running!\n";
 
 	//Interrupt Threads
@@ -212,5 +216,3 @@ int FlightController::run()
 FlightController::~FlightController()
 {
 }
-
-

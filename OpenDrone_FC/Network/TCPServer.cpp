@@ -144,9 +144,8 @@ void TCPServer::acceptClients()
 
 		Command *c = new Command(millis(), 1, buffer);
 		this->list1.push_back(c);
+		mb->Interpret(buffer);
 
-        mb->Interpret(buffer);
-        
         this->checkIOOperation(readfds);
     }
 }

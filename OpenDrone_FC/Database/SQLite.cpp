@@ -4,6 +4,7 @@
 #include "../Controller/Exit.h"
 #include "../Controller/Orientation.h"
 #include "../Controller/PID.h"
+#include "../Sensor/HCSR04.h"
 #include "wiringPi.h"
 #include <string.h>
 #include <sstream>
@@ -25,7 +26,7 @@ static int callback(void *data, int argc, char **argv, char **azColName) {
 	return 0;
 }
 
-void SQLite::startSQL(Orientation *o) {
+void SQLite::startSQL(Orientation *o, HCSR04 *ultrasonic) {
 	char *zErrMsg = 0;
 	int rc;
 	char *sql;
@@ -40,8 +41,10 @@ void SQLite::startSQL(Orientation *o) {
 		if (ar[0] != NULL) {
 			int m = millis();
 
+			//cout << ultrasonic->getDistance() << "\n";
+
 			//Create SQL statement
-			sql = "INSERT INTO Orientation (timestamp,droneid,pitch,roll,yaw) VALUES (" + to_string(m) + ",1," + to_string(ar[0]) + "," + to_string(ar[1]) + "," + to_string(ar[2]) + ");";
+			sql = "INSERT INTO Orientation (timestamp,droneid,pitch,roll,yaw, heightUS) VALUES (" + to_string(m) + ",1," + to_string(ar[0]) + "," + to_string(ar[1]) + "," + to_string(ar[2]) + "," + to_string(ultrasonic->getDistance()) + ");";
 
 			//Execute SQL statement
 			rc = sqlite3_exec(db, sql.c_str(), callback, (void*)data, &zErrMsg);
@@ -53,13 +56,12 @@ void SQLite::startSQL(Orientation *o) {
 
 			int *arThrottle = pid->getThrottles();
 			//Create SQL statement
-			sql = "INSERT INTO Motors (timestamp,droneid,MotorSpeed1, MotorSpeed2, MotorSpeed3, Motorspeed4) VALUES (" + to_string(m) + ",1," + to_string(arThrottle[0]) + "," + to_string(arThrottle[1]) + "," + to_string(arThrottle[2]) + "," + to_string(arThrottle[3]) + ");";
+			sql = "INSERT INTO Motors (timestamp,droneid,MotorSpeed1, MotorSpeed2, MotorSpeed3, Motorspeed4, throttle) VALUES (" + to_string(m) + ",1," + to_string(arThrottle[0]) + "," + to_string(arThrottle[1]) + "," + to_string(arThrottle[2]) + "," + to_string(arThrottle[3]) + "," + to_string(arThrottle[4]) + ");";
 
 			// Execute SQL statement
 			rc = sqlite3_exec(db, sql.c_str(), callback, (void*)data, &zErrMsg);
 
-			if (rc != SQLITE_OK) {
-				fprintf(stderr, "SQL error: %s\n", zErrMsg);
+			if (rc != SQLITE_OK) {				fprintf(stderr, "SQL error: %s\n", zErrMsg);
 				sqlite3_free(zErrMsg);
 			}
 

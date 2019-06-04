@@ -33,7 +33,8 @@ public:
     Modbus();
     ~Modbus();
     void Interpret(string str);
-	
+	void checkMotors(PWMMotorTest *pwm, int motorNum);
+
 	void runThread();
 };
 

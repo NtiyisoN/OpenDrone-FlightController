@@ -26,8 +26,8 @@ float pid_d_gain_yaw = 0.00;					//Gain setting for the yaw D-controller.
 int pid_max_yaw = 300;							//Maximum output of the PID-controller (+/-)
 
 //TODO: Change these values
-float pid_p_gain_height = 2.5;
-float pid_d_gain_height = 10.0;
+float pid_p_gain_height = 4;
+float pid_d_gain_height = 15;
 
 float pid_cur_val = 0;
 
@@ -60,19 +60,19 @@ PID::PID(Orientation *o, PWMMotorTest *p, Barometer *b)
 	barometer = b;
 }
 
-static void manipulateBarometer() {
+/*static void manipulateBarometer() {
 	while (run) {
 		if (throttleUpDown == -1) {
 			//Throttle down
-			nominalBaroVal += 0.01;
+			nominalBaroVal += 1;
 		}
 		else if (throttleUpDown == 1) {
 			//Throttle up
-			nominalBaroVal -= 0.01;
+			nominalBaroVal -= 1;
 		}
 		delay(50);
 	}
-}
+}*/
 
 void PID::calcValues()
 {
@@ -80,21 +80,21 @@ void PID::calcValues()
 		delay(50);
 	}
 
-	nominalBaroVal = barometer->getBarometerValues()[1];
-	std::thread heightThread(manipulateBarometer);
+	//nominalBaroVal = (barometer->getBarometerValues()[1] * 100);
+	//std::thread heightThread(manipulateBarometer);
 
 	while (run) {
 		calcPid();
 
-		if (throttle + pid_output_height < 1800 && throttle + pid_output_height > 1200) {
+		/*if (throttle + pid_output_height < 1800 && throttle + pid_output_height > 1200) {
 			throttle = throttle + pid_output_height;
-		}
+		}*/
 		esc_1 = throttle - pid_output_pitch + pid_output_roll - pid_output_yaw;   //Calculate the pulse for esc 1 (front-right - CCW)
 		esc_2 = throttle + pid_output_pitch + pid_output_roll + pid_output_yaw;   //Calculate the pulse for esc 2 (rear-right - CW)
 		esc_3 = throttle + pid_output_pitch - pid_output_roll - pid_output_yaw;   //Calculate the pulse for esc 3 (rear-left - CCW)
 		esc_4 = throttle - pid_output_pitch - pid_output_roll + pid_output_yaw;   //Calculate the pulse for esc 4 (front-left - CW)
 
-		int speedMin = 1050;
+		int speedMin = 1100;
 		if (esc_1 < speedMin) esc_1 = speedMin;           //Keep the motors running.
 		if (esc_2 < speedMin) esc_2 = speedMin;           //Keep the motors running.
 		if (esc_3 < speedMin) esc_3 = speedMin;           //Keep the motors running.
@@ -106,10 +106,11 @@ void PID::calcValues()
 		if (esc_3 > speedMax) esc_3 = speedMax;           //Limit the esc-3 pulse to 2500.
 		if (esc_4 > speedMax) esc_4 = speedMax;           //Limit the esc-4 pulse to 2500.  
 		
+		std::cout << "front left: " << esc_1 << ", rear left: " << esc_2 << ", rear right: " << esc_3 << ", front right: " << esc_4 << "\n";
 		pwm->SetSpeed(1, esc_1);	//Front left
-		pwm->SetSpeed(0, esc_2);	//Rear left
+		pwm->SetSpeed(2, esc_2);	//Rear left
 		pwm->SetSpeed(3, esc_3);	//Rear right
-		pwm->SetSpeed(2, esc_4);	//Front right
+		pwm->SetSpeed(0, esc_4);	//Front right
 		delay(5);
 
 		/*Default:
@@ -126,11 +127,12 @@ void PID::calcValues()
 
 	pwm->SetSpeed(16, 0);
 
-	heightThread.join();
+	//heightThread.join();
 }
 
 void PID::calcPid() {
 	double *ar = orientation->getPitchRoll();
+	ar[2] = 0;
 
 	//Roll calculations
 	pid_error_temp = ar[1] - pid_roll_setpoint;
@@ -177,16 +179,15 @@ void PID::calcPid() {
 
 	pid_last_yaw_d_error = pid_error_temp;
 
-	//Throttle calculations
-	pid_error_temp = barometer->getBarometerValues()[1] - nominalBaroVal;
-	if (pid_error_temp != pid_error_temp) {
-		calcPid();
-	}
+	/*//Throttle calculations
+	double barVal = barometer->getBarometerValues()[1];
+	barVal *= 100;
+	pid_error_temp = barVal - nominalBaroVal;
 
 	pid_output_height = pid_p_gain_height * pid_error_temp + pid_d_gain_height * ((pid_error_temp - pid_last_height_error));
 	pid_last_height_error = pid_error_temp;
 
-	std::cout << nominalBaroVal << "\n";
+	std::cout << "Nominal: " << nominalBaroVal << " Actual: " << barVal << " Output: " << pid_output_height << "\n";*/
 }
 
 void PID::setP(float curP) {
@@ -215,16 +216,20 @@ void PID::setRun(bool curRun) {
 }
 
 void PID::setThrottle(float curThrottle) {
-	if (curThrottle >= 1000 && curThrottle <= 2000) {
+	/*if (curThrottle >= 1000 && curThrottle <= 2000) {
 		if (curThrottle >= 1450 && curThrottle <= 1550) {
-			nominalBaroVal = barometer->getBarometerValues()[1];
+			//nominalBaroVal = (barometer->getBarometerValues()[1]*100);
+			throttleUpDown = 0;
 		} else if (curThrottle < 1450) {
-			nominalBaroVal = barometer->getBarometerValues()[1];
+			//nominalBaroVal = (barometer->getBarometerValues()[1]*100);
 			throttleUpDown = -1;
 		} else if (curThrottle > 1550) {
-			nominalBaroVal = barometer->getBarometerValues()[1];
+			//nominalBaroVal = (barometer->getBarometerValues()[1]*100);
 			throttleUpDown = 1;
 		}
+	}*/
+	if (curThrottle > 1100 && curThrottle < 1700) {
+		throttle = curThrottle;
 	}
 }
 
@@ -287,11 +292,12 @@ void PID::interruptPid() {
 }
 
 int *PID::getThrottles() {
-	static int ar[4];
+	static int ar[5];
 	ar[0] = esc_1;
 	ar[1] = esc_2;
 	ar[2] = esc_3;
 	ar[3] = esc_4;
+	ar[4] = throttle;
 	return ar;
 }
 
@@ -316,6 +322,10 @@ bool PID::isInit() {
 
 Orientation *PID::getOrientatin() {
 	return orientation;
+}
+
+PWMMotorTest *PID::getPwmMotorTest() {
+	return pwm;
 }
 
 PID::~PID()

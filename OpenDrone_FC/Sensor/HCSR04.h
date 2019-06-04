@@ -10,7 +10,7 @@
 #include "./AbstractSensor/Ultrasonic.h"
 #include "../Filter/Filter.h"
 
-class HCSR04 : public virtual Ultrasonic
+class HCSR04
 {
 public:
 	HCSR04(int pin_trigger, int pin_echo, int num);

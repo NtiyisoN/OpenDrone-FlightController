@@ -14,11 +14,11 @@
 #include "Command.h"
 using namespace std;
 
-bool boolRunThread = false;
-int timeoutCounter = 0;
+//bool boolRunThread = false;
+//int timeoutCounter = 0;
 
 
-static void getTimeout() {
+/*static void getTimeout() {
 	while (!boolRunThread) {
 		delay(50);
 	}
@@ -37,9 +37,9 @@ static void getTimeout() {
 		}
 		delay(1000);
 	}
-}
+}*/
 
-thread timeout(getTimeout);
+//thread timeout(getTimeout);
 
 Modbus::Modbus()
 {
@@ -47,6 +47,17 @@ Modbus::Modbus()
 
 Modbus::~Modbus()
 {
+}
+
+void Modbus::checkMotors(PWMMotorTest *pwm, int motorNum) {
+	pwm->ExitMotor();
+	pwm->ArmMotor();
+	motorNum -= 1;
+
+	pwm->SetSpeed(motorNum, 1200);
+	delay(2500);
+	pwm->SetSpeed(motorNum, 0);
+	pwm->ExitMotor();
 }
 
 void Modbus::Interpret(string str)
@@ -99,15 +110,15 @@ void Modbus::Interpret(string str)
 			//Calibrate
 			if (functionCode == 20) { Calibration *c = new Calibration(pid->getOrientatin()); c->calibrate(); }
 			//Arm Motor
-			if (functionCode == 30) { pid->armMotor(); pid->setRun(true); boolRunThread = true; }
+			if (functionCode == 30) { pid->armMotor(); pid->setRun(true);}
 			//PID - P
 			if (functionCode == 333) { pid->setP(stof(data)); }
 			//PID - I
 			if (functionCode == 334) { pid->setI(stof(data)); }
 			//PID - D
 			if (functionCode == 335) { pid->setD(stof(data)); }
-			//Ping
-			if (functionCode == 1337) { timeoutCounter = 0; }
+			//Test Motors
+			if (functionCode == 17) { PWMMotorTest *pwm = pid->getPwmMotorTest(); checkMotors(pwm, stoi(data)); };
 		}
 
         string parity = result.at(5+(i*3));

@@ -12,4 +12,5 @@ class Ultrasonic
 public:
 	virtual double distance() = 0;
 	virtual int getId() = 0;
+	virtual void calcDistance() = 0;
 };
