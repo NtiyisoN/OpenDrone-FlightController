@@ -18,7 +18,7 @@ HCSR04::HCSR04(int pin_trigger, int pin_echo, int id)
 	this->id = id;
 
 	//Initalize the filter
-	this->filter = new Filter(3.0,400.0,5.0);
+	this->filter = new Filter(3.0,400.0,10.0);
 
 	//Defines the pins
 	pinMode(pin_trigger, OUTPUT);

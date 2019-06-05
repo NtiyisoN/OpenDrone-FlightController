@@ -20,10 +20,10 @@ float pid_i_gain_pitch = pid_i_gain_roll;		//Gain setting for the pitch I-contro
 float pid_d_gain_pitch = pid_d_gain_roll;		//Gain setting for the pitch D-controller.
 int pid_max_pitch = pid_max_roll;				//Maximum output of the PID-controller (+/-)
 
-float pid_p_gain_yaw = 4.0;						//Gain setting for the yaw P-controller.
-float pid_i_gain_yaw = 0.02;					//Gain setting for the yaw I-controller.
+float pid_p_gain_yaw = 2.0;						//Gain setting for the yaw P-controller. 4.0
+float pid_i_gain_yaw = 0.005;					//Gain setting for the yaw I-controller. 0.02
 float pid_d_gain_yaw = 0.00;					//Gain setting for the yaw D-controller.
-int pid_max_yaw = 300;							//Maximum output of the PID-controller (+/-)
+int pid_max_yaw = 200;							//Maximum output of the PID-controller (+/-)
 
 //TODO: Change these values
 float pid_p_gain_height = 4;
@@ -106,7 +106,7 @@ void PID::calcValues()
 		if (esc_3 > speedMax) esc_3 = speedMax;           //Limit the esc-3 pulse to 2500.
 		if (esc_4 > speedMax) esc_4 = speedMax;           //Limit the esc-4 pulse to 2500.  
 		
-		std::cout << "front left: " << esc_1 << ", rear left: " << esc_2 << ", rear right: " << esc_3 << ", front right: " << esc_4 << "\n";
+		//std::cout << "front left: " << esc_1 << ", rear left: " << esc_2 << ", rear right: " << esc_3 << ", front right: " << esc_4 << "\n";
 		pwm->SetSpeed(1, esc_1);	//Front left
 		pwm->SetSpeed(2, esc_2);	//Rear left
 		pwm->SetSpeed(3, esc_3);	//Rear right
@@ -132,7 +132,8 @@ void PID::calcValues()
 
 void PID::calcPid() {
 	double *ar = orientation->getPitchRoll();
-	ar[2] = 0;
+
+	//std::cout << ar[0] << " " << ar[1] << " " << ar[2] << "\n";
 
 	//Roll calculations
 	pid_error_temp = ar[1] - pid_roll_setpoint;
