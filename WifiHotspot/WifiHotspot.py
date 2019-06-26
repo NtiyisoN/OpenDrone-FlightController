@@ -8,40 +8,12 @@ def is_non_zero_file(fpath):
    return os.path.isfile(fpath) and os.path.getsize(fpath) > 0
 
 def loadJSON():
-    if is_non_zero_file('/home/pi/projects/OpenDrone_FC/CONFIG.xml'):
-        with open('/home/pi/projects/OpenDrone_FC/CONFIG.xml') as fd:
-            doc = xmltodict.parse(fd.read())
-
-            if 'accesspointName' in doc['opendrone'] or 'accesspointPassword' in doc['opendrone']:
-                if os.path.isfile('/etc/accesspoint/accesspoint.json') is False:
-                    subprocess.call('sudo touch /etc/accesspoint/accesspoint.json', shell=True)
-
-                j = json.loads(open('/etc/accesspoint/accesspoint.json').read())
-                name = ''
-                enterCode = ''
-                if 'accesspointName' in doc['opendrone']:
-                    name = doc['opendrone']['accesspointName']
-                    if name is None:
-                        name = j['ssid']
-            
-
-                if 'accesspointPassword' in doc['opendrone']:
-                    enterCode = doc['opendrone']['accesspointPassword']
-                    if enterCode is None:
-                        enterCode = j['password']
-
-                with open('/etc/accesspoint/accesspoint.json', 'w+') as f:
-                        f.write('{"ssid": "' + str(name) + '", "inet": "eth0", "wlan": "wlan0", "password": "' + str(enterCode) + '", "netmask": "255.255.255.0", "ip": "192.168.1.254"}')
-                        f.seek(0)
-    else:
-        with open('/etc/accesspoint/accesspoint.json', 'w+') as f:
-               f.write('{"ssid": "' + "OpenDrone" + '", "inet": "eth0", "wlan": "wlan0", "password": "' + "1234567890" + '", "netmask": "255.255.255.0", "ip": "192.168.1.254"}')
-               f.seek(0)    
-
-    
+    with open('/etc/accesspoint/accesspoint.json', 'w+') as f:
+        f.write('{"ssid": "' + "OpenDrone" + '", "inet": "eth0", "wlan": "wlan0", "password": "' + "1234567890" + '", "netmask": "255.255.255.0", "ip": "192.168.1.254"}')
+        f.seek(0)    
 
 subprocess.call('sudo pyaccesspoint stop', shell=True)
-if os.path.isfile('/etc/accesspoint/accesspoint.json'):
+if (os.path.isfile('/etc/accesspoint/accesspoint.json') == True):
     loadJSON()
     subprocess.call("sudo pyaccesspoint --config start", shell=True)
 else:
