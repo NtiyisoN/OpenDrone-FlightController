@@ -123,7 +123,7 @@ void FlightController::initObjects()
 	//parser = new XMLParser();
 	ultrasonic = new HCSR04(5,6,0);
 	sql = new SQLite();
-	pid = PID::getInstance(orientation, pwm, barometer);
+	pid = PID::getInstance(orientation, pwm, barometer, ultrasonic);
 }
 
 /**

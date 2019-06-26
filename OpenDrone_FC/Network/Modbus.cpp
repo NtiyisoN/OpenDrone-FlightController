@@ -120,10 +120,7 @@ void Modbus::Interpret(string str)
 			//Test Motors
 			if (functionCode == 17) { PWMMotorTest *pwm = pid->getPwmMotorTest(); checkMotors(pwm, stoi(data)); };
 			//Height-Control on 
-			if (functionCode == 47) {};
-			//Height-Control off 
-			if (functionCode == 48) {};
-
+			if (functionCode == 47) { pid->updateHeightControl(); };
 		}
 
         string parity = result.at(5+(i*3));

@@ -41,7 +41,7 @@ void SQLite::startSQL(Orientation *o, HCSR04 *ultrasonic) {
 		if (ar[0] != NULL) {
 			int m = millis();
 
-			//cout << ultrasonic->getDistance() << "\n";
+			cout << ultrasonic->getDistance() << "\n";
 
 			//Create SQL statement
 			sql = "INSERT INTO Orientation (timestamp,droneid,pitch,roll,yaw, heightUS) VALUES (" + to_string(m) + ",1," + to_string(ar[0]) + "," + to_string(ar[1]) + "," + to_string(ar[2]) + "," + to_string(ultrasonic->getDistance()) + ");";

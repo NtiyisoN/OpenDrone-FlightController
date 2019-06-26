@@ -11,14 +11,15 @@
 #include "wiringPi.h"
 #include "iostream"
 #include "../Sensor/AbstractSensor/Barometer.h"
-#include "thread";
+#include "../Sensor/HCSR04.h"
+#include "thread"
 
 #pragma once
 class PID
 {
 public:
 	~PID();
-	static PID *getInstance(Orientation *o, PWMMotorTest *p, Barometer *b);
+	static PID *getInstance(Orientation *o, PWMMotorTest *p, Barometer *b, HCSR04 *u);
 	static PID *getInstanceCreated();
 	static PID *instance;
 
@@ -35,6 +36,7 @@ public:
 	void interruptPid();
 	int* getThrottles();
 	float *getPIDVals();
+	void updateHeightControl();
 
 	Orientation *getOrientatin();
 	PWMMotorTest *getPwmMotorTest();
@@ -42,11 +44,11 @@ public:
 	void calcValues();
 
 private:
-	PID(Orientation *o, PWMMotorTest *p, Barometer *b);
+	PID(Orientation *o, PWMMotorTest *p, Barometer *b, HCSR04 *u);
 	PWMMotorTest *pwm = NULL;
 	Orientation *orientation = NULL;
 	Barometer *barometer = NULL;
-
+	HCSR04 *ultrasonic = NULL;
 
 	float pid_error_temp;
 	float pid_i_mem_roll = 0, pid_roll_setpoint = 0, pid_output_roll, pid_last_roll_d_error = 0;
@@ -56,6 +58,7 @@ private:
 
 	int esc_1, esc_2, esc_3, esc_4;
 	int throttle = 1050;
+	bool heightControl = false;
 
 	void calcPid();
 };

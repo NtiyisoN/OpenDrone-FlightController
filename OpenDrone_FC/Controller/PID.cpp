@@ -10,9 +10,9 @@
 
 PID *PID::instance = 0;
 
-float pid_p_gain_roll = 2.0; //1.25             //Gain setting for the roll P-controller 0.65
-float pid_i_gain_roll = 0.01; // 0.05;          //Gain setting for the roll I-controller 0.0006
-float pid_d_gain_roll = 60; // 90;              //Gain setting for the roll D-controller 60
+float pid_p_gain_roll = 2.1; //1.25             //Gain setting for the roll P-controller 0.65
+float pid_i_gain_roll = 0.011; // 0.05;          //Gain setting for the roll I-controller 0.0006
+float pid_d_gain_roll = 65; // 90;              //Gain setting for the roll D-controller 60
 int pid_max_roll = 1000;						//Maximum output of the PID-controller (+/-)
 
 float pid_p_gain_pitch = pid_p_gain_roll;		//Gain setting for the pitch P-controller.
@@ -26,24 +26,22 @@ float pid_d_gain_yaw = 0.00;					//Gain setting for the yaw D-controller.
 int pid_max_yaw = 200;							//Maximum output of the PID-controller (+/-)
 
 //TODO: Change these values
-float pid_p_gain_height = 4;
+float pid_p_gain_height = 3;
 float pid_d_gain_height = 15;
 
 float pid_cur_val = 0;
-
-float nominalBaroVal = 0;						//The height, that the drone should have
-float throttleUpDown = 0;
+double wantedDistane = 200;
 
 float maxAngle = 45;
 float factorControl = maxAngle / 480;			//Maximum 45° (480 steps)
 
 bool run = false, stop = false;
 
-PID *PID::getInstance(Orientation *o, PWMMotorTest *p, Barometer *b)
+PID *PID::getInstance(Orientation *o, PWMMotorTest *p, Barometer *b, HCSR04 *u)
 {
 	if (instance == 0)
 	{
-		instance = new PID(o, p, b);
+		instance = new PID(o, p, b, u);
 	}
 	return instance;
 }
@@ -53,26 +51,13 @@ PID *PID::getInstanceCreated()
 	return instance;
 }
 
-PID::PID(Orientation *o, PWMMotorTest *p, Barometer *b)
+PID::PID(Orientation *o, PWMMotorTest *p, Barometer *b, HCSR04 *u)
 {
 	orientation = o;
 	pwm = p;
 	barometer = b;
+	ultrasonic = u;
 }
-
-/*static void manipulateBarometer() {
-	while (run) {
-		if (throttleUpDown == -1) {
-			//Throttle down
-			nominalBaroVal += 1;
-		}
-		else if (throttleUpDown == 1) {
-			//Throttle up
-			nominalBaroVal -= 1;
-		}
-		delay(50);
-	}
-}*/
 
 void PID::calcValues()
 {
@@ -80,15 +65,12 @@ void PID::calcValues()
 		delay(50);
 	}
 
-	//nominalBaroVal = (barometer->getBarometerValues()[1] * 100);
-	//std::thread heightThread(manipulateBarometer);
-
 	while (run) {
 		calcPid();
 
-		/*if (throttle + pid_output_height < 1800 && throttle + pid_output_height > 1200) {
+		if (throttle + pid_output_height < 1800 && throttle + pid_output_height > 1200) {
 			throttle = throttle + pid_output_height;
-		}*/
+		}
 		esc_1 = throttle - pid_output_pitch + pid_output_roll - pid_output_yaw;   //Calculate the pulse for esc 1 (front-right - CCW)
 		esc_2 = throttle + pid_output_pitch + pid_output_roll + pid_output_yaw;   //Calculate the pulse for esc 2 (rear-right - CW)
 		esc_3 = throttle + pid_output_pitch - pid_output_roll - pid_output_yaw;   //Calculate the pulse for esc 3 (rear-left - CCW)
@@ -100,7 +82,7 @@ void PID::calcValues()
 		if (esc_3 < speedMin) esc_3 = speedMin;           //Keep the motors running.
 		if (esc_4 < speedMin) esc_4 = speedMin;           //Keep the motors running.
 
-		int speedMax = 1800;
+		int speedMax = 1900;
 		if (esc_1 > speedMax) esc_1 = speedMax;           //Limit the esc-1 pulse to 2500.
 		if (esc_2 > speedMax) esc_2 = speedMax;           //Limit the esc-2 pulse to 2500.
 		if (esc_3 > speedMax) esc_3 = speedMax;           //Limit the esc-3 pulse to 2500.
@@ -112,12 +94,6 @@ void PID::calcValues()
 		pwm->SetSpeed(3, esc_3);	//Rear right
 		pwm->SetSpeed(0, esc_4);	//Front right
 		delay(5);
-
-		/*Default:
-		pwm->SetSpeed(0, esc_3);
-		pwm->SetSpeed(1, esc_2);
-		pwm->SetSpeed(2, esc_1);
-		pwm->SetSpeed(3, esc_4);*/
 	}
 
 	delay(100);
@@ -126,8 +102,6 @@ void PID::calcValues()
 	}
 
 	pwm->SetSpeed(16, 0);
-
-	//heightThread.join();
 }
 
 void PID::calcPid() {
@@ -180,15 +154,20 @@ void PID::calcPid() {
 
 	pid_last_yaw_d_error = pid_error_temp;
 
-	/*//Throttle calculations
-	double barVal = barometer->getBarometerValues()[1];
-	barVal *= 100;
-	pid_error_temp = barVal - nominalBaroVal;
+	//Throttle calculations
+	if (heightControl) {
+		double curDistance = ultrasonic->getDistance();
+		pid_error_temp = wantedDistane - curDistance;
 
-	pid_output_height = pid_p_gain_height * pid_error_temp + pid_d_gain_height * ((pid_error_temp - pid_last_height_error));
-	pid_last_height_error = pid_error_temp;
+		pid_output_height = pid_p_gain_height * pid_error_temp + pid_d_gain_height * ((pid_error_temp - pid_last_height_error));
+		pid_last_height_error = pid_error_temp;
+		//std::cout << pid_output_height << "\n";
+	}
+	else {
+		pid_output_height = 0.0;
+	}
 
-	std::cout << "Nominal: " << nominalBaroVal << " Actual: " << barVal << " Output: " << pid_output_height << "\n";*/
+	//std::cout << "Nominal: " << nominalBaroVal << " Actual: " << barVal << " Output: " << pid_output_height << "\n";
 }
 
 void PID::setP(float curP) {
@@ -308,6 +287,10 @@ float *PID::getPIDVals() {
 	ar[1] = pid_cur_val;
 	ar[2] = pid_i_mem_pitch;
 	return ar;
+}
+
+void PID::updateHeightControl() {
+	heightControl = !heightControl;
 }
 
 bool PID::isInit() {
