@@ -10,14 +10,16 @@
 #include "./AbstractSensor/Ultrasonic.h"
 #include "../Filter/Filter.h"
 
-class HCSR04 : public virtual Ultrasonic
+class HCSR04 :
+	public virtual Ultrasonic
 {
 public:
 	HCSR04(int pin_trigger, int pin_echo, int num);
 	~HCSR04();
 	void calcDistance();
 	double getDistance();
-	int getId();
+	void runUltrasonic();
+	void interruptUltrasonic();
 
 private:
 	int pin_trigger;
@@ -25,4 +27,5 @@ private:
 	int id;
 	Filter *filter;
 	double curDistance = -1.0;
+	bool run = false;
 };

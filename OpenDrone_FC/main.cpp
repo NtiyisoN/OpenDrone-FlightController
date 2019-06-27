@@ -1,20 +1,32 @@
+/**********************************************************************
+* !! WORK IN PROGRESS !!
+* 
+* Some classes/methods are not
+* described or undone!
+* The Sensor classes are depricated not described yet, because
+* many of them are currently not in use!
+*    --> HCSR04, BNO080, BMP280 are currently in use on the drone!
+*
+* !! WORK IN PROGRESS !!
+***********************************************************************/
+
 /*
  * Copyright (c) OpenDrone, 2018.  All rights reserved.
  * The entire project (including this file) is licensed under the GNU GPL v3.0
- * Purpose: TODO
+ * Purpose: The main class of the OpenDrone-Project
  *
  * 	@author Tim Klecka, Thomas Brych
- * 	@version 0.0.1 14.02.2019
+ * 	@version 0.0.2 26.06.2019
  */
-#include <iostream>
 #include "FlightController.h"
+#include <iostream>
 #include <string.h>
-#include "./Database/SQLite.h"
 using namespace std;
 
 /**
 	Start our Flightcontroller
 	@param int arg
+
 	@return void
 */
 void startFC(int arg) {
@@ -22,7 +34,6 @@ void startFC(int arg) {
 
 	cout << "Starting the Flight Controller\n";
 	fc->run();
-
 	cout << "Stopping Flight Controller!\n";
 }
 
@@ -33,7 +44,7 @@ void startFC(int arg) {
 */
 int main(int argc, char* argv[])
 {
-	//SQLite *sql = new SQLite();
+	//Arguments should be used to start the FC in a specific mode (-d Debug, -l Log) --> not implemented yet
 	if (argc == 1) {
 		startFC(0);
 	}

@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) OpenDrone, 2018.  All rights reserved.
+ * The entire project (including this file) is licensed under the GNU GPL v3.0
+ * Purpose: This class calls the Orientation-Sensor and returns the current Pitch/Roll/Yaws
+ *
+ * 	@author Thomas Brych, Tim Klecka
+ * 	@version 0.0.2 27.06.2019
+ */
 #include "Orientation.h"
 #include <iostream>
 #include <wiringPi.h>
@@ -6,11 +14,97 @@ using namespace std;
 
 Orientation::Orientation()
 {
-	//this->gyro = new MPU6050();
-	//this->acc = new MPU6050();
 	this->bno = new BNO080();
 }
 
+Orientation::~Orientation()
+{
+}
+
+/**
+	Method to start the Orientation object and start the BNO080 (called by the thread in the main.cpp)
+	@return void
+*/
+void Orientation::runOrientation()
+{
+	this->run = true;
+	this->bno->runBNO();
+}
+
+/**
+	Method to interrupt the Orientation thread
+	@return void
+*/
+void Orientation::interruptOrientation()
+{
+	this->run = false;
+}
+
+/**
+	This method is called after the calibration and is used to storage the calibrated 
+	@return void
+
+	@params double *ar
+*/
+void Orientation::setCalibration(double *ar) {
+	calPitch = ar[0];
+	calRoll = ar[1];
+	calYaw = ar[2];
+}
+
+/**
+	This method is used to get the real Pitch/Roll/Yaw values (without calibration)
+	This method should only be used for calibrating the drone!
+	@return double *
+*/
+double *Orientation::getPitchRollReal()
+{
+	static double ar[4];
+	if (this->run)
+	{
+		ar[0] = this->bno->gyroIntegratedRotationVectorData.lastPitch;
+		ar[1] = this->bno->gyroIntegratedRotationVectorData.lastRoll;
+		ar[2] = this->bno->gyroIntegratedRotationVectorData.lastYaw;
+		ar[3] = this->bno->gyroIntegratedRotationVectorData.time;
+	}
+	else
+	{
+		ar[0] = NULL;
+		ar[1] = NULL;
+		ar[2] = NULL;
+		ar[3] = NULL;
+	}
+
+	return ar;
+}
+
+/**
+	This method is used to get the calibrated Pitch/Roll/Yaw values
+	This method should not be used for calibrating the drone!
+	@return double *
+*/
+double *Orientation::getPitchRoll()
+{
+	static double ar[4];
+	if (this->run)
+	{
+		ar[0] = this->bno->gyroIntegratedRotationVectorData.lastPitch - calPitch;
+		ar[1] = this->bno->gyroIntegratedRotationVectorData.lastRoll - calRoll;
+		ar[2] = this->bno->gyroIntegratedRotationVectorData.lastYaw - calYaw;
+		ar[3] = this->bno->gyroIntegratedRotationVectorData.time;
+	}
+	else
+	{
+		ar[0] = NULL;
+		ar[1] = NULL;
+		ar[2] = NULL;
+		ar[3] = NULL;
+	}
+
+	return ar;
+}
+
+//Deprecated code (might be used again later)
 /*void Orientation::calcPitchRoll()
 {
 	double K = 0.98;
@@ -48,68 +142,3 @@ double Orientation::getYRotation(double accX, double accY, double accZ)
 {
 	return (atan2(accY, sqrt((accX * accX) + (accZ * accZ))))*(180 / M_PI);
 }*/
-
-void Orientation::runOrientation()
-{
-	this->run = true;
-	this->bno->runBNO();
-}
-
-void Orientation::interruptOrientation()
-{
-	this->run = false;
-}
-
-void Orientation::setCalibration(double *ar) {
-	calPitch = ar[0];
-	calRoll = ar[1];
-	calYaw = ar[2];
-}
-
-//Use for calibration
-double *Orientation::getPitchRollReal()
-{
-	static double ar[4];
-	if (this->run)
-	{
-		ar[0] = this->bno->gyroIntegratedRotationVectorData.lastPitch;
-		ar[1] = this->bno->gyroIntegratedRotationVectorData.lastRoll;
-		ar[2] = this->bno->gyroIntegratedRotationVectorData.lastYaw;
-		ar[3] = this->bno->gyroIntegratedRotationVectorData.time;
-	}
-	else
-	{
-		ar[0] = NULL;
-		ar[1] = NULL;
-		ar[2] = NULL;
-		ar[3] = NULL;
-	}
-
-	return ar;
-}
-
-//Use for flying
-double *Orientation::getPitchRoll()
-{
-	static double ar[4];
-	if (this->run)
-	{
-		ar[0] = this->bno->gyroIntegratedRotationVectorData.lastPitch - calPitch;
-		ar[1] = this->bno->gyroIntegratedRotationVectorData.lastRoll - calRoll;
-		ar[2] = this->bno->gyroIntegratedRotationVectorData.lastYaw - calYaw;
-		ar[3] = this->bno->gyroIntegratedRotationVectorData.time;
-	}
-	else
-	{
-		ar[0] = NULL;
-		ar[1] = NULL;
-		ar[2] = NULL;
-		ar[3] = NULL;
-	}
-
-	return ar;
-}
-
-Orientation::~Orientation()
-{
-}

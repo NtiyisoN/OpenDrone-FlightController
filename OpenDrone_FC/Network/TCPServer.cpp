@@ -1,12 +1,11 @@
 /*
  * Copyright (c) OpenDrone, 2018.  All rights reserved.
  * The entire project (including this file) is licensed under the GNU GPL v3.0
- * Purpose: TODO
+ * Purpose: This class is used to communicate with the app
  *
  * 	@author Markus Kurzmann
- * 	@version 0.0.1 07.01.2019
+ * 	@version 0.0.2 26.06.2019
  */
-
 #include "TCPServer.h"
 #include "Modbus.h"
 #include <stdio.h>  
@@ -30,7 +29,6 @@
 #define FALSE  0  
 #define PORT 2018  
 
-
 TCPServer* TCPServer::instance = 0;
 
 TCPServer::TCPServer() {}
@@ -48,7 +46,9 @@ TCPServer * TCPServer::getInstance()
 TCPServer::~TCPServer()
 {
 }
+
 struct sockaddr_in address;
+
 void TCPServer::startUp() {
     isRunning = true;
     
@@ -144,9 +144,8 @@ void TCPServer::acceptClients()
 
 		Command *c = new Command(millis(), 1, buffer);
 		this->list1.push_back(c);
+		mb->Interpret(buffer);
 
-        mb->Interpret(buffer);
-        
         this->checkIOOperation(readfds);
     }
 }

@@ -3,7 +3,6 @@
   <ItemGroup>
     <ClCompile Include="Controller\Calibration.cpp" />
     <ClCompile Include="Controller\Orientation.cpp" />
-    <ClCompile Include="Controller\UltrasonicDistance.cpp" />
     <ClCompile Include="Filter\Filter.cpp" />
     <ClCompile Include="FlightController.cpp" />
     <ClCompile Include="main.cpp" />
@@ -28,7 +27,6 @@
   <ItemGroup>
     <ClInclude Include="Controller\Calibration.h" />
     <ClInclude Include="Controller\Orientation.h" />
-    <ClInclude Include="Controller\UltrasonicDistance.h" />
     <ClInclude Include="Sensor\BMF055.h" />
     <ClInclude Include="Sensor\BMM150.h" />
     <ClInclude Include="Sensor\BMP388.h" />

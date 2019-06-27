@@ -1,4 +1,5 @@
 #include "PCA9685.h"
+/* This code has not been written by the OpenDrone-Team! */
 /*************************************************************************
 * PCA9685.c
 *

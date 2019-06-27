@@ -18,7 +18,7 @@ HCSR04::HCSR04(int pin_trigger, int pin_echo, int id)
 	this->id = id;
 
 	//Initalize the filter
-	this->filter = new Filter(3.0,400.0,16.0);
+	this->filter = new Filter(3.0,400.0,10.0);
 
 	//Defines the pins
 	pinMode(pin_trigger, OUTPUT);
@@ -57,8 +57,19 @@ double HCSR04::getDistance()
 	return this->curDistance;
 }
 
-int HCSR04::getId() {
-	return this->id;
+void HCSR04::runUltrasonic()
+{
+	this->run = true;
+	while (this->run)
+	{
+		this->calcDistance();
+		delay(15);
+	}
+}
+
+void HCSR04::interruptUltrasonic()
+{
+	this->run = false;
 }
 
 HCSR04::~HCSR04()
