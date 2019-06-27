@@ -1,10 +1,18 @@
+/*
+ * Copyright (c) OpenDrone, 2018.  All rights reserved.
+ * The entire project (including this file) is licensed under the GNU GPL v3.0
+ * Purpose: This class logs the important data into our SQLite3-Database
+ *
+ * 	@author Markus Kurzmann, Thomas Brych
+ * 	@version 0.0.2 26.06.2019
+ */
 #include "SQLite.h"
 #include <stdio.h>
 #include <sqlite3.h>
 #include "../Controller/Exit.h"
 #include "../Controller/Orientation.h"
+#include "../Sensor/AbstractSensor/Ultrasonic.h"
 #include "../Controller/PID.h"
-#include "../Sensor/HCSR04.h"
 #include "wiringPi.h"
 #include <string.h>
 #include <sstream>
@@ -14,6 +22,16 @@ SQLite::SQLite()
 {	
 }
 
+SQLite::~SQLite()
+{
+}
+
+/**
+	The Callback-Function used for the database
+	@return int
+
+	@params void *data, int argc, char **argv, char **azColName
+*/
 static int callback(void *data, int argc, char **argv, char **azColName) {
 	int i;
 	fprintf(stderr, "%s: ", (const char*)data);
@@ -26,7 +44,13 @@ static int callback(void *data, int argc, char **argv, char **azColName) {
 	return 0;
 }
 
-void SQLite::startSQL(Orientation *o, HCSR04 *ultrasonic) {
+/**
+	This function logs important data into the database
+	@return void
+
+	@params Orientation *o, Ultrasonic *ultrasonic
+*/
+void SQLite::startSQL(Orientation *o, Ultrasonic *ultrasonic) {
 	char *zErrMsg = 0;
 	int rc;
 	char *sql;
@@ -40,8 +64,6 @@ void SQLite::startSQL(Orientation *o, HCSR04 *ultrasonic) {
 		string sql;
 		if (ar[0] != NULL) {
 			int m = millis();
-
-			cout << ultrasonic->getDistance() << "\n";
 
 			//Create SQL statement
 			sql = "INSERT INTO Orientation (timestamp,droneid,pitch,roll,yaw, heightUS) VALUES (" + to_string(m) + ",1," + to_string(ar[0]) + "," + to_string(ar[1]) + "," + to_string(ar[2]) + "," + to_string(ultrasonic->getDistance()) + ");";
@@ -98,6 +120,12 @@ void SQLite::startSQL(Orientation *o, HCSR04 *ultrasonic) {
 	sqlite3_close(db);
 }
 
+/**
+	This function opens the SQLite3-Database 
+	@return bool
+
+	@params char* name
+*/
 bool SQLite::initSQL(char* name)
 {
 	char *zErrMsg = 0;
@@ -115,10 +143,10 @@ bool SQLite::initSQL(char* name)
 	return true;
 }
 
+/**
+	This function interrupts the logging
+	@return bool
+*/
 void SQLite::interruptSQL() {
 	run = false;
-}
-
-SQLite::~SQLite()
-{
 }

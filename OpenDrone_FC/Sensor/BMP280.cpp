@@ -172,9 +172,6 @@ void BMP280::runBarometer()
 	load_calibration(fd);
 	while (this->run)
 	{
-		//int id = wiringPiI2CReadReg8(fd, 0xD0);
-		//int mode = wiringPiI2CReadReg8(fd, CTR_MEAS);
-		//cout << "Id: " << id << " " << mode << "\n";
 		this->calcBaromter();
 		delay(15);
 	}

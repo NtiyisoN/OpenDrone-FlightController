@@ -1,10 +1,10 @@
 /*
  * Copyright (c) OpenDrone, 2018.  All rights reserved.
  * The entire project (including this file) is licensed under the GNU GPL v3.0
- * Purpose: TODO
+ * Purpose: This class is used to react on the commands received from the app
  *
- * 	@author Markus Kurzmann
- * 	@version 0.0.1 14.02.2019
+ * 	@author Markus Kurzmann, Thomas Brych
+ * 	@version 0.0.2 26.06.2019
  */
 #include "iostream";
 #include <string.h>;
@@ -34,7 +34,5 @@ public:
     ~Modbus();
     void Interpret(string str);
 	void checkMotors(PWMMotorTest *pwm, int motorNum);
-
-	void runThread();
 };
 

@@ -1,43 +1,35 @@
 /*
  * Copyright (c) OpenDrone, 2018.  All rights reserved.
  * The entire project (including this file) is licensed under the GNU GPL v3.0
- * Purpose: TODO
+ * Purpose: This class is used to calculate the speed of the single motors of the drone
  *
- * 	@author Thomas Brych
- * 	@version 0.0.1 14.02.2019
+ * 	@author Thomas Brych, Tim Klecka
+ * 	@version 0.0.2 27.06.2019
  */
 #include "PID.h"
 
 PID *PID::instance = 0;
 
-float pid_p_gain_roll = 2.1; //1.25             //Gain setting for the roll P-controller 0.65
-float pid_i_gain_roll = 0.011; // 0.05;          //Gain setting for the roll I-controller 0.0006
-float pid_d_gain_roll = 65; // 90;              //Gain setting for the roll D-controller 60
-int pid_max_roll = 1000;						//Maximum output of the PID-controller (+/-)
+PID::PID(Orientation *o, PWMMotorTest *p, Barometer *b, Ultrasonic *u)
+{
+	orientation = o;
+	pwm = p;
+	barometer = b;
+	ultrasonic = u;
+}
 
-float pid_p_gain_pitch = pid_p_gain_roll;		//Gain setting for the pitch P-controller.
-float pid_i_gain_pitch = pid_i_gain_roll;		//Gain setting for the pitch I-controller.
-float pid_d_gain_pitch = pid_d_gain_roll;		//Gain setting for the pitch D-controller.
-int pid_max_pitch = pid_max_roll;				//Maximum output of the PID-controller (+/-)
+PID::~PID()
+{
+}
 
-float pid_p_gain_yaw = 2.0;						//Gain setting for the yaw P-controller. 4.0
-float pid_i_gain_yaw = 0.005;					//Gain setting for the yaw I-controller. 0.02
-float pid_d_gain_yaw = 0.00;					//Gain setting for the yaw D-controller.
-int pid_max_yaw = 200;							//Maximum output of the PID-controller (+/-)
+/**
+	This method is used to create/get the instance of the PID-Class (Singleton!)
+	@return PID *
 
-//TODO: Change these values
-float pid_p_gain_height = 3;
-float pid_d_gain_height = 15;
+	@params Orientation *o, PWMMotorTest *p, Barometer *b, Ultrasonic *u
+*/
 
-float pid_cur_val = 0;
-double wantedDistane = 200;
-
-float maxAngle = 45;
-float factorControl = maxAngle / 480;			//Maximum 45° (480 steps)
-
-bool run = false, stop = false;
-
-PID *PID::getInstance(Orientation *o, PWMMotorTest *p, Barometer *b, HCSR04 *u)
+PID *PID::getInstance(Orientation *o, PWMMotorTest *p, Barometer *b, Ultrasonic *u)
 {
 	if (instance == 0)
 	{
@@ -46,19 +38,19 @@ PID *PID::getInstance(Orientation *o, PWMMotorTest *p, Barometer *b, HCSR04 *u)
 	return instance;
 }
 
+/**
+	This method is used to get the instance of the (already instanced) PID-Class (Singleton!)
+	@return PID *
+*/
 PID *PID::getInstanceCreated()
 {
 	return instance;
 }
 
-PID::PID(Orientation *o, PWMMotorTest *p, Barometer *b, HCSR04 *u)
-{
-	orientation = o;
-	pwm = p;
-	barometer = b;
-	ultrasonic = u;
-}
-
+/**
+	This method meshes the values from the different PIDs and sets the speed of the motors
+	@return void
+*/
 void PID::calcValues()
 {
 	while (!run) {
@@ -88,7 +80,6 @@ void PID::calcValues()
 		if (esc_3 > speedMax) esc_3 = speedMax;           //Limit the esc-3 pulse to 2500.
 		if (esc_4 > speedMax) esc_4 = speedMax;           //Limit the esc-4 pulse to 2500.  
 		
-		//std::cout << "front left: " << esc_1 << ", rear left: " << esc_2 << ", rear right: " << esc_3 << ", front right: " << esc_4 << "\n";
 		pwm->SetSpeed(1, esc_1);	//Front left
 		pwm->SetSpeed(2, esc_2);	//Rear left
 		pwm->SetSpeed(3, esc_3);	//Rear right
@@ -104,6 +95,10 @@ void PID::calcValues()
 	pwm->SetSpeed(16, 0);
 }
 
+/**
+	This method calculates the values for the different PIDs (Pitch, Roll, Yaw, Throttle)
+	@return void
+*/
 void PID::calcPid() {
 	double *ar = orientation->getPitchRoll();
 
@@ -161,15 +156,19 @@ void PID::calcPid() {
 
 		pid_output_height = pid_p_gain_height * pid_error_temp + pid_d_gain_height * ((pid_error_temp - pid_last_height_error));
 		pid_last_height_error = pid_error_temp;
-		//std::cout << pid_output_height << "\n";
 	}
 	else {
 		pid_output_height = 0.0;
 	}
 
-	//std::cout << "Nominal: " << nominalBaroVal << " Actual: " << barVal << " Output: " << pid_output_height << "\n";
 }
 
+/**
+	This method is used to set the P-Part of the Pitch/Roll PIDs (only for testing!)
+	@return void
+
+	@params float curP
+*/
 void PID::setP(float curP) {
 	/*if (curP >= 0) {
 		pid_p_gain_roll = curP;
@@ -177,6 +176,12 @@ void PID::setP(float curP) {
 	}*/
 }
 
+/**
+	This method is used to set the I-Part of the Pitch/Roll PIDs (only for testing!)
+	@return void
+
+	@params float curI
+*/
 void PID::setI(float curI) {
 	/*if (curI >= 0) {
 		pid_i_gain_roll = curI;
@@ -184,6 +189,12 @@ void PID::setI(float curI) {
 	}*/
 }
 
+/**
+	This method is used to set the D-Part of the Pitch/Roll PIDs (only for testing!)
+	@return void
+
+	@params float curD
+*/
 void PID::setD(float curD) {
 	/*if (curD >= 0) {
 		pid_d_gain_roll = curD;
@@ -191,28 +202,34 @@ void PID::setD(float curD) {
 	}*/
 }
 
+/**
+	This method is used to start/stop the PIDs
+	@return void
+
+	@params bool curRun
+*/
 void PID::setRun(bool curRun) {
 	run = curRun;
 }
 
+/**
+	This method is used to set the throttle (called from the Modbus.cpp)
+	@return void
+
+	@params float curThrottle
+*/
 void PID::setThrottle(float curThrottle) {
-	/*if (curThrottle >= 1000 && curThrottle <= 2000) {
-		if (curThrottle >= 1450 && curThrottle <= 1550) {
-			//nominalBaroVal = (barometer->getBarometerValues()[1]*100);
-			throttleUpDown = 0;
-		} else if (curThrottle < 1450) {
-			//nominalBaroVal = (barometer->getBarometerValues()[1]*100);
-			throttleUpDown = -1;
-		} else if (curThrottle > 1550) {
-			//nominalBaroVal = (barometer->getBarometerValues()[1]*100);
-			throttleUpDown = 1;
-		}
-	}*/
 	if (curThrottle > 1100 && curThrottle < 1700) {
 		throttle = curThrottle;
 	}
 }
 
+/**
+	This method is used to set the wanted pitch-value (fly forward/backward)
+	@return void
+
+	@params int curPitchSetpoint
+*/
 void PID::setPitchSetpoint(int curPitchSetpoint) {
 	if (curPitchSetpoint >= 1000 && curPitchSetpoint <= 2000) {
 		int diff = 0;
@@ -227,6 +244,12 @@ void PID::setPitchSetpoint(int curPitchSetpoint) {
 	}
 }
 
+/**
+	This method is used to set the wanted roll-value (fly right/left)
+	@return void
+
+	@params int curRollSetpoint
+*/
 void PID::setRollSetpoint(int curRollSetpoint) {
 	int setPoint = curRollSetpoint;
 	if (setPoint >= 1000 && setPoint <= 2000) {
@@ -244,6 +267,12 @@ void PID::setRollSetpoint(int curRollSetpoint) {
 	}
 }
 
+/**
+	This method is used to set the wanted yaw-value (rotate the drone)
+	@return void
+
+	@params int curYawSetpoint
+*/
 void PID::setYawSetpoint(int curYawSetpoint) {
 	/*int setPoint = curYawSetpoint;
 	if (setPoint >= 1000 && setPoint <= 2000) {
@@ -261,16 +290,28 @@ void PID::setYawSetpoint(int curYawSetpoint) {
 	}*/
 }
 
+/**
+	This method is used to arm the motors
+	@return void
+*/
 void PID::armMotor() {
 	pwm->ExitMotor();
 	pwm->ArmMotor();
 }
 
+/**
+	This method is used to interrupt the PIDs
+	@return void
+*/
 void PID::interruptPid() {
 	run = false;
 	stop = true;
 }
 
+/**
+	This method returns the speed of all motors (used for logging into the database)
+	@return void
+*/
 int *PID::getThrottles() {
 	static int ar[5];
 	ar[0] = esc_1;
@@ -281,6 +322,10 @@ int *PID::getThrottles() {
 	return ar;
 }
 
+/**
+	This method returns the output of the pid-output (used for logging into the database)
+	@return void
+*/
 float *PID::getPIDVals() {
 	static float ar[3];
 	ar[0] = pid_output_pitch;
@@ -289,29 +334,37 @@ float *PID::getPIDVals() {
 	return ar;
 }
 
+/**
+	This method is used to enable/disable the height control of the drone
+	@return void
+*/
 void PID::updateHeightControl() {
 	heightControl = !heightControl;
 }
 
+/**
+	This method checks if the PID has already been initialized
+	@return bool
+*/
 bool PID::isInit() {
 	if (orientation != NULL) 
-	{
 		return true;
-	}
 	else 
-	{
 		return false;
-	}
 }
 
+/**
+	This method returns the Orientation object
+	@return Orientation *
+*/
 Orientation *PID::getOrientatin() {
 	return orientation;
 }
 
+/**
+	This method returns the PWMMotorTest object
+	@return PWMMotorTest *
+*/
 PWMMotorTest *PID::getPwmMotorTest() {
 	return pwm;
-}
-
-PID::~PID()
-{
 }

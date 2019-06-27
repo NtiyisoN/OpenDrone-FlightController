@@ -74,7 +74,6 @@
     <ClCompile Include="Controller\Exit.cpp" />
     <ClCompile Include="Controller\Orientation.cpp" />
     <ClCompile Include="Controller\PID.cpp" />
-    <ClCompile Include="Controller\UltrasonicDistance.cpp" />
     <ClCompile Include="Database\SQLite.cpp" />
     <ClCompile Include="Filter\Filter.cpp" />
     <ClCompile Include="FlightController.cpp" />
@@ -99,7 +98,6 @@
     <ClInclude Include="Controller\Exit.h" />
     <ClInclude Include="Controller\Orientation.h" />
     <ClInclude Include="Controller\PID.h" />
-    <ClInclude Include="Controller\UltrasonicDistance.h" />
     <ClInclude Include="Database\SQLite.h" />
     <ClInclude Include="Network\Command.h" />
     <ClInclude Include="Network\Modbus.h" />

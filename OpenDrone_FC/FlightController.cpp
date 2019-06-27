@@ -1,126 +1,155 @@
 /*
  * Copyright (c) OpenDrone, 2018.  All rights reserved.
  * The entire project (including this file) is licensed under the GNU GPL v3.0
- * Purpose: TODO
+ * Purpose: The class, that initializes all objects and starts all the necessary threads
  *
  * 	@author Thomas Brych, Tim Klecka
- * 	@version 0.0.1 14.02.2019
+ * 	@version 0.0.2 26.06.2019
  */
 #include "FlightController.h"
 #include "Sensor/AbstractSensor/Barometer.h"
 #include "Sensor/AbstractSensor/Ultrasonic.h"
-#include "Sensor/BMP388.h"
 #include "Sensor/BMP280.h"
-#include "Sensor/BMP180.h"
 #include "Sensor/BNO080.h"
+#include "Sensor/HCSR04.h"
 
 #include "Network/TCPServer.h"
+#include "Motor/PWMMotorTest.h"
+#include "Database/SQLite.h"
 
 #include "Controller/Calibration.h"
 #include "Controller/Orientation.h"
-#include "Controller/UltrasonicDistance.h"
 #include "Controller/Exit.h"
 #include "Controller/PID.h"
-
-#include "Motor/PWMMotorTest.h"
-
-#include "Database/SQLite.h"
-
-#include "Motor/PWMMotorTest.h"
 
 #include <wiringPi.h>
 #include <iostream>
 #include <thread>
 #include <fstream>
 #include <signal.h>
-
 using namespace std;
-
-Orientation *orientation;
-Barometer *barometer;
-//UltrasonicDistance *ultrasonic;
-HCSR04 *ultrasonic;
-TCPServer *server;
-Exit *error;
-PID *pid;
-PWMMotorTest *pwm;
-SQLite *sql;
-int arg;
 
 FlightController::FlightController(int argIn)
 {
 	arg = argIn;
 }
 
-
-static void runUltrasonic()
+FlightController::~FlightController()
 {
-	while (true) {
-		ultrasonic->calcDistance();
-	}
 }
 
-static void runBarometer()
+/**
+	Method to run the Ultrasonic-Thread
+	@return void
+
+	@params Ultrasonic *ultrasonic
+*/
+static void runUltrasonic(Ultrasonic *ultrasonic)
+{
+	ultrasonic->runUltrasonic();
+}
+
+/**
+	Method to run the Barometer-Thread
+	@return void
+
+	@params Barometer *barometer
+*/
+static void runBarometer(Barometer *barometer)
 {
 	barometer->runBarometer();
 }
 
-static void runOrientation()
+/**
+	Method to run the Orientation-Thread
+	@return void
+
+	@params Orientation *orientation
+*/
+static void runOrientation(Orientation *orientation)
 {
 	orientation->runOrientation();
 }
 
-static void runServer()
+/**
+	Method to run the Server-Thread
+	@return void
+
+	@params TCPServer *server
+*/
+static void runServer(TCPServer *server)
 {
 	server->startUp();
 }
 
-static void runPid() {
+/**
+	Method to run the PID-Thread
+	@return void
+
+	@params PID *pid
+*/
+static void runPid(PID *pid) {
 	pid->calcValues();
 }
 
-static void runSQL()
+/**
+	Method to run the SQL-Thread
+	@return void
+
+	@params SQLite *sql, Orientation *orientation, Ultrasonic *ultrasonic
+*/
+static void runSQL(SQLite *sql, Orientation *orientation, Ultrasonic *ultrasonic)
 {
 	sql->initSQL("opendrone");
 	sql->startSQL(orientation, ultrasonic);
 }
 
+/**
+	Method that gets called after the user presses Ctrl+C
+	@return void
+
+	@params int sig
+*/
 void sighandler(int sig)
 {
 	cout << "Signal " << sig << " caught..." << endl;
-
-	//Interrupt Threads
-	orientation->interruptOrientation();
+	
+	//Interrupt PID-Thread
+	PID *pid = PID::getInstanceCreated();
 	pid->interruptPid();
-	cout << "Interrupting Threads! \n";
-
-	pwm->ExitMotor();
+	
+	//Exits the motors (stop the motors immediately)
+	PWMMotorTest *pwm = pid->getPwmMotorTest();
 	cout << "Exitmotors called";
-	getchar();
+	pwm->ExitMotor();
+	delay(250);
 	pwm->ExitMotor();
 
-	system("sudo /home/pi/projects/getValues.sh");
-
-	exit(1);
+	exit(0);
 }
 
+/**
+	Method thats called to initialize all our objects
+	@return void
+*/
 void FlightController::initObjects() 
 {
 	error = Exit::getInstance();
 
+	//WiringPi GPIO-Setup
 	int rc = wiringPiSetupGpio();
 	if (rc != 0)
 	{
 		//The GPIO-Setup did not work
+		cout << "Error initializing the GPIO-Setup!\n";
 		error->sendError(0x01, true);
 		return;
 	}
   
+	//Init the important objects
 	orientation = new Orientation();
 	barometer = new BMP280();
 	pwm = new PWMMotorTest();
-	//ultrasonic = new UltrasonicDistance();
-	//parser = new XMLParser();
 	ultrasonic = new HCSR04(5,6,0);
 	sql = new SQLite();
 	pid = PID::getInstance(orientation, pwm, barometer, ultrasonic);
@@ -137,70 +166,32 @@ int FlightController::run()
 {
 	//Start server
 	server = TCPServer::getInstance();
-	thread serverThread(runServer);
+	thread serverThread(runServer, server);
 	while (!server->connected) { delay(50); };
 	cout << "Client connected!\n";
 
 	//Initialize all important objects
 	initObjects();
 
+	//Check if user pressed Ctrl+C to interrupt the pid and stop the motors
 	signal(SIGINT, &sighandler);
 
 	delay(250);
 
-	//Arm Motors
-	/*cout << "Hallo";
-	getchar();
-	pwm->ExitMotor();
-	pwm->ArmMotor();
-	getchar();
-	pwm->ExitMotor();
-
-	//Calibrate
-	/*cout << "Hallo";
-	getchar();
-	pwm->ExitMotor();
-	pwm->CalMotor();
-	cout << "Tim";
-	getchar();
-	pwm->ExitMotor();*/
-
-	//Check Motors
-	/*int rc = wiringPiSetupGpio();
-	pwm = new PWMMotorTest();
-	pwm->ExitMotor();
-	pwm->ArmMotor();
-	cout << "0";
-	pwm->SetSpeed(0, 1200);
-	getchar();
-	cout << "1";
-	pwm->SetSpeed(0, 0);
-	pwm->SetSpeed(1, 1200);
-	getchar();
-	cout << "2";
-	pwm->SetSpeed(1, 0);
-	pwm->SetSpeed(2, 1200);
-	getchar();
-	cout << "3";
-	pwm->SetSpeed(2, 0);
-	pwm->SetSpeed(3, 1200);
-	getchar();
-	pwm->SetSpeed(3, 0);*/
-
 	//Run Threads
-	thread pitchRollYawThread(runOrientation);
-	thread barometerThread(runBarometer);
-	thread pidController(runPid);
-	thread sqlThread(runSQL);
-	thread ultrasonicThread(runUltrasonic);
+	thread pitchRollYawThread(runOrientation, orientation);
+	thread barometerThread(runBarometer, barometer);
+	thread pidController(runPid, pid);
+	thread sqlThread(runSQL, sql, orientation, ultrasonic);
+	thread ultrasonicThread(runUltrasonic, ultrasonic);
 	cout << "Threads are running!\n";
 
-	//Interrupt Threads
-	//orientation->interruptOrientation();
-	//barometer->interruptBaromter();
-	//pid->interruptPid();
-	//sql->interruptSQL();
-	//cout << "Interrupting Threads! \n";
+	//TODO: Interrupt the Threads
+	/*orientation->interruptOrientation();
+	barometer->interruptBaromter();
+	pid->interruptPid();
+	sql->interruptSQL();
+	cout << "Interrupting Threads! \n";*/
 
 	//Wait until threads stopped
 	serverThread.join();
@@ -211,8 +202,4 @@ int FlightController::run()
 	cout << "Stopped Threads!\n";
 
 	return (0);
-}
-
-FlightController::~FlightController()
-{
 }

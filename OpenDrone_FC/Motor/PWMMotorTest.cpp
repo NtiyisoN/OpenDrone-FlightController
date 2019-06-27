@@ -1,17 +1,16 @@
 /*
  * Copyright (c) OpenDrone, 2018.  All rights reserved.
  * The entire project (including this file) is licensed under the GNU GPL v3.0
- * Purpose: TODO
+ * Purpose: This class controls the motors of the drone
  *
  * 	@author Tim Klecka
- * 	@version 0.0.1 07.01.2019
+ * 	@version 0.0.2 26.06.2019
  */
 #include "PWMMotorTest.h"
 #include <iostream>
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include "PCA9685.h"
-
 using namespace std;
 
 #define PIN_BASE 300
@@ -19,11 +18,6 @@ using namespace std;
 #define MIN_PWM 1000
 #define HERTZ 50
 
-/**
-	PWMMotorTest
-	@param void
-	@return void
-*/
 PWMMotorTest::PWMMotorTest()
 {
 	this->fd = PCA9685Setup(PIN_BASE, 0x40, HERTZ);
@@ -33,6 +27,10 @@ PWMMotorTest::PWMMotorTest()
 	}
 
 	PCA9685PWMReset(this->fd);
+}
+
+PWMMotorTest::~PWMMotorTest()
+{
 }
 
 /**
@@ -88,7 +86,6 @@ void PWMMotorTest::CalMotor() {
 	cout << "MIN\n";
 	pwmWrite(PIN_BASE + 16, MIN_PWM*0.208);
 	delay(5000);
-	//getchar();
 }
 
 /**
@@ -125,11 +122,4 @@ void PWMMotorTest::Test()
 			delay(10);
 		}
 	}
-}
-
-/**
-	Destructor
-*/
-PWMMotorTest::~PWMMotorTest()
-{
 }
