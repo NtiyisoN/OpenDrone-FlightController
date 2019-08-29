@@ -720,7 +720,7 @@ int BNO080::readFrsWord(uint16_t recordType, uint32_t offset, uint32_t* result) 
 
 void BNO080::start(uint32_t dataRate) { // set datarate to zero to stop sensors
 	uint32_t odrPeriodMicrosecs = 0;
-	if (dataRate != 0) odrPeriodMicrosecs = 10000/ dataRate;
+	if (dataRate != 0) odrPeriodMicrosecs = 10000 / dataRate;
 
 	// There is some interaction between the operational rates selected for the reports.
 	// You will have to look at the feature responses to see if a particular report

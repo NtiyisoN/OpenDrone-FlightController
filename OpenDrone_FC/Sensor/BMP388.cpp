@@ -27,6 +27,7 @@ BMP388::BMP388()
 		cout << "wiringPiI2CSetup(addressBarometer)\n";
 		exit(1);
 	}
+
 	wiringPiI2CWriteReg8(this->fd, OSR, 0x03);		//Pressure = high resolution, temperature = 1x
 	wiringPiI2CWriteReg8(this->fd, CONFIG, 0x00);	//Filter coefficient
 	wiringPiI2CWriteReg8(this->fd, ODR, 0x00);		//Sampling-Rate

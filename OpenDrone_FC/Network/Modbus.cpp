@@ -33,7 +33,7 @@ void Modbus::checkMotors(PWMMotorTest *pwm, int motorNum) {
 	pwm->ArmMotor();
 	motorNum -= 1;
 
-	pwm->SetSpeed(motorNum, 1200);
+	pwm->SetSpeed(motorNum, 1150);
 	delay(2500);
 	pwm->SetSpeed(motorNum, 0);
 	pwm->ExitMotor();

@@ -12,6 +12,7 @@
 #include "Sensor/BMP280.h"
 #include "Sensor/BNO080.h"
 #include "Sensor/HCSR04.h"
+#include "Sensor/GYUS42.h"
 
 #include "Network/TCPServer.h"
 #include "Motor/PWMMotorTest.h"
@@ -150,7 +151,7 @@ void FlightController::initObjects()
 	orientation = new Orientation();
 	barometer = new BMP280();
 	pwm = new PWMMotorTest();
-	ultrasonic = new HCSR04(5,6,0);
+	ultrasonic = new GYUS42();
 	sql = new SQLite();
 	pid = PID::getInstance(orientation, pwm, barometer, ultrasonic);
 }
@@ -186,7 +187,7 @@ int FlightController::run()
 	thread ultrasonicThread(runUltrasonic, ultrasonic);
 	cout << "Threads are running!\n";
 
-	//TODO: Interrupt the Threads
+	//Interrupt the Threads
 	/*orientation->interruptOrientation();
 	barometer->interruptBaromter();
 	pid->interruptPid();

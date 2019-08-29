@@ -31,11 +31,13 @@ public:
 	void setRollSetpoint(int curRollSetpoint);
 	void setYawSetpoint(int curYawSetpoint);
 	void setRun(bool curRun);
+	void landDrone();
 	void armMotor();
 	bool isInit();
 	void interruptPid();
 	int* getThrottles();
 	float *getPIDVals();
+	double* getAltVals();
 	void updateHeightControl();
 
 	Orientation *getOrientatin();
@@ -58,7 +60,16 @@ private:
 
 	int esc_1, esc_2, esc_3, esc_4;
 	int throttle = 1050;
-	bool heightControl = false;
+
+	/* Altitude Hold */
+	bool startUp = true;		//Used to bring the drone to the wanted start-height (default 150cm)
+	bool isStarting = true;		//Used to start the drone (up to 30cm)
+	bool heightControl = false;	//If heightControl should be used
+	bool hasHeightControl = false;
+	int wantedDistanceStart = 150;	//The wanted distance when auto-starting the drone
+	double maxBaroVal = 0.0;
+	bool emergencyThrottleSet = false;
+	int wantedDistance = 150;
 
 	float pid_p_gain_roll = 2.1; //1.25             //Gain setting for the roll P-controller 0.65
 	float pid_i_gain_roll = 0.011; // 0.05;          //Gain setting for the roll I-controller 0.0006
@@ -75,11 +86,15 @@ private:
 	float pid_d_gain_yaw = 0.00;					//Gain setting for the yaw D-controller.
 	int pid_max_yaw = 200;							//Maximum output of the PID-controller (+/-)
 
-	float pid_p_gain_height = 3;
-	float pid_d_gain_height = 15;
+	//Used for start automatic
+	float pid_p_gain_height = 1.75;
+	float pid_d_gain_height = 2.75;
+	float pid_p_gain_start = 4;
+	float pid_d_gain_start = 6;
+
+	double* curPitchRollYaw;
 
 	float pid_cur_val = 0;
-	double wantedDistane = 200;
 
 	float maxAngle = 45;
 	float factorControl = maxAngle / 480;			//Maximum 45° (480 steps)

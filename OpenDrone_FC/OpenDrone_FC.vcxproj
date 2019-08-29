@@ -62,7 +62,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <Link>
-      <LibraryDependencies>wiringPi;pthread</LibraryDependencies>
+      <LibraryDependencies>wiringPi;pthread;tinyxml2;bcm2835;sqlite3</LibraryDependencies>
     </Link>
     <RemotePostBuildEvent>
       <Command>gpio export 17 out</Command>
@@ -89,6 +89,7 @@
     <ClCompile Include="Sensor\BMP280.cpp" />
     <ClCompile Include="Sensor\BMP388.cpp" />
     <ClCompile Include="Sensor\BNO080.cpp" />
+    <ClCompile Include="Sensor\GYUS42.cpp" />
     <ClCompile Include="Sensor\MPU6050.cpp" />
     <ClCompile Include="Sensor\HMC5883L.cpp" />
     <ClCompile Include="Sensor\HCSR04.cpp" />
@@ -116,6 +117,7 @@
     <ClInclude Include="Sensor\AbstractSensor\Magnetometer.h" />
     <ClInclude Include="Sensor\BMP180.h" />
     <ClInclude Include="Sensor\BNO080.h" />
+    <ClInclude Include="Sensor\GYUS42.h" />
     <ClInclude Include="Sensor\MPU6050.h" />
     <ClInclude Include="Sensor\HMC5883L.h" />
     <ClInclude Include="Sensor\HCSR04.h" />
@@ -133,6 +135,7 @@
     <ClCompile>
       <CppLanguageStandard>c++11</CppLanguageStandard>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>MaxSpeed</Optimization>
     </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

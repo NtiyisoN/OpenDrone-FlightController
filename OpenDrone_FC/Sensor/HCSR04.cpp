@@ -10,6 +10,9 @@
 #include "../Filter/Filter.h"
 #include "./AbstractSensor/Ultrasonic.h"
 #include <wiringPi.h>
+#include "stdio.h"
+#include <iostream>
+using namespace std;
 
 HCSR04::HCSR04(int pin_trigger, int pin_echo, int id)
 {
@@ -50,6 +53,7 @@ void HCSR04::calcDistance()
 	distance = ((pong - ping)/2000000.0)*341.29*100;
 
 	this->curDistance = this->filter->addValue(distance);
+	//cout << distance << endl;
 }
 
 double HCSR04::getDistance() 

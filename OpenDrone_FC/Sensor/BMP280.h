@@ -8,6 +8,7 @@
  */
 #pragma once
 #include "AbstractSensor/Barometer.h"
+#include "../Filter/Filter.h"
 class BMP280 :
 	public virtual Barometer
 {
@@ -21,7 +22,8 @@ public:
 private:
 	int fd;
 	bool run = false;
-	double temperature = 0, pressure = 0;
+	double temperature = 0;
+	int pressure = 0;
 
 	unsigned short int cal_t1 = 27504;
 	short int cal_t2 = 26435;
@@ -40,7 +42,9 @@ private:
 	int read_raw(int fd, int reg);
 	int compensate_temp(int raw_temp);
 	float read_temperature(int fd);
-	double read_pressure(int fd);
+	int read_pressure(int fd);
 	void load_calibration(int fd);
+
+	Filter* filter;
 };
 

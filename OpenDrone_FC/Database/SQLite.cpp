@@ -15,7 +15,11 @@
 #include "../Controller/PID.h"
 #include "wiringPi.h"
 #include <string.h>
+#include <iostream>
+#include <fstream>
 #include <sstream>
+#include <chrono>
+#include <ctime>    
 using namespace std;
 
 SQLite::SQLite()
@@ -32,7 +36,7 @@ SQLite::~SQLite()
 
 	@params void *data, int argc, char **argv, char **azColName
 */
-static int callback(void *data, int argc, char **argv, char **azColName) {
+/*static int callback(void *data, int argc, char **argv, char **azColName) {
 	int i;
 	fprintf(stderr, "%s: ", (const char*)data);
 
@@ -42,7 +46,7 @@ static int callback(void *data, int argc, char **argv, char **azColName) {
 
 	printf("\n");
 	return 0;
-}
+}*/
 
 /**
 	This function logs important data into the database
@@ -51,16 +55,28 @@ static int callback(void *data, int argc, char **argv, char **azColName) {
 	@params Orientation *o, Ultrasonic *ultrasonic
 */
 void SQLite::startSQL(Orientation *o, Ultrasonic *ultrasonic) {
-	char *zErrMsg = 0;
+	/*char *zErrMsg = 0;
 	int rc;
 	char *sql;
-	const char* data = "Callback function called";
+	const char* data = "Callback function called";*/
 
 	PID *pid = PID::getInstanceCreated();
 	TCPServer *tcp = TCPServer::getInstance();
+	ofstream altLoggingFile;
+	altLoggingFile.open("Logger.csv");
+	altLoggingFile << "Time;CurBaroVal;UltrasonicDistance;ESC1;ESC2;ESC3;ESC4;Throttle;Pitch;Roll;Yaw;OuputHeightPID;OutputPitchPID;OutputRollPID;OutputYawPID;ErrorPitch;ErrorRoll;ErrorYaw" << std::endl;
+	altLoggingFile.flush();
+	int64_t startTime = std::chrono::system_clock::now().time_since_epoch().count();
+
 	run = true;
 	while (run == true) {
-		double *ar = o->getPitchRollReal();
+		int64_t curTime = std::chrono::system_clock::now().time_since_epoch().count() - startTime;
+		double* arAlt = pid->getAltVals();
+		if (arAlt != NULL) {
+			altLoggingFile << to_string(curTime) << ";" << arAlt[0] << ";" << arAlt[1] << ";" << arAlt[2] << ";" << arAlt[3] << ";" << arAlt[4] << ";" << arAlt[5] << ";" << arAlt[6] << ";" << arAlt[7] << ";" << arAlt[8] << ";" << arAlt[9] << ";" << arAlt[10] << ";" << arAlt[11] << ";" << arAlt[12] << ";" << arAlt[13] << ";" << arAlt[14] << ";" << arAlt[15] << ";" << arAlt[16] << std::endl;
+			altLoggingFile.flush();
+		}
+		/*double *ar = o->getPitchRollReal();
 		string sql;
 		if (ar[0] != NULL) {
 			int m = millis();
@@ -88,10 +104,10 @@ void SQLite::startSQL(Orientation *o, Ultrasonic *ultrasonic) {
 			}
 
 			float *arPID = pid->getPIDVals();
-			/* Create SQL statement */
+			//Create SQL statement
 			sql = "INSERT INTO PID_Values (timestamp, droneid, PIDPitch, PIDRoll, PIDYaw) VALUES (" + to_string(m) + ",1,'" + to_string(arPID[0]) + "','" + to_string(arPID[1]) + "','" + to_string(arPID[2]) + "');";
 
-			/* Execute SQL statement */
+			//Execute SQL statement
 			rc = sqlite3_exec(db, sql.c_str(), callback, (void*)data, &zErrMsg);
 
 			if (rc != SQLITE_OK) {
@@ -105,7 +121,7 @@ void SQLite::startSQL(Orientation *o, Ultrasonic *ultrasonic) {
 				
 				sql = "INSERT INTO Commands (timestamp, droneid, command) VALUES (" + to_string(c->timestamp) + ",1,'" + c->command + "');";
 
-				/* Execute SQL statement */
+				// Execute SQL statement
 				rc = sqlite3_exec(db, sql.c_str(), callback, (void*)data, &zErrMsg);
 				if (rc != SQLITE_OK) {
 					fprintf(stderr, "SQL error: %s\n", zErrMsg);
@@ -114,10 +130,10 @@ void SQLite::startSQL(Orientation *o, Ultrasonic *ultrasonic) {
 
 				tcp->list1.pop_front();
 			}
-		}
-		delay(1);
+		}*/
+		delay(5);
 	}
-	sqlite3_close(db);
+	//sqlite3_close(db);
 }
 
 /**
@@ -128,7 +144,7 @@ void SQLite::startSQL(Orientation *o, Ultrasonic *ultrasonic) {
 */
 bool SQLite::initSQL(char* name)
 {
-	char *zErrMsg = 0;
+	/*char *zErrMsg = 0;
 	int rc;
 
 	rc = sqlite3_open("/home/pi/projects/opendrone", &db);
@@ -138,7 +154,7 @@ bool SQLite::initSQL(char* name)
 	}
 	else {
 		fprintf(stderr, "Opened database successfully\n");
-	}
+	}*/
 
 	return true;
 }

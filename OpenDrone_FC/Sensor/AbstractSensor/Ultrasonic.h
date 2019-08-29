@@ -11,7 +11,6 @@ class Ultrasonic
 {
 public:
 	virtual double getDistance() = 0;
-	virtual void calcDistance() = 0;
 	virtual void runUltrasonic() = 0;
 	virtual void interruptUltrasonic() = 0;
 };

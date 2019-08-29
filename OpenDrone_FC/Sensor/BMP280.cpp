@@ -21,7 +21,7 @@ using namespace std;
 #define BMP280_TEMPDATA     0xFA
 
 /* BMP280 default address */
-#define BMP280_I2CADDR 0x77
+#define BMP280_I2CADDR 0x76
 #define BMP280_CHIPID  0xD0
 
 /* BMP280 Registers */
@@ -55,15 +55,16 @@ BMP280::BMP280()
 	//delay(2000);
 	//wiringPiI2CWriteReg8(fd, CTR_MEAS, 0x11);
 	delay(1000);
+	//wiringPiI2CWriteReg8(fd, BMP280_CONFIG, 0x38);
 	wiringPiI2CWriteReg8(fd, BMP280_CONFIG, 0x00);
 	wiringPiI2CWriteReg8(fd, BMP280_CONTROL, 0x3F);
 
 	int id = wiringPiI2CReadReg8(fd, 0xD0);
-	cout  << "Id: " << id << "\n";
 	/*if (id != 88) {
 		Exit *exit = Exit::getInstance();
 		exit->sendError(0x101, true);
 	}*/
+	filter = new Filter(0, 500000, 50);
 }
 
 void BMP280::load_calibration(int fd)
@@ -108,7 +109,7 @@ float BMP280::read_temperature(int fd)
 	return (float)((compensated_temp * 5 + 128) >> 8) / 100;
 }
 
-double BMP280::read_pressure(int fd)
+int BMP280::read_pressure(int fd)
 {
 	int raw_temp = read_raw(fd, BMP280_TEMPDATA);
 	int32_t compensated_temp = compensate_temp(raw_temp);
@@ -134,20 +135,22 @@ double BMP280::read_pressure(int fd)
 	p2 = ((int64_t)cal_p8 * p) >> 19;
 	p = ((p + p1 + p2) >> 8) + (((int64_t)cal_p7) << 4);
 
-	return (double)(p / 256) / 100.0;
+	return (int)(p / 256);
 }
 
 void BMP280::calcBaromter()
 {
-	double curP = read_pressure(fd);
+	int result = read_pressure(fd);
+	double curP = (double)result;
 	double curT = read_temperature(fd);
 	
-	pressure = curP;
-	temperature = curT;
-	if (pressure < 900 || pressure > 1050) {
+	pressure = filter->addValue(curP);
+ 	temperature = curT;
+	if (pressure < 90000 || pressure > 105000) {
 		cout << pressure << " " << temperature << "\n";
+		cout.flush();
 	}
-	cout.flush();
+	//cout << temperature << endl;
 }
 
 double *BMP280::getBarometerValues()
@@ -173,7 +176,7 @@ void BMP280::runBarometer()
 	while (this->run)
 	{
 		this->calcBaromter();
-		delay(15);
+		delayMicroseconds(1500);
 	}
 }
 
